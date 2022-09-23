@@ -1,0 +1,19 @@
+{
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrecker/GardenFrantic.git"
+  },
+  "author": "Henry Recker",
+  "license": "MIT",
+  "scripts": {
+    "start": "set BROWSERSLIST_IGNORE_OLD_DATA=1&& parcel webroot/index.html",
+    "build": "parcel build webroot/index.html"
+  },
+  "devDependencies": {
+    "cssnano": "^5.1.13",
+    "parcel": "^2.7.0",
+    "phaser": "^3.55.2",
+    "postcss": "^8.4.16",
+    "typescript": "^4.6.3"
+  }
+}

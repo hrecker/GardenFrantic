@@ -1,2 +1,2 @@
 # GardenFrantic
-A 2D gardening game made with Phaser 3
+A 2D gardening game made with Phaser 3.
