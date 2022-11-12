@@ -1,3 +1,8 @@
 {
-    "sampleTextColor": "#ffffff"
+    "backgroundColor": "#f5f1d0",
+
+    "defaultWaterLevel": 50,
+    "defaultLightLevel": 50,
+    "waterDecayRate": 3,
+    "lightDecayRate": 2
 }
