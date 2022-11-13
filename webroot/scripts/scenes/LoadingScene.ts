@@ -1,4 +1,4 @@
-import { startGame } from "../game/Game";
+import { newGame } from "../game/Game";
 import { loadConfig } from "../model/Config";
 
 let loadingText: Phaser.GameObjects.Text;
@@ -43,7 +43,7 @@ export class LoadingScene extends Phaser.Scene {
 
     create() {
         loadConfig(this.cache.json.get("config"));
-        this.scene.start("MainScene", { gardenGame: startGame() })
+        this.scene.start("MainScene", { gardenGame: newGame() })
                   .stop();
     }
 }
