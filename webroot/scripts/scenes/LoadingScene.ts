@@ -35,7 +35,10 @@ export class LoadingScene extends Phaser.Scene {
         this.scale.on("resize", this.resize, this);
 
         // Images
-        this.load.image("plant", "assets/sprites/plant.png")
+        this.load.image("plant", "assets/sprites/plant.png");
+        this.load.image("statusBarBackground", "assets/sprites/statusBarBackground.png");
+        this.load.image("waterIcon", "assets/sprites/waterIcon.png");
+        this.load.image("lightIcon", "assets/sprites/lightIcon.png");
 
         // Load json
         this.load.json("config", "assets/json/config.json");

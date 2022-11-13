@@ -19,21 +19,19 @@ export function newGame(): GardenGame {
     return game;
 }
 
-export function startGame(game: GardenGame, scene: Phaser.Scene): GardenGame {
-    // Create first plant object
-    //TODO default positioning, probably based on game window size
-    //TODO plant texture
-    let plant = newPlant(scene.add.image(200, 200, "plant"));
+export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.Image): Plant {
+    let plant = newPlant(plantGameObject);
     game.plants[plant.id] = plant;
-    return game;
+    return plant;
 }
 
 export function update(game: GardenGame, delta: number) {
     //TODO updating plants here
+    //TODO handling levels reaching 0 or 100 here
+    
     Object.keys(game.plants).forEach(id => {
         let plant: Plant = game.plants[id];
-        plant.gameObject.x += 0.01 * delta;
-        plant.lightLevel -= (delta / 1000.0) * game.lightDecayRate;
-        plant.waterLevel -= (delta / 1000.0) * game.waterDecayRate;
+        plant.lightLevel = Math.min(Math.max(plant.lightLevel - (delta / 1000.0) * game.lightDecayRate, 0), 100);
+        plant.waterLevel = Math.min(Math.max(plant.waterLevel - (delta / 1000.0) * game.waterDecayRate, 0), 100);
     });
 }

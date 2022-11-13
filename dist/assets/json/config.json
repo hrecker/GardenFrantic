@@ -1,8 +1,14 @@
 {
     "backgroundColor": "#f5f1d0",
 
+    "healthyLevelColor": "0x9cf0aa",
+    "warningLevelColor": "0xf0a49c",
+
     "defaultWaterLevel": 50,
     "defaultLightLevel": 50,
     "waterDecayRate": 3,
-    "lightDecayRate": 2
+    "lightDecayRate": 2,
+
+    "lowWarning": 20,
+    "highWarning": 80
 }
