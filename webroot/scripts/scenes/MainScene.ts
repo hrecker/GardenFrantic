@@ -1,7 +1,8 @@
 import * as game from "../game/Game";
 import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
-import { PlantStatusBar, updateStatusBars } from "./PlantStatusBar";
+import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
+import { Tool } from "../game/Tool";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -26,8 +27,13 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.plantStatusBars = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
-        let startingPlant = game.addPlant(this.gardenGame, this.add.image(350, 250, "plant"));
+        let startingPlant = game.addPlant(this.gardenGame, this.add.image(250, 250, "plant"));
         this.createStatusBar(startingPlant);
+
+        startingPlant.gameObject.setInteractive();
+        startingPlant.gameObject.on("pointerdown", () => {
+            game.useSelectedTool(this.gardenGame, startingPlant);
+        });
     }
 
     createStatusBar(plant: Plant) {

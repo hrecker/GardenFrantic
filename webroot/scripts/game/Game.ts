@@ -1,5 +1,6 @@
 import { config } from "../model/Config";
 import { newPlant, Plant } from "./Plant";
+import { Tool } from "./Tool";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -8,13 +9,16 @@ export type GardenGame = {
     waterDecayRate: number;
     /** Rate of decay of plant light levels, per second */
     lightDecayRate: number;
+    /** Currently selected tool, or null if none selected */
+    selectedTool: Tool;
 }
 
 export function newGame(): GardenGame {
     let game: GardenGame = {
         plants: {},
         waterDecayRate: config()["waterDecayRate"],
-        lightDecayRate: config()["lightDecayRate"]
+        lightDecayRate: config()["lightDecayRate"],
+        selectedTool: Tool.NoTool,
     };
     return game;
 }
@@ -34,4 +38,15 @@ export function update(game: GardenGame, delta: number) {
         plant.lightLevel = Math.min(Math.max(plant.lightLevel - (delta / 1000.0) * game.lightDecayRate, 0), 100);
         plant.waterLevel = Math.min(Math.max(plant.waterLevel - (delta / 1000.0) * game.waterDecayRate, 0), 100);
     });
+}
+
+export function useSelectedTool(game: GardenGame, plant: Plant) {
+    switch (game.selectedTool) {
+        case Tool.Lamp:
+            plant.lightLevel += config()["lampIncrease"];
+            break;
+        case Tool.WateringCan:
+            plant.waterLevel += config()["wateringCanIncrease"];
+            break;
+    }
 }

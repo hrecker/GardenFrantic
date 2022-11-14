@@ -1,5 +1,6 @@
 {
     "backgroundColor": "#f5f1d0",
+    "toolbarColor": "0x97e7f0",
 
     "healthyLevelColor": "0x9cf0aa",
     "warningLevelColor": "0xf0a49c",
@@ -10,5 +11,8 @@
     "lightDecayRate": 2,
 
     "lowWarning": 20,
-    "highWarning": 80
+    "highWarning": 80,
+
+    "lampIncrease": 10,
+    "wateringCanIncrease": 15
 }

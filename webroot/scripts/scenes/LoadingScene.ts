@@ -39,6 +39,8 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("statusBarBackground", "assets/sprites/statusBarBackground.png");
         this.load.image("waterIcon", "assets/sprites/waterIcon.png");
         this.load.image("lightIcon", "assets/sprites/lightIcon.png");
+        this.load.image("wateringCan", "assets/sprites/wateringCan.png");
+        this.load.image("lamp", "assets/sprites/lamp.png");
 
         // Load json
         this.load.json("config", "assets/json/config.json");
@@ -46,7 +48,9 @@ export class LoadingScene extends Phaser.Scene {
 
     create() {
         loadConfig(this.cache.json.get("config"));
-        this.scene.start("MainScene", { gardenGame: newGame() })
+        let game = newGame();
+        this.scene.start("MainScene", { gardenGame: game })
+                  .start("ToolbarScene", { gardenGame: game })
                   .stop();
     }
 }
