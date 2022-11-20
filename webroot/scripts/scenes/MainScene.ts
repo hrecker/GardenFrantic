@@ -30,7 +30,7 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.plantStatusBars = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
-        let startingPlant = game.addPlant(this.gardenGame, this.add.image(250, 250, "plant"));
+        let startingPlant = game.addPlant(this.gardenGame, this.add.image(350, 350, "plant"));
         this.createStatusBar(startingPlant);
 
         startingPlant.gameObject.setInteractive();

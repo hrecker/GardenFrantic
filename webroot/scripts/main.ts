@@ -9,8 +9,8 @@ var config: Phaser.Types.Core.GameConfig = {
         parent: "game-div",
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 640,
-        height: 360,
+        width: 800,
+        height: 600,
     },
     // NOTE - With hardware acceleration disabled in Chrome, WEBGL causes enormous CPU usage on my desktop.
     type: Phaser.WEBGL,
