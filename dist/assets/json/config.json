@@ -5,6 +5,8 @@
     "healthyLevelColor": "0x9cf0aa",
     "warningLevelColor": "0xf0a49c",
 
+    "minLevel": 0,
+    "maxLevel": 100,
     "defaultWaterLevel": 50,
     "defaultLightLevel": 50,
     "waterDecayRate": 3,

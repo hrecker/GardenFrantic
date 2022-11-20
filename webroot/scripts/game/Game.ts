@@ -1,5 +1,6 @@
+import { plantDestroyEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
-import { newPlant, Plant } from "./Plant";
+import { newPlant, Plant, setLightLevel, setWaterLevel } from "./Plant";
 import { Tool } from "./Tool";
 
 export type GardenGame = {
@@ -29,24 +30,40 @@ export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.I
     return plant;
 }
 
+export function destroyPlant(game: GardenGame, plant: Plant) {
+    
+}
+
 export function update(game: GardenGame, delta: number) {
     //TODO updating plants here
     //TODO handling levels reaching 0 or 100 here
+    let toRemove: number[] = [];
     
     Object.keys(game.plants).forEach(id => {
         let plant: Plant = game.plants[id];
-        plant.lightLevel = Math.min(Math.max(plant.lightLevel - (delta / 1000.0) * game.lightDecayRate, 0), 100);
-        plant.waterLevel = Math.min(Math.max(plant.waterLevel - (delta / 1000.0) * game.waterDecayRate, 0), 100);
+        if (plant.shouldDestroy) {
+            plant.gameObject.destroy();
+            plantDestroyEvent(plant);
+            toRemove.push(parseInt(id));
+        } else {
+            setLightLevel(plant, plant.lightLevel - (delta / 1000.0) * game.lightDecayRate);
+            setWaterLevel(plant, plant.waterLevel - (delta / 1000.0) * game.waterDecayRate);
+        }
     });
+
+    // Remove any plants that were destroyed
+    toRemove.forEach(id => {
+        delete game.plants[id]
+    })
 }
 
 export function useSelectedTool(game: GardenGame, plant: Plant) {
     switch (game.selectedTool) {
         case Tool.Lamp:
-            plant.lightLevel += config()["lampIncrease"];
+            setLightLevel(plant, plant.lightLevel + config()["lampIncrease"]);
             break;
         case Tool.WateringCan:
-            plant.waterLevel += config()["wateringCanIncrease"];
+            setWaterLevel(plant, plant.waterLevel + config()["wateringCanIncrease"]);
             break;
     }
 }

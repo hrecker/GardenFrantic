@@ -1,13 +1,14 @@
 import { config } from "../model/Config";
 import { Plant } from "./Plant";
 
-//TODO eventually if the plants can move, will want to move the status bars here too
-// Will have to store all aspects off the status bar here in that case, including the icon
-// and the background object
 export type PlantStatusBar = {
     maxStatusBarWidth: number;
     waterStatusBar: Phaser.GameObjects.Rectangle;
+    waterStatusBarBackground: Phaser.GameObjects.Image;
+    waterIcon: Phaser.GameObjects.Image;
     lightStatusBar: Phaser.GameObjects.Rectangle;
+    lightStatusBarBackground: Phaser.GameObjects.Image;
+    lightIcon: Phaser.GameObjects.Image;
 }
 
 export function updateStatusBars(statusBar: PlantStatusBar, plant: Plant) {

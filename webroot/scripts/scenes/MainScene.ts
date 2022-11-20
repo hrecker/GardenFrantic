@@ -3,6 +3,7 @@ import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { Tool } from "../game/Tool";
+import { addPlantDestroyListener } from "../events/EventMessenger";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -22,6 +23,8 @@ export class MainScene extends Phaser.Scene {
 
     init(data) {
         this.gardenGame = data.gardenGame;
+        // Event listeners
+        addPlantDestroyListener(this.handlePlantDestroy, this);
     }
 
     create() {
@@ -53,14 +56,29 @@ export class MainScene extends Phaser.Scene {
             parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
         
         // Icons
-        this.add.image(waterBarBackground.getTopLeft().x - statusIconXMargin, waterBarBackground.y, "waterIcon");
-        this.add.image(lightBarBackground.getTopLeft().x - statusIconXMargin, lightBarBackground.y, "lightIcon");
+        let waterIcon = this.add.image(waterBarBackground.getTopLeft().x - statusIconXMargin, waterBarBackground.y, "waterIcon");
+        let lightIcon = this.add.image(lightBarBackground.getTopLeft().x - statusIconXMargin, lightBarBackground.y, "lightIcon");
 
         this.plantStatusBars[plant.id] = {
             waterStatusBar: waterBar,
+            waterStatusBarBackground: waterBarBackground,
+            waterIcon: waterIcon,
             lightStatusBar: lightBar,
+            lightStatusBarBackground: lightBarBackground,
+            lightIcon: lightIcon,
             maxStatusBarWidth: waterBarBackground.width - (statusBarXPadding * 2)
         }
+    }
+
+    handlePlantDestroy(scene: MainScene, plant: Plant) {
+        // Destroy the corresponding status bars
+        scene.plantStatusBars[plant.id].lightStatusBar.destroy();
+        scene.plantStatusBars[plant.id].lightStatusBarBackground.destroy();
+        scene.plantStatusBars[plant.id].lightIcon.destroy();
+        scene.plantStatusBars[plant.id].waterStatusBar.destroy();
+        scene.plantStatusBars[plant.id].waterStatusBarBackground.destroy();
+        scene.plantStatusBars[plant.id].waterIcon.destroy();
+        delete scene.plantStatusBars[plant.id];
     }
     
     /** Main game update loop */
