@@ -3,7 +3,8 @@ import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { Tool } from "../game/Tool";
-import { addPlantDestroyListener } from "../events/EventMessenger";
+import { addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { Weather } from "../game/Weather";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -14,6 +15,7 @@ const statusIconXMargin = 25;
 export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     plantStatusBars: { [id: number] : PlantStatusBar }
+    background: Phaser.GameObjects.Image;
 
     constructor() {
         super({
@@ -25,11 +27,15 @@ export class MainScene extends Phaser.Scene {
         this.gardenGame = data.gardenGame;
         // Event listeners
         addPlantDestroyListener(this.handlePlantDestroy, this);
+        addWeatherUpdateListener(this.handleWeatherUpdate, this);
     }
 
     create() {
         this.plantStatusBars = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
+
+        this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
+
         let startingPlant = game.addPlant(this.gardenGame, this.add.image(350, 350, "plant"));
         this.createStatusBar(startingPlant);
 
@@ -70,6 +76,7 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    /** Handle plant being destroyed */
     handlePlantDestroy(scene: MainScene, plant: Plant) {
         // Destroy the corresponding status bars
         scene.plantStatusBars[plant.id].lightStatusBar.destroy();
@@ -79,6 +86,11 @@ export class MainScene extends Phaser.Scene {
         scene.plantStatusBars[plant.id].waterStatusBarBackground.destroy();
         scene.plantStatusBars[plant.id].waterIcon.destroy();
         delete scene.plantStatusBars[plant.id];
+    }
+
+    /** Handle weather being changed (may be called even if the new weather is the same) */
+    handleWeatherUpdate(scene: MainScene, weather: Weather) {
+        scene.background.setTexture(weather);
     }
     
     /** Main game update loop */

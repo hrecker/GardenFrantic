@@ -1,4 +1,5 @@
 import { newGame } from "../game/Game";
+import { Weather } from "../game/Weather";
 import { loadConfig } from "../model/Config";
 
 let loadingText: Phaser.GameObjects.Text;
@@ -41,6 +42,10 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("lightIcon", "assets/sprites/lightIcon.png");
         this.load.image("wateringCan", "assets/sprites/wateringCan.png");
         this.load.image("lamp", "assets/sprites/lamp.png");
+        this.load.image(Weather.PartlyCloudy, "assets/sprites/" + Weather.PartlyCloudy + ".png");
+        this.load.image(Weather.Cloudy, "assets/sprites/" + Weather.Cloudy + ".png");
+        this.load.image(Weather.Heat, "assets/sprites/" + Weather.Heat + ".png");
+        this.load.image(Weather.Rain, "assets/sprites/" + Weather.Rain + ".png");
 
         // Load json
         this.load.json("config", "assets/json/config.json");

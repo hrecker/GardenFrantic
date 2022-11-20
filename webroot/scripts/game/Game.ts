@@ -1,25 +1,26 @@
-import { plantDestroyEvent } from "../events/EventMessenger";
+import { plantDestroyEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { newPlant, Plant, setLightLevel, setWaterLevel } from "./Plant";
 import { Tool } from "./Tool";
+import { getDefaultWeather, getLightDecayRate, getRandomWeather, getWaterDecayRate, Weather } from "./Weather";
 
 export type GardenGame = {
     /** Plants in the game */
     plants: { [id: number]: Plant };
-    /** Rate of decay of plant water levels, per second */
-    waterDecayRate: number;
-    /** Rate of decay of plant light levels, per second */
-    lightDecayRate: number;
     /** Currently selected tool, or null if none selected */
     selectedTool: Tool;
+    /** Currently active weather */
+    weather: Weather;
+    /** How long the current weather has lasted */
+    currentWeatherDurationMs: number;
 }
 
 export function newGame(): GardenGame {
     let game: GardenGame = {
         plants: {},
-        waterDecayRate: config()["waterDecayRate"],
-        lightDecayRate: config()["lightDecayRate"],
         selectedTool: Tool.NoTool,
+        weather: getDefaultWeather(),
+        currentWeatherDurationMs: 0
     };
     return game;
 }
@@ -30,13 +31,8 @@ export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.I
     return plant;
 }
 
-export function destroyPlant(game: GardenGame, plant: Plant) {
-    
-}
-
 export function update(game: GardenGame, delta: number) {
-    //TODO updating plants here
-    //TODO handling levels reaching 0 or 100 here
+    // Plant updates
     let toRemove: number[] = [];
     
     Object.keys(game.plants).forEach(id => {
@@ -46,15 +42,23 @@ export function update(game: GardenGame, delta: number) {
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));
         } else {
-            setLightLevel(plant, plant.lightLevel - (delta / 1000.0) * game.lightDecayRate);
-            setWaterLevel(plant, plant.waterLevel - (delta / 1000.0) * game.waterDecayRate);
+            setLightLevel(plant, plant.lightLevel - (delta / 1000.0) * getLightDecayRate(game.weather));
+            setWaterLevel(plant, plant.waterLevel - (delta / 1000.0) * getWaterDecayRate(game.weather));
         }
     });
 
     // Remove any plants that were destroyed
     toRemove.forEach(id => {
         delete game.plants[id]
-    })
+    });
+
+    // Weather updates
+    game.currentWeatherDurationMs += delta;
+    if (game.currentWeatherDurationMs >= config()["weatherDurationMs"]) {
+        game.currentWeatherDurationMs = 0;
+        game.weather = getRandomWeather();
+        weatherUpdateEvent(game.weather);
+    }
 }
 
 export function useSelectedTool(game: GardenGame, plant: Plant) {

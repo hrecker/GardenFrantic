@@ -1,6 +1,6 @@
 {
     "backgroundColor": "#f5f1d0",
-    "toolbarColor": "0x97e7f0",
+    "toolbarColor": "0xFFB27F",
 
     "healthyLevelColor": "0x9cf0aa",
     "warningLevelColor": "0xf0a49c",
@@ -9,12 +9,31 @@
     "maxLevel": 100,
     "defaultWaterLevel": 50,
     "defaultLightLevel": 50,
-    "waterDecayRate": 3,
-    "lightDecayRate": 2,
 
     "lowWarning": 20,
     "highWarning": 80,
 
     "lampIncrease": 10,
-    "wateringCanIncrease": 15
+    "wateringCanIncrease": 15,
+    
+    "weatherDurationMs": 2000,
+    "defaultWeather": "partlyCloudy",
+    "decayRates": {
+        "partlyCloudy": {
+            "water": 3,
+            "light": -1
+        },
+        "cloudy": {
+            "water": 3,
+            "light": 2
+        },
+        "heat": {
+            "water": 5,
+            "light": -3
+        },
+        "rain": {
+            "water": -4,
+            "light": 2
+        }
+    }
 }
