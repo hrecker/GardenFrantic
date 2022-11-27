@@ -12,13 +12,11 @@
 
     "lowWarning": 20,
     "highWarning": 80,
-
-    "lampIncrease": 10,
-    "wateringCanIncrease": 15,
     
     "weatherDurationMs": 2000,
     "defaultWeather": "partlyCloudy",
-    "decayRates": {
+
+    "weatherDecayRates": {
         "partlyCloudy": {
             "water": 3,
             "light": -1
@@ -34,6 +32,17 @@
         "rain": {
             "water": -4,
             "light": 2
+        }
+    },
+    
+    "toolDecayRates": {
+        "lamp": {
+            "water": 0,
+            "light": -3
+        },
+        "wateringCan": {
+            "water": -6,
+            "light": 0
         }
     }
 }

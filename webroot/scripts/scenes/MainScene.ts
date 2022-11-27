@@ -2,7 +2,7 @@ import * as game from "../game/Game";
 import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
-import { Tool } from "../game/Tool";
+import { ActiveTool, Tool } from "../game/Tool";
 import { addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 
@@ -10,6 +10,8 @@ const statusBarXPadding = 14;
 const statusBarYPadding = 2;
 const statusBarYMargin = 35;
 const statusIconXMargin = 25;
+
+const toolMargin = 50;
 
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
@@ -36,12 +38,34 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
 
-        let startingPlant = game.addPlant(this.gardenGame, this.add.image(350, 350, "plant"));
-        this.createStatusBar(startingPlant);
+        this.createPlant(350, 350);
+    }
 
-        startingPlant.gameObject.setInteractive();
-        startingPlant.gameObject.on("pointerdown", () => {
-            game.useSelectedTool(this.gardenGame, startingPlant);
+    createPlant(x: number, y: number): Plant {
+        let plant = game.addPlant(this.gardenGame, this.add.image(x, y, "plant"));
+        this.createStatusBar(plant);
+
+        plant.gameObject.setInteractive();
+        plant.gameObject.on("pointerdown", () => {
+            console.log("clicked plant");
+            let newActiveTool = game.useSelectedTool(this.gardenGame, plant);
+            if (newActiveTool != null) {
+                // Create a gameobject to represent the active tool
+                this.createActiveToolGameObject(newActiveTool, plant);
+            }
+        });
+        return plant;
+    }
+
+    createActiveToolGameObject(activeTool: ActiveTool, plant: Plant) {
+        let topLeft = plant.gameObject.getTopLeft();
+        let toolImage = this.add.image(topLeft.x,
+            topLeft.y + (toolMargin * game.numActiveTools(this.gardenGame, plant)), activeTool.tool);
+        activeTool.gameObject = toolImage;
+        toolImage.setInteractive();
+        toolImage.on("pointerdown", () => {
+            console.log("clicked " + activeTool.tool);
+            game.removeActiveTool(this.gardenGame, plant, activeTool.tool);
         });
     }
 

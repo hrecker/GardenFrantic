@@ -29,10 +29,10 @@ export function getDefaultWeather(): Weather {
 
 /** Get the current water decay rate for the weather */
 export function getWaterDecayRate(weather: Weather): number {
-    return config()["decayRates"][weather]["water"];
+    return config()["weatherDecayRates"][weather]["water"];
 }
 
 /** Get the current light decay rate for the weather */
 export function getLightDecayRate(weather: Weather): number {
-    return config()["decayRates"][weather]["light"];
+    return config()["weatherDecayRates"][weather]["light"];
 }
