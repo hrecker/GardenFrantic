@@ -3,22 +3,41 @@ import { config } from "../model/Config";
 export enum Tool {
     NoTool = "",
     Lamp = "lamp",
+    Shade = "shade",
+    Umbrella = "umbrella",
     WateringCan = "wateringCan"
 }
 
-export let startingTools = [Tool.Lamp, Tool.WateringCan];
+export enum ToolCategory {
+    Water = "water",
+    Light = "light"
+}
+
+export let startingTools = [Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan];
 
 export type ActiveTool = {
     tool: Tool;
     gameObject: Phaser.GameObjects.Image;
 }
 
-/** Get the water decay rate for a given tool */
-export function getWaterDecayRate(tool: Tool): number {
-    return config()["toolDecayRates"][tool]["water"];
+export function getCategory(tool: Tool): ToolCategory {
+    return config()["tools"][tool]["category"];
 }
 
-/** Get the light decay rate for a given tool */
-export function getLightDecayRate(tool: Tool): number {
-    return config()["toolDecayRates"][tool]["light"];
+export function isWaterDecayPrevented(tool: Tool): boolean {
+    return getCategory(tool) == ToolCategory.Water &&
+        config()["tools"][tool]["preventive"];
+}
+
+export function isLightDecayPrevented(tool: Tool): boolean {
+    return getCategory(tool) == ToolCategory.Light &&
+        config()["tools"][tool]["preventive"];
+}
+
+/** Get the water decay rate for a given tool */
+export function getDecayRate(tool: Tool, category: ToolCategory): number {
+    if (getCategory(tool) == category) {
+        return config()["tools"][tool]["decayRate"];
+    }
+    return 0;
 }

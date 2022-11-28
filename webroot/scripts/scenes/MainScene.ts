@@ -2,7 +2,7 @@ import * as game from "../game/Game";
 import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
-import { ActiveTool, Tool } from "../game/Tool";
+import { ActiveTool, getCategory } from "../game/Tool";
 import { addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 
@@ -11,7 +11,10 @@ const statusBarYPadding = 2;
 const statusBarYMargin = 35;
 const statusIconXMargin = 25;
 
-const toolMargin = 50;
+const toolYByCategory = {
+    "water": 50,
+    "light": 100
+};
 
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
@@ -47,7 +50,6 @@ export class MainScene extends Phaser.Scene {
 
         plant.gameObject.setInteractive();
         plant.gameObject.on("pointerdown", () => {
-            console.log("clicked plant");
             let newActiveTool = game.useSelectedTool(this.gardenGame, plant);
             if (newActiveTool != null) {
                 // Create a gameobject to represent the active tool
@@ -60,12 +62,11 @@ export class MainScene extends Phaser.Scene {
     createActiveToolGameObject(activeTool: ActiveTool, plant: Plant) {
         let topLeft = plant.gameObject.getTopLeft();
         let toolImage = this.add.image(topLeft.x,
-            topLeft.y + (toolMargin * game.numActiveTools(this.gardenGame, plant)), activeTool.tool);
+            topLeft.y + toolYByCategory[getCategory(activeTool.tool)], activeTool.tool);
         activeTool.gameObject = toolImage;
         toolImage.setInteractive();
         toolImage.on("pointerdown", () => {
-            console.log("clicked " + activeTool.tool);
-            game.removeActiveTool(this.gardenGame, plant, activeTool.tool);
+            game.removeActiveTool(this.gardenGame, plant, getCategory(activeTool.tool));
         });
     }
 

@@ -35,14 +35,24 @@
         }
     },
     
-    "toolDecayRates": {
+    "tools": {
         "lamp": {
-            "water": 0,
-            "light": -3
+            "category": "light",
+            "decayRate": -3
+        },
+        "shade": {
+            "category": "light",
+            "preventive": true,
+            "decayRate": 2
+        },
+        "umbrella": {
+            "category": "water",
+            "preventive": true,
+            "decayRate": 3
         },
         "wateringCan": {
-            "water": -6,
-            "light": 0
+            "category": "water",
+            "decayRate": -6
         }
     }
 }

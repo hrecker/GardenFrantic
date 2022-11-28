@@ -73,52 +73,71 @@ export function update(game: GardenGame, delta: number) {
     }
 }
 
+//TODO reduce duplication
 function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
-    let rate = weather.getLightDecayRate(game.weather);
+    let weatherRate = weather.getLightDecayRate(game.weather);
+    let toolRate = 0;
     if (plant.id in game.activeTools) {
         let activeTools: tool.ActiveTool[] = game.activeTools[plant.id];
-        activeTools.forEach(activeTool => {
-            rate += tool.getLightDecayRate(activeTool.tool);
-        });
+        for (let i = 0; i < activeTools.length; i++) {
+            if (tool.isLightDecayPrevented(activeTools[i].tool)) {
+                // When prevented, use only this tool's rate
+                weatherRate = 0;
+                toolRate = tool.getDecayRate(activeTools[i].tool, tool.ToolCategory.Light);
+                break;
+            }
+            toolRate += tool.getDecayRate(activeTools[i].tool, tool.ToolCategory.Light);
+        }
     }
-    return rate;
+    return weatherRate + toolRate;
 }
 
 function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
-    let rate = weather.getWaterDecayRate(game.weather);
+    let weatherRate = weather.getWaterDecayRate(game.weather);
+    let toolRate = 0;
     if (plant.id in game.activeTools) {
         let activeTools: tool.ActiveTool[] = game.activeTools[plant.id];
-        activeTools.forEach(activeTool => {
-            rate += tool.getWaterDecayRate(activeTool.tool);
-        });
+        for (let i = 0; i < activeTools.length; i++) {
+            if (tool.isWaterDecayPrevented(activeTools[i].tool)) {
+                // When prevented, use the tool rate only if the weather is going in the opposite direction
+                toolRate = 0;
+                //TODO may need updates as more preventive tools are added
+                if (weatherRate <= 0) {
+                    weatherRate = tool.getDecayRate(activeTools[i].tool, tool.ToolCategory.Water);
+                }
+                break;
+            }
+            toolRate += tool.getDecayRate(activeTools[i].tool, tool.ToolCategory.Water);
+        }
     }
-    return rate;
+    return weatherRate + toolRate;
 }
 
 /** Remove an active tool from a plant. Returns true if the given tool was found and removed, false if it was not found. */
-export function removeActiveTool(game: GardenGame, plant: Plant, tool: tool.Tool): boolean {
+export function removeActiveTool(game: GardenGame, plant: Plant, category: tool.ToolCategory): tool.Tool {
     if (plant.id in game.activeTools) {
         let activeTools: tool.ActiveTool[] = game.activeTools[plant.id];
         let toRemove = -1;
         for (let i = 0; i < activeTools.length; i++) {
-            if (activeTools[i].tool == tool) {
+            if (tool.getCategory(activeTools[i].tool) == category) {
                 toRemove = i;
                 break;
             }
         }
         if (toRemove > -1) {
+            let removed = activeTools[toRemove].tool;
             activeTools[toRemove].gameObject.destroy();
             activeTools.splice(toRemove, 1);
-            return true;
+            return removed;
         }
     }
-    return false;
+    return null;
 }
 
 /** Use the currently selected tool. If a new active tool is created, it will be returned. Otherwise, null is returned. */
 export function useSelectedTool(game: GardenGame, plant: Plant): tool.ActiveTool {
     // Remove the selected tool if one is active
-    if (! game.selectedTool ||  removeActiveTool(game, plant, game.selectedTool)) {
+    if (! game.selectedTool || removeActiveTool(game, plant, tool.getCategory(game.selectedTool)) == game.selectedTool) {
         return null;
     }
 
