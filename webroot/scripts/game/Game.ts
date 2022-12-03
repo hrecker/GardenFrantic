@@ -1,6 +1,6 @@
 import { plantDestroyEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
-import { newPlant, Plant, setLightLevel, setWaterLevel } from "./Plant";
+import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, setLightLevel, setWaterLevel } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 
@@ -55,6 +55,9 @@ export function update(game: GardenGame, delta: number) {
         } else {
             setLightLevel(plant, plant.lightLevel - (delta / 1000.0) * getLightDecayRateForPlant(game, plant));
             setWaterLevel(plant, plant.waterLevel - (delta / 1000.0) * getWaterDecayRateForPlant(game, plant));
+            if (! isFruitGrowthPaused(plant)) {
+                setFruitProgress(plant, plant.fruitProgress + (delta / 1000.0) * config()["fruitProgressRate"])
+            }
         }
     });
 
@@ -136,6 +139,12 @@ export function removeActiveTool(game: GardenGame, plant: Plant, category: tool.
 
 /** Use the currently selected tool. If a new active tool is created, it will be returned. Otherwise, null is returned. */
 export function useSelectedTool(game: GardenGame, plant: Plant): tool.ActiveTool {
+    // If using a one time use tool, just use it
+    if (game.selectedTool && tool.getCategory(game.selectedTool) == tool.ToolCategory.SingleUse) {
+        useSingleUseTool(game, plant);
+        return null;
+    }
+
     // Remove the selected tool if one is active
     if (! game.selectedTool || removeActiveTool(game, plant, tool.getCategory(game.selectedTool)) == game.selectedTool) {
         return null;
@@ -155,4 +164,17 @@ export function numActiveTools(game: GardenGame, plant: Plant): number {
         return game.activeTools[plant.id].length;
     }
     return 0;
+}
+
+function useSingleUseTool(game: GardenGame, plant: Plant) {
+    switch (game.selectedTool) {
+        case tool.Tool.Basket:
+            if (plant.isFruitAvailable) {
+                harvestFruit(plant);
+            }
+            break;
+        default:
+            // Nothing to do here
+            break;
+    }
 }

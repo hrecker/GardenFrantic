@@ -1,5 +1,5 @@
 import { config } from "../model/Config";
-import { Plant } from "./Plant";
+import { isInWarningZone, Plant } from "./Plant";
 
 export type PlantStatusBar = {
     maxStatusBarWidth: number;
@@ -9,19 +9,49 @@ export type PlantStatusBar = {
     lightStatusBar: Phaser.GameObjects.Rectangle;
     lightStatusBarBackground: Phaser.GameObjects.Image;
     lightIcon: Phaser.GameObjects.Image;
+    fruitStatusBar: Phaser.GameObjects.Rectangle;
+    fruitStatusBarBackground: Phaser.GameObjects.Image;
+    fruitIcon: Phaser.GameObjects.Image;
 }
 
 export function updateStatusBars(statusBar: PlantStatusBar, plant: Plant) {
     statusBar.waterStatusBar.width = plant.waterLevel / 100.0 * statusBar.maxStatusBarWidth;
     statusBar.lightStatusBar.width = plant.lightLevel / 100.0 * statusBar.maxStatusBarWidth;
-    updateStatusColor(statusBar.waterStatusBar, plant.waterLevel);
-    updateStatusColor(statusBar.lightStatusBar, plant.lightLevel);
+    statusBar.fruitStatusBar.width = plant.fruitProgress / 100.0 * statusBar.maxStatusBarWidth;
+    let isWarning = updateStatusColor(statusBar.waterStatusBar, plant.waterLevel);
+    isWarning = updateStatusColor(statusBar.lightStatusBar, plant.lightLevel) || isWarning;
+    if (plant.isFruitAvailable) {
+        setHighlightColor(statusBar.fruitStatusBar);
+    } else if (isWarning) {
+        setWarningColor(statusBar.fruitStatusBar);
+    } else {
+        setHealthyColor(statusBar.fruitStatusBar);
+    }
 }
 
-function updateStatusColor(statusBar: Phaser.GameObjects.Rectangle, level: number) {
-    if (level <= config()["lowWarning"] || level >= config()["highWarning"]) {
-        statusBar.fillColor = parseInt(config()["warningLevelColor"], 16);
+/** Update the status bar color based on if it is in the warning range. If it is in the warning range, return true, false otherwise. */
+function updateStatusColor(statusBar: Phaser.GameObjects.Rectangle, level: number): boolean {
+    if (isInWarningZone(level)) {
+        setWarningColor(statusBar);
+        return true;
     } else {
-        statusBar.fillColor = parseInt(config()["healthyLevelColor"], 16);
+        setHealthyColor(statusBar);
+        return false;
     }
+}
+
+function setWarningColor(statusBar: Phaser.GameObjects.Rectangle) {
+    setColor(statusBar, parseInt(config()["warningLevelColor"], 16));
+}
+
+function setHealthyColor(statusBar: Phaser.GameObjects.Rectangle) {
+    setColor(statusBar, parseInt(config()["healthyLevelColor"], 16));
+}
+
+function setHighlightColor(statusBar: Phaser.GameObjects.Rectangle) {
+    setColor(statusBar, parseInt(config()["highlightColor"], 16));
+}
+
+function setColor(statusBar: Phaser.GameObjects.Rectangle, color: number) {
+    statusBar.fillColor = color;
 }

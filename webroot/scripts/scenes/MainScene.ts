@@ -3,7 +3,7 @@ import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { ActiveTool, getCategory } from "../game/Tool";
-import { addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { addFruitGrowthListener, addFruitHarvestListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 
 const statusBarXPadding = 14;
@@ -20,6 +20,7 @@ const toolYByCategory = {
 export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     plantStatusBars: { [id: number] : PlantStatusBar }
+    plantFruitImages: { [id: number] : Phaser.GameObjects.Image }
     background: Phaser.GameObjects.Image;
 
     constructor() {
@@ -33,10 +34,13 @@ export class MainScene extends Phaser.Scene {
         // Event listeners
         addPlantDestroyListener(this.handlePlantDestroy, this);
         addWeatherUpdateListener(this.handleWeatherUpdate, this);
+        addFruitGrowthListener(this.handleFruitGrowth, this);
+        addFruitHarvestListener(this.handleFruitHarvest, this);
     }
 
     create() {
         this.plantStatusBars = {};
+        this.plantFruitImages = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
 
         this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
@@ -72,8 +76,10 @@ export class MainScene extends Phaser.Scene {
 
     createStatusBar(plant: Plant) {
         let waterBarBackground = this.add.image(plant.gameObject.x,
-            plant.gameObject.getTopCenter().y - (statusBarYMargin * 2), "statusBarBackground").setOrigin(0.5);
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 3), "statusBarBackground").setOrigin(0.5);
         let lightBarBackground = this.add.image(plant.gameObject.x,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 2), "statusBarBackground").setOrigin(0.5);
+        let fruitBarBackground = this.add.image(plant.gameObject.x,
             plant.gameObject.getTopCenter().y - statusBarYMargin, "statusBarBackground").setOrigin(0.5);
         let waterBar = this.add.rectangle(waterBarBackground.getTopLeft().x + statusBarXPadding,
             waterBarBackground.y,
@@ -85,10 +91,16 @@ export class MainScene extends Phaser.Scene {
             lightBarBackground.width / 2 - statusBarXPadding,
             lightBarBackground.height - (statusBarYPadding * 2),
             parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
+        let fruitBar = this.add.rectangle(fruitBarBackground.getTopLeft().x + statusBarXPadding,
+            fruitBarBackground.y,
+            fruitBarBackground.width / 2 - statusBarXPadding,
+            fruitBarBackground.height - (statusBarYPadding * 2),
+            parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
         
         // Icons
         let waterIcon = this.add.image(waterBarBackground.getTopLeft().x - statusIconXMargin, waterBarBackground.y, "waterIcon");
         let lightIcon = this.add.image(lightBarBackground.getTopLeft().x - statusIconXMargin, lightBarBackground.y, "lightIcon");
+        let fruitIcon = this.add.image(fruitBarBackground.getTopLeft().x - statusIconXMargin, fruitBarBackground.y, "fruitIcon");
 
         this.plantStatusBars[plant.id] = {
             waterStatusBar: waterBar,
@@ -97,6 +109,9 @@ export class MainScene extends Phaser.Scene {
             lightStatusBar: lightBar,
             lightStatusBarBackground: lightBarBackground,
             lightIcon: lightIcon,
+            fruitStatusBar: fruitBar,
+            fruitStatusBarBackground: fruitBarBackground,
+            fruitIcon: fruitIcon,
             maxStatusBarWidth: waterBarBackground.width - (statusBarXPadding * 2)
         }
     }
@@ -110,12 +125,27 @@ export class MainScene extends Phaser.Scene {
         scene.plantStatusBars[plant.id].waterStatusBar.destroy();
         scene.plantStatusBars[plant.id].waterStatusBarBackground.destroy();
         scene.plantStatusBars[plant.id].waterIcon.destroy();
+        scene.plantStatusBars[plant.id].fruitStatusBar.destroy();
+        scene.plantStatusBars[plant.id].fruitStatusBarBackground.destroy();
+        scene.plantStatusBars[plant.id].fruitIcon.destroy();
         delete scene.plantStatusBars[plant.id];
     }
 
     /** Handle weather being changed (may be called even if the new weather is the same) */
     handleWeatherUpdate(scene: MainScene, weather: Weather) {
         scene.background.setTexture(weather);
+    }
+
+    /** Handle a fruit being grown for a plant */
+    handleFruitGrowth(scene: MainScene, plant: Plant) {
+        let pos = plant.gameObject.getRightCenter();
+        scene.plantFruitImages[plant.id] = scene.add.image(pos.x, pos.y, "fruitIcon");
+    }
+
+    /** Handle a fruit being harvested for a plant */
+    handleFruitHarvest(scene: MainScene, plant: Plant) {
+        scene.plantFruitImages[plant.id].destroy();
+        delete scene.plantFruitImages[plant.id];
     }
     
     /** Main game update loop */

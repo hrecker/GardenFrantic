@@ -5,15 +5,17 @@ export enum Tool {
     Lamp = "lamp",
     Shade = "shade",
     Umbrella = "umbrella",
-    WateringCan = "wateringCan"
+    WateringCan = "wateringCan",
+    Basket = "basket"
 }
 
 export enum ToolCategory {
     Water = "water",
-    Light = "light"
+    Light = "light",
+    SingleUse = "singleuse"
 }
 
-export let startingTools = [Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan];
+export let startingTools = [Tool.Basket, Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan];
 
 export type ActiveTool = {
     tool: Tool;

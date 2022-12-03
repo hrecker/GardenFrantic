@@ -4,6 +4,7 @@
 
     "healthyLevelColor": "0x9cf0aa",
     "warningLevelColor": "0xf0a49c",
+    "highlightColor": "0x6ee7f5",
 
     "minLevel": 0,
     "maxLevel": 100,
@@ -15,6 +16,8 @@
     
     "weatherDurationMs": 2000,
     "defaultWeather": "partlyCloudy",
+
+    "fruitProgressRate": 15,
 
     "weatherDecayRates": {
         "partlyCloudy": {
@@ -53,6 +56,9 @@
         "wateringCan": {
             "category": "water",
             "decayRate": -6
+        },
+        "basket": {
+            "category": "singleuse"
         }
     }
 }
