@@ -1,6 +1,6 @@
 import { plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
-import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, setLightLevel, setWaterLevel } from "./Plant";
+import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 
@@ -56,8 +56,8 @@ export function update(game: GardenGame, delta: number) {
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));
         } else {
-            setLightLevel(plant, plant.lightLevel - (delta / 1000.0) * getLightDecayRateForPlant(game, plant));
-            setWaterLevel(plant, plant.waterLevel - (delta / 1000.0) * getWaterDecayRateForPlant(game, plant));
+            updateStatusLevel(plant, Status.Light, -delta / 1000.0 * getLightDecayRateForPlant(game, plant));
+            updateStatusLevel(plant, Status.Water, -delta / 1000.0 * getWaterDecayRateForPlant(game, plant));
             if (! isFruitGrowthPaused(plant)) {
                 setFruitProgress(plant, plant.fruitProgress + (delta / 1000.0) * config()["fruitProgressRate"])
             }
@@ -79,14 +79,13 @@ export function update(game: GardenGame, delta: number) {
     }
 }
 
-//TODO reduce duplication
 function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
-    let weatherRate = weather.getLightDecayRate(game.weather);
+    let weatherRate = weather.getDecayRate(game.weather, Status.Light);
     let toolRate = 0;
     if (plant.id in game.activeTools) {
         let activeTools: tool.ActiveTool[] = game.activeTools[plant.id];
         for (let i = 0; i < activeTools.length; i++) {
-            if (tool.isLightDecayPrevented(activeTools[i].tool)) {
+            if (tool.isDecayPrevented(activeTools[i].tool, tool.ToolCategory.Light)) {
                 // When prevented, use only this tool's rate
                 weatherRate = 0;
                 toolRate = tool.getDecayRate(activeTools[i].tool, tool.ToolCategory.Light);
@@ -99,12 +98,12 @@ function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
 }
 
 function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
-    let weatherRate = weather.getWaterDecayRate(game.weather);
+    let weatherRate = weather.getDecayRate(game.weather, Status.Water);
     let toolRate = 0;
     if (plant.id in game.activeTools) {
         let activeTools: tool.ActiveTool[] = game.activeTools[plant.id];
         for (let i = 0; i < activeTools.length; i++) {
-            if (tool.isWaterDecayPrevented(activeTools[i].tool)) {
+            if (tool.isDecayPrevented(activeTools[i].tool, tool.ToolCategory.Water)) {
                 // When prevented, use the tool rate only if the weather is going in the opposite direction
                 toolRate = 0;
                 //TODO may need updates as more preventive tools are added

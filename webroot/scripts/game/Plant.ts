@@ -4,8 +4,7 @@ import { getNewId } from "./Id"
 
 export type Plant = {
     id: number;
-    waterLevel: number;
-    lightLevel: number;
+    levels: { [status: string] : number }
     fruitProgress: number;
     isFruitAvailable: boolean;
     gameObject: Phaser.GameObjects.Image;
@@ -13,35 +12,32 @@ export type Plant = {
     shouldDestroy?: boolean;
 }
 
+export enum Status {
+    Water = "water",
+    Light = "light"
+}
+
 export function newPlant(gameObject: Phaser.GameObjects.Image): Plant {
+    let levels: { [status: string] : number } = {};
+    levels[Status.Water] = config()["defaultWaterLevel"];
+    levels[Status.Light] = config()["defaultLightLevel"];
+    
     return {
         id: getNewId(),
-        waterLevel: config()["defaultWaterLevel"],
-        lightLevel: config()["defaultLightLevel"],
+        levels: levels,
         fruitProgress: config()["minLevel"],
         isFruitAvailable: false,
         gameObject: gameObject
     }
 }
 
-export function setLightLevel(plant: Plant, lightLevel: number) {
-    plant.lightLevel = lightLevel;
-    if (plant.lightLevel <= config()["minLevel"]) {
-        plant.lightLevel = config()["minLevel"];
+export function updateStatusLevel(plant: Plant, status: Status, delta: number) {
+    plant.levels[status] += delta;
+    if (plant.levels[status]  <= config()["minLevel"]) {
+        plant.levels[status] = config()["minLevel"];
         plant.shouldDestroy = true;
-    } else if (plant.lightLevel >= config()["maxLevel"]) {
-        plant.lightLevel = config()["maxLevel"];
-        plant.shouldDestroy = true;
-    }
-}
-
-export function setWaterLevel(plant: Plant, waterLevel: number) {
-    plant.waterLevel = waterLevel;
-    if (plant.waterLevel <= config()["minLevel"]) {
-        plant.waterLevel = config()["minLevel"];
-        plant.shouldDestroy = true;
-    } else if (plant.waterLevel >= config()["maxLevel"]) {
-        plant.waterLevel = config()["maxLevel"];
+    } else if (plant.levels[status] >= config()["maxLevel"]) {
+        plant.levels[status] = config()["maxLevel"];
         plant.shouldDestroy = true;
     }
 }
@@ -62,7 +58,12 @@ export function harvestFruit(plant: Plant) {
 }
 
 export function isFruitGrowthPaused(plant: Plant) {
-    return plant.isFruitAvailable || isInWarningZone(plant.lightLevel) || isInWarningZone(plant.waterLevel);
+    for (const status of Object.keys(plant.levels)) {
+        if (isInWarningZone(plant.levels[status])) {
+            return true;
+        }
+    }
+    return plant.isFruitAvailable;
 }
 
 export function isInWarningZone(level: number) {

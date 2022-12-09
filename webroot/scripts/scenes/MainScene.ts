@@ -45,7 +45,8 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
 
-        this.createPlant(350, 350);
+        this.createPlant(250, 350);
+        this.createPlant(450, 350);
     }
 
     createPlant(x: number, y: number): Plant {

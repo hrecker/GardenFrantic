@@ -1,5 +1,5 @@
 import { config } from "../model/Config";
-import { isInWarningZone, Plant } from "./Plant";
+import { isInWarningZone, Plant, Status } from "./Plant";
 
 export type PlantStatusBar = {
     maxStatusBarWidth: number;
@@ -15,11 +15,11 @@ export type PlantStatusBar = {
 }
 
 export function updateStatusBars(statusBar: PlantStatusBar, plant: Plant) {
-    statusBar.waterStatusBar.width = plant.waterLevel / 100.0 * statusBar.maxStatusBarWidth;
-    statusBar.lightStatusBar.width = plant.lightLevel / 100.0 * statusBar.maxStatusBarWidth;
+    statusBar.waterStatusBar.width = plant.levels[Status.Water] / 100.0 * statusBar.maxStatusBarWidth;
+    statusBar.lightStatusBar.width = plant.levels[Status.Light] / 100.0 * statusBar.maxStatusBarWidth;
     statusBar.fruitStatusBar.width = plant.fruitProgress / 100.0 * statusBar.maxStatusBarWidth;
-    let isWarning = updateStatusColor(statusBar.waterStatusBar, plant.waterLevel);
-    isWarning = updateStatusColor(statusBar.lightStatusBar, plant.lightLevel) || isWarning;
+    let isWarning = updateStatusColor(statusBar.waterStatusBar, plant.levels[Status.Water]);
+    isWarning = updateStatusColor(statusBar.lightStatusBar, plant.levels[Status.Light]) || isWarning;
     if (plant.isFruitAvailable) {
         setHighlightColor(statusBar.fruitStatusBar);
     } else if (isWarning) {

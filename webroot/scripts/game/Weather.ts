@@ -1,4 +1,5 @@
 import { config } from "../model/Config";
+import { Status } from "./Plant";
 
 /** Types of weather in the game */
 export enum Weather {
@@ -27,12 +28,7 @@ export function getDefaultWeather(): Weather {
     return config()["defaultWeather"];
 }
 
-/** Get the current water decay rate for the weather */
-export function getWaterDecayRate(weather: Weather): number {
-    return config()["weatherDecayRates"][weather]["water"];
-}
-
-/** Get the current light decay rate for the weather */
-export function getLightDecayRate(weather: Weather): number {
-    return config()["weatherDecayRates"][weather]["light"];
+/** Get the current status decay rate for the weather */
+export function getDecayRate(weather: Weather, status: Status) {
+    return config()["weatherDecayRates"][weather][status]
 }

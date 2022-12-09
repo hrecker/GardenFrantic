@@ -26,13 +26,8 @@ export function getCategory(tool: Tool): ToolCategory {
     return config()["tools"][tool]["category"];
 }
 
-export function isWaterDecayPrevented(tool: Tool): boolean {
-    return getCategory(tool) == ToolCategory.Water &&
-        config()["tools"][tool]["preventive"];
-}
-
-export function isLightDecayPrevented(tool: Tool): boolean {
-    return getCategory(tool) == ToolCategory.Light &&
+export function isDecayPrevented(tool: Tool, category: ToolCategory): boolean {
+    return getCategory(tool) == category &&
         config()["tools"][tool]["preventive"];
 }
 
