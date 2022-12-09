@@ -2,11 +2,10 @@ import * as game from "../game/Game";
 import * as tool from "../game/Tool";
 import { config } from "../model/Config";
 
-const toolbarWidth = 150;
 const toolYAnchor = 50;
 const toolMargin = 75;
 
-/** Main game scene */
+/** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
 
@@ -21,9 +20,9 @@ export class ToolbarScene extends Phaser.Scene {
     }
 
     create() {
-        let toolbarX = this.game.renderer.width - (toolbarWidth / 2);
+        let toolbarX = this.game.renderer.width - (config()["toolbarWidth"] / 2);
         this.add.rectangle(toolbarX, this.game.renderer.height / 2,
-            toolbarWidth, this.game.renderer.height, parseInt(config()["toolbarColor"], 16));
+            config()["toolbarWidth"], this.game.renderer.height, parseInt(config()["toolbarColor"], 16));
         
         for (let i = 0; i < tool.startingTools.length; i++) {
             let toolIcon = this.add.image(toolbarX, toolYAnchor + (i * toolMargin), tool.startingTools[i]);

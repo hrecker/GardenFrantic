@@ -4,6 +4,10 @@ import { Weather } from "../game/Weather";
 // This file is used for defining callbacks for events
 
 // Callback types
+type NumberCallback = {
+    callback: (scene: Phaser.Scene, value: number) => void;
+    scene: Phaser.Scene;
+}
 type PlantCallback = {
     callback: (scene: Phaser.Scene, plant: Plant) => void;
     scene: Phaser.Scene;
@@ -14,10 +18,25 @@ type WeatherCallback = {
 }
 
 // Callback lists
+let scoreUpdateCallbacks: NumberCallback[] = [];
 let fruitGrowthCallbacks: PlantCallback[] = [];
 let fruitHarvestedCallbacks: PlantCallback[] = [];
 let plantDestroyCallbacks: PlantCallback[] = [];
 let weatherUpdateCallbacks: WeatherCallback[] = [];
+
+/** Add a callback listening for score changes */
+export function addScoreUpdateListener(callback: (scene: Phaser.Scene, score: number) => void, scene: Phaser.Scene) {
+    scoreUpdateCallbacks.push({ 
+        callback: callback,
+        scene: scene
+    });
+}
+
+/** Call any listeners for score changes */
+export function scoreUpdateEvent(score: number) {
+    scoreUpdateCallbacks.forEach(callback => 
+        callback.callback(callback.scene, score));
+}
 
 /** Add a callback listening for plant growing fruit */
 export function addFruitGrowthListener(callback: (scene: Phaser.Scene, plant: Plant) => void, scene: Phaser.Scene) {

@@ -1,4 +1,4 @@
-import { plantDestroyEvent, weatherUpdateEvent } from "../events/EventMessenger";
+import { plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, setLightLevel, setWaterLevel } from "./Plant";
 import * as tool from "./Tool";
@@ -15,6 +15,8 @@ export type GardenGame = {
     weather: weather.Weather;
     /** How long the current weather has lasted */
     currentWeatherDurationMs: number;
+    /** Current score */
+    score: number;
 }
 
 export function newGame(): GardenGame {
@@ -23,7 +25,8 @@ export function newGame(): GardenGame {
         activeTools: {},
         selectedTool: tool.Tool.NoTool,
         weather: weather.getDefaultWeather(),
-        currentWeatherDurationMs: 0
+        currentWeatherDurationMs: 0,
+        score: 0,
     };
     return game;
 }
@@ -166,11 +169,17 @@ export function numActiveTools(game: GardenGame, plant: Plant): number {
     return 0;
 }
 
+function addScore(game: GardenGame, toAdd: number) {
+    game.score += toAdd;
+    scoreUpdateEvent(game.score);
+}
+
 function useSingleUseTool(game: GardenGame, plant: Plant) {
     switch (game.selectedTool) {
         case tool.Tool.Basket:
             if (plant.isFruitAvailable) {
                 harvestFruit(plant);
+                addScore(game, config()["fruitHarvestPoints"]);
             }
             break;
         default:

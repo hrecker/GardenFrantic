@@ -51,6 +51,8 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image(Weather.Heat, "assets/sprites/" + Weather.Heat + ".png");
         this.load.image(Weather.Rain, "assets/sprites/" + Weather.Rain + ".png");
 
+        this.load.bitmapFont('uiFont', 'assets/fonts/uiFont.png', 'assets/fonts/uiFont.xml');
+
         // Load json
         this.load.json("config", "assets/json/config.json");
     }
@@ -60,6 +62,7 @@ export class LoadingScene extends Phaser.Scene {
         let game = newGame();
         this.scene.start("MainScene", { gardenGame: game })
                   .start("ToolbarScene", { gardenGame: game })
+                  .start("UIScene")
                   .stop();
     }
 }

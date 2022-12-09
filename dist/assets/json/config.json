@@ -1,10 +1,13 @@
 {
     "backgroundColor": "#f5f1d0",
     "toolbarColor": "0xFFB27F",
+    "uiFontColor": "0xFFF7E4",
 
     "healthyLevelColor": "0x9cf0aa",
     "warningLevelColor": "0xf0a49c",
     "highlightColor": "0x6ee7f5",
+
+    "toolbarWidth": 150,
 
     "minLevel": 0,
     "maxLevel": 100,
@@ -18,6 +21,7 @@
     "defaultWeather": "partlyCloudy",
 
     "fruitProgressRate": 15,
+    "fruitHarvestPoints": 10,
 
     "weatherDecayRates": {
         "partlyCloudy": {

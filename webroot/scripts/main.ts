@@ -3,6 +3,7 @@ import 'phaser';
 import { LoadingScene } from "./scenes/LoadingScene";
 import { MainScene } from "./scenes/MainScene";
 import { ToolbarScene } from './scenes/ToolbarScene';
+import { UIScene } from './scenes/UIScene';
 
 var config: Phaser.Types.Core.GameConfig = {
     scale: {
@@ -17,7 +18,8 @@ var config: Phaser.Types.Core.GameConfig = {
     scene: [
         LoadingScene,
         MainScene,
-        ToolbarScene
+        ToolbarScene,
+        UIScene,
     ]
 };
 
