@@ -1,4 +1,5 @@
 import { newGame } from "../game/Game";
+import { Hazard } from "../game/Hazard";
 import { Weather } from "../game/Weather";
 import { loadConfig } from "../model/Config";
 
@@ -50,6 +51,9 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image(Weather.Cloudy, "assets/sprites/" + Weather.Cloudy + ".png");
         this.load.image(Weather.Heat, "assets/sprites/" + Weather.Heat + ".png");
         this.load.image(Weather.Rain, "assets/sprites/" + Weather.Rain + ".png");
+        this.load.image(Hazard.Birds, "assets/sprites/" + Hazard.Birds + ".png");
+        this.load.image(Hazard.Bugs, "assets/sprites/" + Hazard.Bugs + ".png");
+        this.load.image(Hazard.Weeds, "assets/sprites/" + Hazard.Weeds + ".png");
 
         this.load.bitmapFont('uiFont', 'assets/fonts/uiFont.png', 'assets/fonts/uiFont.xml');
 

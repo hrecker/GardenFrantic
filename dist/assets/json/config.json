@@ -64,5 +64,22 @@
         "basket": {
             "category": "singleuse"
         }
+    },
+
+    "hazardGapDurationMs": {
+        "low": 3000,
+        "high": 5000
+    }
+
+    "hazards": {
+        "bugs": {
+            ""
+        },
+        "birds": {
+
+        },
+        "weeds": {
+
+        }
     }
 }

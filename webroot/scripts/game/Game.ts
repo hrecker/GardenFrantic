@@ -1,5 +1,6 @@
 import { plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
+import { getNextHazardDurationMs, Hazard } from "./Hazard";
 import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
@@ -15,6 +16,12 @@ export type GardenGame = {
     weather: weather.Weather;
     /** How long the current weather has lasted */
     currentWeatherDurationMs: number;
+    /** Active hazards */
+    activeHazards: Hazard[];
+    /** How long ago the current hazard started */
+    currentHazardDurationMs: number;
+    /** Time until the next hazard should start */
+    nextHazardDuration: number;
     /** Current score */
     score: number;
 }
@@ -26,6 +33,9 @@ export function newGame(): GardenGame {
         selectedTool: tool.Tool.NoTool,
         weather: weather.getDefaultWeather(),
         currentWeatherDurationMs: 0,
+        activeHazards: [],
+        currentHazardDurationMs: 0,
+        nextHazardDuration: getNextHazardDurationMs(),
         score: 0,
     };
     return game;
@@ -76,6 +86,14 @@ export function update(game: GardenGame, delta: number) {
         game.currentWeatherDurationMs = 0;
         game.weather = weather.getRandomWeather();
         weatherUpdateEvent(game.weather);
+    }
+
+    // Hazard updates
+    game.currentHazardDurationMs += delta;
+    if (game.currentHazardDurationMs >= game.nextHazardDuration) {
+        game.currentHazardDurationMs = 0;
+        game.nextHazardDuration = getNextHazardDurationMs();
+        
     }
 }
 
