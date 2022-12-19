@@ -1,7 +1,7 @@
 import * as game from "../game/Game";
 import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
-import { PlantStatusBar, updateStatusBars } from "../game/PlantStatusBar";
+import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { ActiveTool, getCategory } from "../game/Tool";
 import { addFruitGrowthListener, addFruitHarvestListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
@@ -45,13 +45,13 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
 
-        this.createPlant(250, 350);
-        this.createPlant(450, 350);
+        this.createPlant(200, 350);
+        this.createPlant(500, 350);
     }
 
     createPlant(x: number, y: number): Plant {
         let plant = game.addPlant(this.gardenGame, this.add.image(x, y, "plant"));
-        this.createStatusBar(plant);
+        this.createStatusBars(plant);
 
         plant.gameObject.setInteractive();
         plant.gameObject.on("pointerdown", () => {
@@ -75,60 +75,53 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    createStatusBar(plant: Plant) {
-        let waterBarBackground = this.add.image(plant.gameObject.x,
-            plant.gameObject.getTopCenter().y - (statusBarYMargin * 3), "statusBarBackground").setOrigin(0.5);
-        let lightBarBackground = this.add.image(plant.gameObject.x,
-            plant.gameObject.getTopCenter().y - (statusBarYMargin * 2), "statusBarBackground").setOrigin(0.5);
-        let fruitBarBackground = this.add.image(plant.gameObject.x,
-            plant.gameObject.getTopCenter().y - statusBarYMargin, "statusBarBackground").setOrigin(0.5);
-        let waterBar = this.add.rectangle(waterBarBackground.getTopLeft().x + statusBarXPadding,
-            waterBarBackground.y,
-            waterBarBackground.width / 2 - statusBarXPadding,
-            waterBarBackground.height - (statusBarYPadding * 2),
+    createStatusBar(plant: Plant, backgroundY: number, iconTexture: string): StatusBar {
+        let barBackground = this.add.image(plant.gameObject.x,
+            backgroundY, "statusBarBackground").setOrigin(0.5);
+        let bar = this.add.rectangle(barBackground.getTopLeft().x + statusBarXPadding,
+            barBackground.y,
+            barBackground.width / 2 - statusBarXPadding,
+            barBackground.height - (statusBarYPadding * 2),
             parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
-        let lightBar = this.add.rectangle(lightBarBackground.getTopLeft().x + statusBarXPadding,
-            lightBarBackground.y,
-            lightBarBackground.width / 2 - statusBarXPadding,
-            lightBarBackground.height - (statusBarYPadding * 2),
-            parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
-        let fruitBar = this.add.rectangle(fruitBarBackground.getTopLeft().x + statusBarXPadding,
-            fruitBarBackground.y,
-            fruitBarBackground.width / 2 - statusBarXPadding,
-            fruitBarBackground.height - (statusBarYPadding * 2),
-            parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
-        
-        // Icons
-        let waterIcon = this.add.image(waterBarBackground.getTopLeft().x - statusIconXMargin, waterBarBackground.y, "waterIcon");
-        let lightIcon = this.add.image(lightBarBackground.getTopLeft().x - statusIconXMargin, lightBarBackground.y, "lightIcon");
-        let fruitIcon = this.add.image(fruitBarBackground.getTopLeft().x - statusIconXMargin, fruitBarBackground.y, "fruitIcon");
+        let icon = this.add.image(barBackground.getTopLeft().x - statusIconXMargin, barBackground.y, iconTexture);
+        return {
+            statusBarBackground: barBackground,
+            statusBar: bar,
+            icon: icon
+        };
+    }
 
+    createStatusBars(plant: Plant) {
+        let waterBar = this.createStatusBar(plant,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 4), "waterIcon");
+        let lightBar = this.createStatusBar(plant,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 3), "lightIcon");
+        let fruitBar = this.createStatusBar(plant,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 2), "fruitIcon");
+        let healthBar = this.createStatusBar(plant,
+            plant.gameObject.getTopCenter().y - statusBarYMargin, "healthIcon");
         this.plantStatusBars[plant.id] = {
             waterStatusBar: waterBar,
-            waterStatusBarBackground: waterBarBackground,
-            waterIcon: waterIcon,
             lightStatusBar: lightBar,
-            lightStatusBarBackground: lightBarBackground,
-            lightIcon: lightIcon,
             fruitStatusBar: fruitBar,
-            fruitStatusBarBackground: fruitBarBackground,
-            fruitIcon: fruitIcon,
-            maxStatusBarWidth: waterBarBackground.width - (statusBarXPadding * 2)
+            healthStatusBar: healthBar,
+            maxStatusBarWidth: waterBar.statusBarBackground.width - (statusBarXPadding * 2)
         }
+    }
+
+    destroyStatusBar(statusBar: StatusBar) {
+        statusBar.statusBar.destroy();
+        statusBar.statusBarBackground.destroy();
+        statusBar.icon.destroy();
     }
 
     /** Handle plant being destroyed */
     handlePlantDestroy(scene: MainScene, plant: Plant) {
         // Destroy the corresponding status bars
-        scene.plantStatusBars[plant.id].lightStatusBar.destroy();
-        scene.plantStatusBars[plant.id].lightStatusBarBackground.destroy();
-        scene.plantStatusBars[plant.id].lightIcon.destroy();
-        scene.plantStatusBars[plant.id].waterStatusBar.destroy();
-        scene.plantStatusBars[plant.id].waterStatusBarBackground.destroy();
-        scene.plantStatusBars[plant.id].waterIcon.destroy();
-        scene.plantStatusBars[plant.id].fruitStatusBar.destroy();
-        scene.plantStatusBars[plant.id].fruitStatusBarBackground.destroy();
-        scene.plantStatusBars[plant.id].fruitIcon.destroy();
+        scene.destroyStatusBar(scene.plantStatusBars[plant.id].lightStatusBar);
+        scene.destroyStatusBar(scene.plantStatusBars[plant.id].waterStatusBar);
+        scene.destroyStatusBar(scene.plantStatusBars[plant.id].fruitStatusBar);
+        scene.destroyStatusBar(scene.plantStatusBars[plant.id].healthStatusBar);
         delete scene.plantStatusBars[plant.id];
     }
 

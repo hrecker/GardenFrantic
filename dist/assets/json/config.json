@@ -13,6 +13,7 @@
     "maxLevel": 100,
     "defaultWaterLevel": 50,
     "defaultLightLevel": 50,
+    "defaultHealthLevel": 50,
 
     "lowWarning": 20,
     "highWarning": 80,
@@ -22,6 +23,21 @@
 
     "fruitProgressRate": 15,
     "fruitHarvestPoints": 10,
+
+    "healthGrowthRate": 5,
+    "healthDecayRateBase": 5,
+
+    "statusProps": {
+        "water": {
+            "warnHigh": true
+        },
+        "light": {
+            "warnHigh": true
+        },
+        "health": {
+            "warnHigh": false
+        }
+    },
 
     "weatherDecayRates": {
         "partlyCloudy": {
@@ -69,17 +85,14 @@
     "hazardGapDurationMs": {
         "low": 3000,
         "high": 5000
-    }
+    },
 
     "hazards": {
         "bugs": {
-            ""
         },
         "birds": {
-
         },
         "weeds": {
-
         }
     }
 }

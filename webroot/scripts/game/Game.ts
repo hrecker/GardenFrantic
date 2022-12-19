@@ -1,7 +1,7 @@
 import { plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { getNextHazardDurationMs, Hazard } from "./Hazard";
-import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel } from "./Plant";
+import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 
@@ -68,8 +68,9 @@ export function update(game: GardenGame, delta: number) {
         } else {
             updateStatusLevel(plant, Status.Light, -delta / 1000.0 * getLightDecayRateForPlant(game, plant));
             updateStatusLevel(plant, Status.Water, -delta / 1000.0 * getWaterDecayRateForPlant(game, plant));
+            updateStatusLevel(plant, Status.Health, -delta / 1000.0 * getHealthDecayRateForPlant(plant));
             if (! isFruitGrowthPaused(plant)) {
-                setFruitProgress(plant, plant.fruitProgress + (delta / 1000.0) * config()["fruitProgressRate"])
+                setFruitProgress(plant, plant.fruitProgress + (delta / 1000.0) * getFruitProgressRate(plant))
             }
         }
     });
@@ -134,6 +135,16 @@ function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
         }
     }
     return weatherRate + toolRate;
+}
+
+function getHealthDecayRateForPlant(plant: Plant): number {
+    let decayRate = config()["healthGrowthRate"] * -1;
+    // If any status is at warning level, then health will decrease
+    let numWarning = numWarningStatus(plant);
+    if (numWarning > 0) {
+        decayRate = config()["healthDecayRateBase"] * numWarning;
+    }
+    return decayRate;
 }
 
 /** Remove an active tool from a plant. Returns true if the given tool was found and removed, false if it was not found. */

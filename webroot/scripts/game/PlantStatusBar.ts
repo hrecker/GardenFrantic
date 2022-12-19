@@ -3,39 +3,47 @@ import { isInWarningZone, Plant, Status } from "./Plant";
 
 export type PlantStatusBar = {
     maxStatusBarWidth: number;
-    waterStatusBar: Phaser.GameObjects.Rectangle;
-    waterStatusBarBackground: Phaser.GameObjects.Image;
-    waterIcon: Phaser.GameObjects.Image;
-    lightStatusBar: Phaser.GameObjects.Rectangle;
-    lightStatusBarBackground: Phaser.GameObjects.Image;
-    lightIcon: Phaser.GameObjects.Image;
-    fruitStatusBar: Phaser.GameObjects.Rectangle;
-    fruitStatusBarBackground: Phaser.GameObjects.Image;
-    fruitIcon: Phaser.GameObjects.Image;
+    waterStatusBar: StatusBar;
+    lightStatusBar: StatusBar;
+    fruitStatusBar: StatusBar;
+    healthStatusBar: StatusBar;
+}
+
+export type StatusBar = {
+    statusBar: Phaser.GameObjects.Rectangle;
+    statusBarBackground: Phaser.GameObjects.Image;
+    icon: Phaser.GameObjects.Image;
 }
 
 export function updateStatusBars(statusBar: PlantStatusBar, plant: Plant) {
-    statusBar.waterStatusBar.width = plant.levels[Status.Water] / 100.0 * statusBar.maxStatusBarWidth;
-    statusBar.lightStatusBar.width = plant.levels[Status.Light] / 100.0 * statusBar.maxStatusBarWidth;
-    statusBar.fruitStatusBar.width = plant.fruitProgress / 100.0 * statusBar.maxStatusBarWidth;
-    let isWarning = updateStatusColor(statusBar.waterStatusBar, plant.levels[Status.Water]);
-    isWarning = updateStatusColor(statusBar.lightStatusBar, plant.levels[Status.Light]) || isWarning;
+    // Always display at least one for light/water so the bar never disappears completely
+    statusBar.waterStatusBar.statusBar.width = Math.max(plant.levels[Status.Water], 1) / 100.0 * statusBar.maxStatusBarWidth;
+    statusBar.lightStatusBar.statusBar.width = Math.max(plant.levels[Status.Light], 1) / 100.0 * statusBar.maxStatusBarWidth;
+    statusBar.healthStatusBar.statusBar.width = plant.levels[Status.Health] / 100.0 * statusBar.maxStatusBarWidth;
+    statusBar.fruitStatusBar.statusBar.width = plant.fruitProgress / 100.0 * statusBar.maxStatusBarWidth;
+    let isWarning = updateStatusColor(statusBar.waterStatusBar.statusBar, plant.levels[Status.Water], Status.Water);
+    isWarning = updateStatusColor(statusBar.lightStatusBar.statusBar, plant.levels[Status.Light], Status.Light) || isWarning;
     if (plant.isFruitAvailable) {
-        setHighlightColor(statusBar.fruitStatusBar);
+        setHighlightColor(statusBar.fruitStatusBar.statusBar);
     } else if (isWarning) {
-        setWarningColor(statusBar.fruitStatusBar);
+        setWarningColor(statusBar.fruitStatusBar.statusBar);
     } else {
-        setHealthyColor(statusBar.fruitStatusBar);
+        setHealthyColor(statusBar.fruitStatusBar.statusBar);
     }
+    updateStatusColor(statusBar.healthStatusBar.statusBar, plant.levels[Status.Health], Status.Health);
 }
 
 /** Update the status bar color based on if it is in the warning range. If it is in the warning range, return true, false otherwise. */
-function updateStatusColor(statusBar: Phaser.GameObjects.Rectangle, level: number): boolean {
-    if (isInWarningZone(level)) {
+function updateStatusColor(statusBar: Phaser.GameObjects.Rectangle, level: number, status: Status): boolean {
+    if (isInWarningZone(status, level)) {
         setWarningColor(statusBar);
         return true;
     } else {
-        setHealthyColor(statusBar);
+        if (status == Status.Health && level >= config()["maxLevel"]) {
+            setHighlightColor(statusBar);
+        } else {
+            setHealthyColor(statusBar);
+        }
         return false;
     }
 }
