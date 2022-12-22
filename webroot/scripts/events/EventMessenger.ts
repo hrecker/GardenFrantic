@@ -23,6 +23,7 @@ let fruitGrowthCallbacks: PlantCallback[] = [];
 let fruitHarvestedCallbacks: PlantCallback[] = [];
 let plantDestroyCallbacks: PlantCallback[] = [];
 let weatherUpdateCallbacks: WeatherCallback[] = [];
+let hazardCreatedCallbacks: NumberCallback[] = [];
 
 /** Add a callback listening for score changes */
 export function addScoreUpdateListener(callback: (scene: Phaser.Scene, score: number) => void, scene: Phaser.Scene) {
@@ -92,4 +93,18 @@ export function addWeatherUpdateListener(callback: (scene: Phaser.Scene, weather
 export function weatherUpdateEvent(weather: Weather) {
     weatherUpdateCallbacks.forEach(callback => 
         callback.callback(callback.scene, weather));
+}
+
+/** Add a callback listening for new hazards */
+export function addHazardCreatedListener(callback: (scene: Phaser.Scene, hazardId: number) => void, scene: Phaser.Scene) {
+    hazardCreatedCallbacks.push({ 
+        callback: callback,
+        scene: scene
+    });
+}
+
+/** Call any listeners for new hazards */
+export function hazardCreatedEvent(hazardId: number) {
+    hazardCreatedCallbacks.forEach(callback => 
+        callback.callback(callback.scene, hazardId));
 }

@@ -1,9 +1,11 @@
-import { plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
+import { hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
-import { getNextHazardDurationMs, Hazard } from "./Hazard";
+import { ActiveHazard, getNextHazardDurationMs, getRandomizedHazards, Hazard } from "./Hazard";
+import { getNewId } from "./Id";
 import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
+import { shuffleArray } from "../util/Util";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -17,7 +19,7 @@ export type GardenGame = {
     /** How long the current weather has lasted */
     currentWeatherDurationMs: number;
     /** Active hazards */
-    activeHazards: Hazard[];
+    activeHazards: { [id: number]: ActiveHazard };
     /** How long ago the current hazard started */
     currentHazardDurationMs: number;
     /** Time until the next hazard should start */
@@ -90,12 +92,37 @@ export function update(game: GardenGame, delta: number) {
     }
 
     // Hazard updates
+    Object.keys(game.activeHazards).forEach(id => {
+        let activeHazard: ActiveHazard = game.activeHazards[id];
+        if (activeHazard.timeUntilActiveMs > 0) {
+            activeHazard.timeUntilActiveMs -= delta;
+        }
+    });
+
     game.currentHazardDurationMs += delta;
-    if (game.currentHazardDurationMs >= game.nextHazardDuration) {
+    if (game.currentHazardDurationMs >= game.nextHazardDuration && Object.keys(game.plants).length > 0) {
         game.currentHazardDurationMs = 0;
         game.nextHazardDuration = getNextHazardDurationMs();
-        
+        let nextHazard = getRandomizedHazards()[0];
+        let targetPlant = getRandomPlant(game).id;
+        let activeHazard: ActiveHazard = {
+            id: getNewId(),
+            hazard: nextHazard,
+            timeUntilActiveMs: config()["hazardTimeToActiveMs"],
+            targetPlantId: targetPlant,
+        }
+        game.activeHazards[activeHazard.id] = activeHazard;
+        hazardCreatedEvent(activeHazard.id);
     }
+}
+
+function getRandomPlant(game: GardenGame): Plant {
+    let ids = [];
+    Object.keys(game.plants).forEach(id => {
+        ids.push(id);
+    });
+    shuffleArray(ids);
+    return game.plants[ids[0]];
 }
 
 function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
@@ -137,14 +164,25 @@ function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
     return weatherRate + toolRate;
 }
 
-function getHealthDecayRateForPlant(plant: Plant): number {
+function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): number {
     let decayRate = config()["healthGrowthRate"] * -1;
     // If any status is at warning level, then health will decrease
     let numWarning = numWarningStatus(plant);
     if (numWarning > 0) {
         decayRate = config()["healthDecayRateBase"] * numWarning;
     }
-    return decayRate;
+    let hazardDecayRate = 0;
+    Object.keys(game.activeHazards).forEach(id => {
+        let hazard: ActiveHazard = game.activeHazards[id];
+        if (hazard.targetPlantId == plant.id) {
+            hazardDecayRate += config()["hazards"][hazard.hazard.toString()]["healthDamageRate"];
+        }
+    });
+    // If hazards are causing damage then don't let health increase
+    if (hazardDecayRate > 0 && decayRate < 0) {
+        decayRate = 0;
+    }
+    return decayRate + hazardDecayRate;
 }
 
 /** Remove an active tool from a plant. Returns true if the given tool was found and removed, false if it was not found. */

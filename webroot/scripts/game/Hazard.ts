@@ -8,6 +8,19 @@ export enum Hazard {
     Weeds = "weeds"
 }
 
+export enum HazardMotion {
+    Walk = "walk",
+    Swoop = "swoop",
+    Grow = "grow"
+}
+
+export type ActiveHazard = {
+    id: number;
+    hazard: Hazard;
+    timeUntilActiveMs: number;
+    targetPlantId: number;
+}
+
 /** Get a duration before the next hazard appears, based on the range */
 export function getNextHazardDurationMs(): number {
     let low = config()["hazardGapDurationMs"]["low"];
@@ -43,4 +56,8 @@ export function getRandomizedHazards(): Hazard[] {
     ];
     shuffleArray(allHazards);
     return allHazards;
+}
+
+export function getHazardMotion(hazard: Hazard): HazardMotion {
+    return config()["hazards"][hazard.toString()]["motion"] as HazardMotion
 }

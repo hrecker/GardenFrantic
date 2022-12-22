@@ -114,6 +114,8 @@ export class MainScene extends Phaser.Scene {
         statusBar.statusBarBackground.destroy();
         statusBar.icon.destroy();
     }
+    
+    //TODO hazards!
 
     /** Handle plant being destroyed */
     handlePlantDestroy(scene: MainScene, plant: Plant) {

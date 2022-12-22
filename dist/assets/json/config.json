@@ -87,12 +87,20 @@
         "high": 5000
     },
 
+    "hazardTimeToActiveMs": 3000,
+
     "hazards": {
         "bugs": {
+            "motion": "walk",
+            "healthDamageRate": 5
         },
         "birds": {
+            "motion": "swoop",
+            "healthDamageRate": 3
         },
         "weeds": {
+            "motion": "grow",
+            "healthDamageRate": 4
         }
     }
 }
