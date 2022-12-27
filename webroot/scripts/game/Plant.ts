@@ -1,5 +1,6 @@
 import { fruitGrowthEvent, fruitHarvestEvent } from "../events/EventMessenger";
 import { config } from "../model/Config"
+import { GardenGame } from "./Game";
 import { getNewId } from "./Id"
 
 export type Plant = {
@@ -7,6 +8,7 @@ export type Plant = {
     levels: { [status: string] : number }
     fruitProgress: number;
     isFruitAvailable: boolean;
+    activeHazardIds: number[];
     gameObject: Phaser.GameObjects.Image;
     // The game will handle destroying plants in its update loop.
     shouldDestroy?: boolean;
@@ -33,6 +35,7 @@ export function newPlant(gameObject: Phaser.GameObjects.Image): Plant {
         levels: levels,
         fruitProgress: config()["minLevel"],
         isFruitAvailable: false,
+        activeHazardIds: [],
         gameObject: gameObject
     }
 }
@@ -75,8 +78,17 @@ export function numWarningStatus(plant: Plant): number {
     return numWarning;
 }
 
-export function isFruitGrowthPaused(plant: Plant) {
-    return numWarningStatus(plant) > 0 || plant.isFruitAvailable;
+export function isFruitGrowthPaused(game: GardenGame, plant: Plant) {
+    return numWarningStatus(plant) > 0 || plant.isFruitAvailable || hasActiveHazards(game, plant);
+}
+
+function hasActiveHazards(game: GardenGame, plant: Plant) {
+    for (let i = 0; i < plant.activeHazardIds.length; i++) {
+        if (game.activeHazards[plant.activeHazardIds[i]].timeUntilActiveMs <= 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export function isInWarningZone(status: Status, level: number) {

@@ -1,5 +1,6 @@
 import { config } from "../model/Config";
-import { isInWarningZone, Plant, Status } from "./Plant";
+import { GardenGame } from "./Game";
+import { isFruitGrowthPaused, isInWarningZone, Plant, Status } from "./Plant";
 
 export type PlantStatusBar = {
     maxStatusBarWidth: number;
@@ -15,7 +16,7 @@ export type StatusBar = {
     icon: Phaser.GameObjects.Image;
 }
 
-export function updateStatusBars(statusBar: PlantStatusBar, plant: Plant) {
+export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, plant: Plant) {
     // Always display at least one for light/water so the bar never disappears completely
     statusBar.waterStatusBar.statusBar.width = Math.max(plant.levels[Status.Water], 1) / 100.0 * statusBar.maxStatusBarWidth;
     statusBar.lightStatusBar.statusBar.width = Math.max(plant.levels[Status.Light], 1) / 100.0 * statusBar.maxStatusBarWidth;
@@ -25,7 +26,7 @@ export function updateStatusBars(statusBar: PlantStatusBar, plant: Plant) {
     isWarning = updateStatusColor(statusBar.lightStatusBar.statusBar, plant.levels[Status.Light], Status.Light) || isWarning;
     if (plant.isFruitAvailable) {
         setHighlightColor(statusBar.fruitStatusBar.statusBar);
-    } else if (isWarning) {
+    } else if (isFruitGrowthPaused(game, plant)) {
         setWarningColor(statusBar.fruitStatusBar.statusBar);
     } else {
         setHealthyColor(statusBar.fruitStatusBar.statusBar);

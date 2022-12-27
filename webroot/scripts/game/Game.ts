@@ -70,8 +70,8 @@ export function update(game: GardenGame, delta: number) {
         } else {
             updateStatusLevel(plant, Status.Light, -delta / 1000.0 * getLightDecayRateForPlant(game, plant));
             updateStatusLevel(plant, Status.Water, -delta / 1000.0 * getWaterDecayRateForPlant(game, plant));
-            updateStatusLevel(plant, Status.Health, -delta / 1000.0 * getHealthDecayRateForPlant(plant));
-            if (! isFruitGrowthPaused(plant)) {
+            updateStatusLevel(plant, Status.Health, -delta / 1000.0 * getHealthDecayRateForPlant(game, plant));
+            if (! isFruitGrowthPaused(game, plant)) {
                 setFruitProgress(plant, plant.fruitProgress + (delta / 1000.0) * getFruitProgressRate(plant))
             }
         }
@@ -103,16 +103,42 @@ export function update(game: GardenGame, delta: number) {
     if (game.currentHazardDurationMs >= game.nextHazardDuration && Object.keys(game.plants).length > 0) {
         game.currentHazardDurationMs = 0;
         game.nextHazardDuration = getNextHazardDurationMs();
-        let nextHazard = getRandomizedHazards()[0];
         let targetPlant = getRandomPlant(game).id;
-        let activeHazard: ActiveHazard = {
-            id: getNewId(),
-            hazard: nextHazard,
-            timeUntilActiveMs: config()["hazardTimeToActiveMs"],
-            targetPlantId: targetPlant,
+        // Select a hazard that isn't already active for this plant
+        // There is a chance that we select a plant that can't add any new hazards when another
+        // plant could get a hazard. I'll just accept this as a feature for now - anyways if a plant
+        // has every possible hazard things are likely pretty bad already for the player
+        let possibleHazards = getRandomizedHazards();
+        let chosenHazard: Hazard = null;
+        let foundHazards: Hazard[] = [];
+        // Build list of all hazards currently active for the chosen plant
+        for (let i = 0; i < game.plants[targetPlant].activeHazardIds.length; i++) {
+            foundHazards.push(game.activeHazards[game.plants[targetPlant].activeHazardIds[i]].hazard);
         }
-        game.activeHazards[activeHazard.id] = activeHazard;
-        hazardCreatedEvent(activeHazard.id);
+        for (let i = 0; i < possibleHazards.length; i++) {
+            let existingHazardFound = false;
+            for (let j = 0; j < foundHazards.length; j++) {
+                if (possibleHazards[i] == foundHazards[j]) {
+                    existingHazardFound = true;
+                    break;
+                }
+            }
+            if (! existingHazardFound) {
+                chosenHazard = possibleHazards[i];
+                break;
+            }
+        }
+        if (chosenHazard != null) {
+            let activeHazard: ActiveHazard = {
+                id: getNewId(),
+                hazard: chosenHazard,
+                timeUntilActiveMs: config()["hazardTimeToActiveMs"],
+                targetPlantId: targetPlant,
+            }
+            game.activeHazards[activeHazard.id] = activeHazard;
+            game.plants[targetPlant].activeHazardIds.push(activeHazard.id);
+            hazardCreatedEvent(activeHazard.id);
+        }
     }
 }
 
@@ -172,12 +198,12 @@ function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): number {
         decayRate = config()["healthDecayRateBase"] * numWarning;
     }
     let hazardDecayRate = 0;
-    Object.keys(game.activeHazards).forEach(id => {
-        let hazard: ActiveHazard = game.activeHazards[id];
-        if (hazard.targetPlantId == plant.id) {
+    for (let i = 0; i < plant.activeHazardIds.length; i++) {
+        let hazard: ActiveHazard = game.activeHazards[plant.activeHazardIds[i]];
+        if (hazard.timeUntilActiveMs <= 0) {
             hazardDecayRate += config()["hazards"][hazard.hazard.toString()]["healthDamageRate"];
         }
-    });
+    }
     // If hazards are causing damage then don't let health increase
     if (hazardDecayRate > 0 && decayRate < 0) {
         decayRate = 0;

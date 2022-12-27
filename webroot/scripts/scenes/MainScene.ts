@@ -3,8 +3,9 @@ import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { ActiveTool, getCategory } from "../game/Tool";
-import { addFruitGrowthListener, addFruitHarvestListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
+import { ActiveHazard } from "../game/Hazard";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -21,6 +22,7 @@ export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     plantStatusBars: { [id: number] : PlantStatusBar }
     plantFruitImages: { [id: number] : Phaser.GameObjects.Image }
+    hazardImages: { [id: number] : Phaser.GameObjects.Image }
     background: Phaser.GameObjects.Image;
 
     constructor() {
@@ -36,16 +38,18 @@ export class MainScene extends Phaser.Scene {
         addWeatherUpdateListener(this.handleWeatherUpdate, this);
         addFruitGrowthListener(this.handleFruitGrowth, this);
         addFruitHarvestListener(this.handleFruitHarvest, this);
+        addHazardCreatedListener(this.handleHazardCreated, this);
     }
 
     create() {
         this.plantStatusBars = {};
         this.plantFruitImages = {};
+        this.hazardImages = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
 
         this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
 
-        this.createPlant(200, 350);
+        //this.createPlant(200, 350);
         this.createPlant(500, 350);
     }
 
@@ -115,7 +119,45 @@ export class MainScene extends Phaser.Scene {
         statusBar.icon.destroy();
     }
     
-    //TODO hazards!
+    /** Handle hazard being created */
+    handleHazardCreated(scene: MainScene, hazardId: number) {
+        let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
+        let plantImage: Phaser.GameObjects.Image = scene.gardenGame.plants[activeHazard.targetPlantId].gameObject;
+        let hazardImage: Phaser.GameObjects.Image;
+        let tweenConfig: any = {
+            duration: config()["hazardTimeToActiveMs"]
+        }
+        switch(config()["hazards"][activeHazard.hazard.toString()]["motion"]) {
+            case "walk":
+                hazardImage = scene.add.image(0, plantImage.y, activeHazard.hazard.toString());
+                tweenConfig.x = {
+                    from: hazardImage.x,
+                    to: plantImage.getCenter().x
+                }
+                break;
+            case "swoop":
+                hazardImage = scene.add.image(0, 0, activeHazard.hazard.toString());
+                tweenConfig.x = {
+                    from: hazardImage.x,
+                    to: plantImage.getTopCenter().x
+                }
+                tweenConfig.y = {
+                    from: hazardImage.y,
+                    to: plantImage.getTopCenter().y
+                }
+                break;
+            case "grow":
+                hazardImage = scene.add.image(plantImage.x, plantImage.getBottomCenter().y + 100, activeHazard.hazard.toString());
+                tweenConfig.y = {
+                    from: hazardImage.y,
+                    to: plantImage.getBottomCenter().y
+                }
+                break;
+        }
+        tweenConfig.targets = hazardImage;
+        scene.tweens.add(tweenConfig);
+        scene.hazardImages[hazardId] = hazardImage;
+    }
 
     /** Handle plant being destroyed */
     handlePlantDestroy(scene: MainScene, plant: Plant) {
@@ -125,6 +167,16 @@ export class MainScene extends Phaser.Scene {
         scene.destroyStatusBar(scene.plantStatusBars[plant.id].fruitStatusBar);
         scene.destroyStatusBar(scene.plantStatusBars[plant.id].healthStatusBar);
         delete scene.plantStatusBars[plant.id];
+        // Destroy hazards for the plant
+        plant.activeHazardIds.forEach(id => {
+            scene.hazardImages[id].destroy();
+            delete scene.hazardImages[id];
+        });
+
+        if (plant.id in scene.plantFruitImages) {
+            scene.plantFruitImages[plant.id].destroy();
+            delete scene.plantFruitImages[plant.id];
+        }
     }
 
     /** Handle weather being changed (may be called even if the new weather is the same) */
@@ -149,7 +201,7 @@ export class MainScene extends Phaser.Scene {
         game.update(this.gardenGame, delta);
 
         Object.keys(this.gardenGame.plants).forEach(id => {
-            updateStatusBars(this.plantStatusBars[id], this.gardenGame.plants[id]);
+            updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id]);
         })
     }
 }

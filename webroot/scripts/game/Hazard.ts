@@ -29,24 +29,6 @@ export function getNextHazardDurationMs(): number {
     return Math.floor(Math.random() * range) + low;
 }
 
-/** Get a hazard to activate */
-export function getNewHazard(game: GardenGame): Hazard {
-    let allHazards = getRandomizedHazards();
-    for (let i = 0; i < allHazards.length; i++) {
-        let found = false;
-        for (let j = 0; j < game.activeHazards.length; j++) {
-            if (game.activeHazards[j] == allHazards[i]) {
-                found = true;
-                break;
-            }
-        }
-        if (! found) {
-            return allHazards[i];
-        }
-    }
-    return null;
-}
-
 /** Get a randomly ordered list of hazards */
 export function getRandomizedHazards(): Hazard[] {
     let allHazards = [

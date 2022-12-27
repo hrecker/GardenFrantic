@@ -52,9 +52,9 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image(Weather.Cloudy, "assets/sprites/" + Weather.Cloudy + ".png");
         this.load.image(Weather.Heat, "assets/sprites/" + Weather.Heat + ".png");
         this.load.image(Weather.Rain, "assets/sprites/" + Weather.Rain + ".png");
-        this.load.image(Hazard.Birds, "assets/sprites/" + Hazard.Birds + ".png");
-        this.load.image(Hazard.Bugs, "assets/sprites/" + Hazard.Bugs + ".png");
-        this.load.image(Hazard.Weeds, "assets/sprites/" + Hazard.Weeds + ".png");
+        this.load.image(Hazard.Birds, "assets/sprites/hazards/" + Hazard.Birds + ".png");
+        this.load.image(Hazard.Bugs, "assets/sprites/hazards/" + Hazard.Bugs + ".png");
+        this.load.image(Hazard.Weeds, "assets/sprites/hazards/" + Hazard.Weeds + ".png");
 
         this.load.bitmapFont('uiFont', 'assets/fonts/uiFont.png', 'assets/fonts/uiFont.xml');
 
