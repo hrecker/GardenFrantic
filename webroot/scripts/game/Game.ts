@@ -2,7 +2,7 @@ import { hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateE
 import { config } from "../model/Config";
 import { ActiveHazard, getNextHazardDurationMs, getRandomizedHazards, Hazard } from "./Hazard";
 import { getNewId } from "./Id";
-import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate } from "./Plant";
+import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazard } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
@@ -273,6 +273,15 @@ function useSingleUseTool(game: GardenGame, plant: Plant) {
                 harvestFruit(plant);
                 addScore(game, config()["fruitHarvestPoints"]);
             }
+            break;
+        case tool.Tool.Pesticide:
+            removeHazard(game, plant, Hazard.Bugs);
+            break;
+        case tool.Tool.Scarecrow:
+            removeHazard(game, plant, Hazard.Birds);
+            break;
+        case tool.Tool.Weedkiller:
+            removeHazard(game, plant, Hazard.Weeds);
             break;
         default:
             // Nothing to do here

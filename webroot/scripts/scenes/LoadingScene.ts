@@ -1,5 +1,6 @@
 import { newGame } from "../game/Game";
 import { Hazard } from "../game/Hazard";
+import { Tool } from "../game/Tool";
 import { Weather } from "../game/Weather";
 import { loadConfig } from "../model/Config";
 
@@ -43,11 +44,14 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("lightIcon", "assets/sprites/lightIcon.png");
         this.load.image("fruitIcon", "assets/sprites/fruitIcon.png");
         this.load.image("healthIcon", "assets/sprites/healthIcon.png");
-        this.load.image("basket", "assets/sprites/basket.png");
-        this.load.image("lamp", "assets/sprites/lamp.png");
-        this.load.image("shade", "assets/sprites/shade.png");
-        this.load.image("umbrella", "assets/sprites/umbrella.png");
-        this.load.image("wateringCan", "assets/sprites/wateringCan.png");
+        this.load.image(Tool.Basket, "assets/sprites/" + Tool.Basket + ".png");
+        this.load.image(Tool.Lamp, "assets/sprites/" + Tool.Lamp + ".png");
+        this.load.image(Tool.Shade, "assets/sprites/" + Tool.Shade + ".png");
+        this.load.image(Tool.Umbrella, "assets/sprites/" + Tool.Umbrella + ".png");
+        this.load.image(Tool.WateringCan, "assets/sprites/" + Tool.WateringCan + ".png");
+        this.load.image(Tool.Scarecrow, "assets/sprites/" + Tool.Scarecrow + ".png");
+        this.load.image(Tool.Weedkiller, "assets/sprites/" + Tool.Weedkiller + ".png");
+        this.load.image(Tool.Pesticide, "assets/sprites/" + Tool.Pesticide + ".png");
         this.load.image(Weather.PartlyCloudy, "assets/sprites/" + Weather.PartlyCloudy + ".png");
         this.load.image(Weather.Cloudy, "assets/sprites/" + Weather.Cloudy + ".png");
         this.load.image(Weather.Heat, "assets/sprites/" + Weather.Heat + ".png");

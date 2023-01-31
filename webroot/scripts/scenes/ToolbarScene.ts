@@ -3,7 +3,7 @@ import * as tool from "../game/Tool";
 import { config } from "../model/Config";
 
 const toolYAnchor = 50;
-const toolMargin = 75;
+const toolMargin = 65;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {

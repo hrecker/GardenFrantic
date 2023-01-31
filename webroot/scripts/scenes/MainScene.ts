@@ -3,7 +3,7 @@ import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { ActiveTool, getCategory } from "../game/Tool";
-import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 import { ActiveHazard } from "../game/Hazard";
 
@@ -39,6 +39,7 @@ export class MainScene extends Phaser.Scene {
         addFruitGrowthListener(this.handleFruitGrowth, this);
         addFruitHarvestListener(this.handleFruitHarvest, this);
         addHazardCreatedListener(this.handleHazardCreated, this);
+        addHazardDestroyedListener(this.handleHazardDestroy, this);
     }
 
     create() {
@@ -157,6 +158,11 @@ export class MainScene extends Phaser.Scene {
         tweenConfig.targets = hazardImage;
         scene.tweens.add(tweenConfig);
         scene.hazardImages[hazardId] = hazardImage;
+    }
+
+    handleHazardDestroy(scene: MainScene, hazardId: number) {
+        scene.hazardImages[hazardId].destroy();
+        delete scene.hazardImages[hazardId];
     }
 
     /** Handle plant being destroyed */

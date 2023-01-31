@@ -79,6 +79,15 @@
         },
         "basket": {
             "category": "singleuse"
+        },
+        "scarecrow": {
+            "category": "singleuse"
+        },
+        "pesticide": {
+            "category": "singleuse"
+        },
+        "weedkiller": {
+            "category": "singleuse"
         }
     },
 

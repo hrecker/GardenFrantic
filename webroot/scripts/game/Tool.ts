@@ -6,7 +6,10 @@ export enum Tool {
     Shade = "shade",
     Umbrella = "umbrella",
     WateringCan = "wateringCan",
-    Basket = "basket"
+    Basket = "basket",
+    Scarecrow = "scarecrow",
+    Weedkiller = "weedkiller",
+    Pesticide = "pesticide"
 }
 
 export enum ToolCategory {
@@ -15,7 +18,7 @@ export enum ToolCategory {
     SingleUse = "singleuse"
 }
 
-export let startingTools = [Tool.Basket, Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan];
+export let startingTools = [Tool.Basket, Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan, Tool.Scarecrow, Tool.Weedkiller, Tool.Pesticide];
 
 export type ActiveTool = {
     tool: Tool;

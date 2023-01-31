@@ -1,6 +1,7 @@
-import { fruitGrowthEvent, fruitHarvestEvent } from "../events/EventMessenger";
+import { fruitGrowthEvent, fruitHarvestEvent, hazardDestroyedEvent } from "../events/EventMessenger";
 import { config } from "../model/Config"
 import { GardenGame } from "./Game";
+import { Hazard } from "./Hazard";
 import { getNewId } from "./Id"
 
 export type Plant = {
@@ -87,6 +88,25 @@ function hasActiveHazards(game: GardenGame, plant: Plant) {
         if (game.activeHazards[plant.activeHazardIds[i]].timeUntilActiveMs <= 0) {
             return true;
         }
+    }
+    return false;
+}
+
+export function removeHazard(game: GardenGame, plant: Plant, type: Hazard) {
+    let toRemoveIndices = [];
+    for (let i = 0; i < plant.activeHazardIds.length; i++) {
+        let id = plant.activeHazardIds[i];
+        let hazard = game.activeHazards[id];
+        if (hazard.timeUntilActiveMs <= 0 && hazard.hazard == type) {
+            toRemoveIndices.push(i);
+        }
+    }
+    // Remove any destroyed hazards from the plant
+    for (let i = toRemoveIndices.length - 1; i >= 0; i--) {
+        let id = plant.activeHazardIds[toRemoveIndices[i]];
+        plant.activeHazardIds.splice(toRemoveIndices[i], 1);
+        delete game.activeHazards[id];
+        hazardDestroyedEvent(id);
     }
     return false;
 }
