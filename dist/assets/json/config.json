@@ -57,6 +57,8 @@
             "light": 2
         }
     },
+
+    "weatherQueueLength": 5,
     
     "tools": {
         "lamp": {

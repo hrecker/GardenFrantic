@@ -56,6 +56,10 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image(Weather.Cloudy, "assets/sprites/" + Weather.Cloudy + ".png");
         this.load.image(Weather.Heat, "assets/sprites/" + Weather.Heat + ".png");
         this.load.image(Weather.Rain, "assets/sprites/" + Weather.Rain + ".png");
+        this.load.image(Weather.PartlyCloudy + "Preview", "assets/sprites/" + Weather.PartlyCloudy + "Preview.png");
+        this.load.image(Weather.Cloudy + "Preview", "assets/sprites/" + Weather.Cloudy + "Preview.png");
+        this.load.image(Weather.Heat + "Preview", "assets/sprites/" + Weather.Heat + "Preview.png");
+        this.load.image(Weather.Rain + "Preview", "assets/sprites/" + Weather.Rain + "Preview.png");
         this.load.image(Hazard.Birds, "assets/sprites/hazards/" + Hazard.Birds + ".png");
         this.load.image(Hazard.Bugs, "assets/sprites/hazards/" + Hazard.Bugs + ".png");
         this.load.image(Hazard.Weeds, "assets/sprites/hazards/" + Hazard.Weeds + ".png");
@@ -71,7 +75,7 @@ export class LoadingScene extends Phaser.Scene {
         let game = newGame();
         this.scene.start("MainScene", { gardenGame: game })
                   .start("ToolbarScene", { gardenGame: game })
-                  .start("UIScene")
+                  .start("UIScene", { gardenGame: game })
                   .stop();
     }
 }

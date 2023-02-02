@@ -13,7 +13,7 @@ type PlantCallback = {
     scene: Phaser.Scene;
 }
 type WeatherCallback = {
-    callback: (scene: Phaser.Scene, weather: Weather) => void;
+    callback: (scene: Phaser.Scene, weather: Weather, weatherQueue: Weather[]) => void;
     scene: Phaser.Scene;
 }
 
@@ -83,7 +83,7 @@ export function plantDestroyEvent(plant: Plant) {
 }
 
 /** Add a callback listening for weather changes */
-export function addWeatherUpdateListener(callback: (scene: Phaser.Scene, weather: Weather) => void, scene: Phaser.Scene) {
+export function addWeatherUpdateListener(callback: (scene: Phaser.Scene, weather: Weather, weatherQueue: Weather[]) => void, scene: Phaser.Scene) {
     weatherUpdateCallbacks.push({ 
         callback: callback,
         scene: scene
@@ -91,9 +91,9 @@ export function addWeatherUpdateListener(callback: (scene: Phaser.Scene, weather
 }
 
 /** Call any listeners for weather changes */
-export function weatherUpdateEvent(weather: Weather) {
+export function weatherUpdateEvent(weather: Weather, weatherQueue: Weather[]) {
     weatherUpdateCallbacks.forEach(callback => 
-        callback.callback(callback.scene, weather));
+        callback.callback(callback.scene, weather, weatherQueue));
 }
 
 /** Add a callback listening for new hazards */

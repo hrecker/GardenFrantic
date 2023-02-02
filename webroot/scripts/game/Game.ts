@@ -16,6 +16,8 @@ export type GardenGame = {
     selectedTool: tool.Tool;
     /** Currently active weather */
     weather: weather.Weather;
+    /** Upcoming weather */
+    weatherQueue: weather.Weather[];
     /** How long the current weather has lasted */
     currentWeatherDurationMs: number;
     /** Active hazards */
@@ -34,13 +36,31 @@ export function newGame(): GardenGame {
         activeTools: {},
         selectedTool: tool.Tool.NoTool,
         weather: weather.getDefaultWeather(),
+        weatherQueue: initialWeatherQueue(),
         currentWeatherDurationMs: 0,
         activeHazards: [],
         currentHazardDurationMs: 0,
         nextHazardDuration: getNextHazardDurationMs(),
         score: 0,
     };
+    weatherUpdateEvent(game.weather, game.weatherQueue);
     return game;
+}
+
+function initialWeatherQueue(): weather.Weather[] {
+    let queue = [];
+    for (let i = 0; i < config()["weatherQueueLength"]; i++) {
+        queue.push(weather.getRandomWeather());
+    }
+    return queue;
+}
+
+function advanceWeather(game: GardenGame) {
+    game.weather = game.weatherQueue[0];
+    for (let i = 0; i < game.weatherQueue.length - 1; i++) {
+        game.weatherQueue[i] = game.weatherQueue[i + 1];
+    }
+    game.weatherQueue[game.weatherQueue.length - 1] = weather.getRandomWeather();
 }
 
 export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.Image): Plant {
@@ -87,8 +107,8 @@ export function update(game: GardenGame, delta: number) {
     game.currentWeatherDurationMs += delta;
     if (game.currentWeatherDurationMs >= config()["weatherDurationMs"]) {
         game.currentWeatherDurationMs = 0;
-        game.weather = weather.getRandomWeather();
-        weatherUpdateEvent(game.weather);
+        advanceWeather(game);
+        weatherUpdateEvent(game.weather, game.weatherQueue);
     }
 
     // Hazard updates

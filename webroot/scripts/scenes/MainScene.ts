@@ -51,7 +51,7 @@ export class MainScene extends Phaser.Scene {
         this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
 
         //this.createPlant(200, 350);
-        this.createPlant(500, 350);
+        this.createPlant((this.game.renderer.width - config()["toolbarWidth"]) / 2, 410);
     }
 
     createPlant(x: number, y: number): Plant {
@@ -186,7 +186,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     /** Handle weather being changed (may be called even if the new weather is the same) */
-    handleWeatherUpdate(scene: MainScene, weather: Weather) {
+    handleWeatherUpdate(scene: MainScene, weather: Weather, _weatherQueue: Weather[]) {
         scene.background.setTexture(weather);
     }
 
