@@ -44,6 +44,8 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("lightIcon", "assets/sprites/lightIcon.png");
         this.load.image("fruitIcon", "assets/sprites/fruitIcon.png");
         this.load.image("healthIcon", "assets/sprites/healthIcon.png");
+        this.load.image("toolbox", "assets/sprites/toolbox.png");
+        this.load.image("selectedToolbox", "assets/sprites/selectedToolbox.png");
         this.load.image(Tool.Basket, "assets/sprites/" + Tool.Basket + ".png");
         this.load.image(Tool.Lamp, "assets/sprites/" + Tool.Lamp + ".png");
         this.load.image(Tool.Shade, "assets/sprites/" + Tool.Shade + ".png");

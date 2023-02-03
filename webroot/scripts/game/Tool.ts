@@ -41,3 +41,26 @@ export function getDecayRate(tool: Tool, category: ToolCategory): number {
     }
     return 0;
 }
+
+export function getToolName(tool: Tool): string {
+    switch (tool) {
+        case Tool.Lamp:
+            return "Lamp";
+        case Tool.Shade:
+            return "Shade";
+        case Tool.Umbrella:
+            return "Umbrella";
+        case Tool.WateringCan:
+            return "Watering Can";
+        case Tool.Basket:
+            return "Basket";
+        case Tool.Scarecrow:
+            return "Scarecrow";
+        case Tool.Weedkiller:
+            return "Weedkiller";
+        case Tool.Pesticide:
+            return "Pesticide";
+        default:
+            return "";
+    }
+}
