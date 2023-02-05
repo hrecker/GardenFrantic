@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "set BROWSERSLIST_IGNORE_OLD_DATA=1&& parcel webroot/index.html",
-    "build": "parcel build webroot/index.html"
+    "build": "del dist\\index.html && del dist\\index.*.js* && parcel build webroot/index.html && robocopy dist R:\\ItchioBuilds\\GardenFrantic\\dist /s /e || powershell -Command \"(Get-Content R:\\ItchioBuilds\\GardenFrantic\\dist\\index.html) -replace 'src=\\\"/', 'src=\\\"./' | Out-File -encoding ASCII R:\\ItchioBuilds\\GardenFrantic\\dist\\index.html\""
   },
   "devDependencies": {
     "cssnano": "^5.1.13",

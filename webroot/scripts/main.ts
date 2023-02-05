@@ -8,7 +8,7 @@ import { UIScene } from './scenes/UIScene';
 var config: Phaser.Types.Core.GameConfig = {
     scale: {
         parent: "game-div",
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.NONE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 800,
         height: 600,
