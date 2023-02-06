@@ -8,10 +8,8 @@ import { UIScene } from './scenes/UIScene';
 var config: Phaser.Types.Core.GameConfig = {
     scale: {
         parent: "game-div",
-        mode: Phaser.Scale.NONE,
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 600,
     },
     // NOTE - With hardware acceleration disabled in Chrome, WEBGL causes enormous CPU usage on my desktop.
     type: Phaser.WEBGL,
