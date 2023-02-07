@@ -9,7 +9,7 @@ import { ActiveHazard } from "../game/Hazard";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
-const statusBarYMargin = 35;
+const statusBarYMargin = 27;
 const statusIconXMargin = 25;
 
 const toolYByCategory = {
@@ -48,10 +48,10 @@ export class MainScene extends Phaser.Scene {
         this.hazardImages = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
 
-        this.background = this.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, this.gardenGame.weather);
+        this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0);
 
         //this.createPlant(200, 350);
-        this.createPlant((this.game.renderer.width - config()["toolbarWidth"]) / 2, 410);
+        this.createPlant((this.game.renderer.width - config()["toolbarWidth"]) / 2, 260);
     }
 
     createPlant(x: number, y: number): Plant {

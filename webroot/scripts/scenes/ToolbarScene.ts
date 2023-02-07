@@ -30,9 +30,16 @@ export class ToolbarScene extends Phaser.Scene {
         this.currentToolText = this.add.bitmapText(toolbarX, toolYAnchor - 50, "uiFont", "", 48).setOrigin(0.5);
         
         for (let i = 0; i < tool.startingTools.length; i++) {
-            let toolIcon = this.add.image(toolbarX, toolYAnchor + (i * toolMargin), tool.startingTools[i]);
+            let x, y;
+            if (i % 2 == 0) {
+                x = toolbarX - 30;
+            } else {
+                x = toolbarX + 30;
+            }
+            y = toolYAnchor + (Math.floor(i / 2) * toolMargin);
+            let toolIcon = this.add.image(x, y, tool.startingTools[i]);
             // Add box background
-            let toolbox = this.add.image(toolbarX, toolYAnchor + (i * toolMargin), "toolbox");
+            let toolbox = this.add.image(x, y, "toolbox");
             toolIcon.setInteractive();
             toolIcon.on("pointerdown", () => {
                 let toolValue = toolIcon.texture.key as tool.Tool;

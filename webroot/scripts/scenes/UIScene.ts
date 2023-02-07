@@ -3,9 +3,9 @@ import * as game from "../game/Game";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
 
-const weatherPreviewY = 45;
+const uiY = 35;
+const uiXMargin = 15;
 const weatherImageWidth = 50;
-const scoreY = 105;
 
 /** UI scene */
 export class UIScene extends Phaser.Scene {
@@ -29,13 +29,14 @@ export class UIScene extends Phaser.Scene {
 
     create() {
         let uiCenterX = (this.game.renderer.width - config()["toolbarWidth"]) / 2;
-        this.scoreText = this.add.bitmapText(uiCenterX, scoreY,
-            "uiFont", "0", 48).setOrigin(0.5);//.setTintFill(parseInt(config()["uiFontColor"], 16));
+        this.scoreText = this.add.bitmapText(uiXMargin, uiY - 8,
+            "uiFont", "0", 48).setOrigin(0, 0.5);//.setTintFill(parseInt(config()["uiFontColor"], 16));
         // Weather queue images
         this.weatherImages = [];
-        let leftX = uiCenterX - (((this.gardenGame.weatherQueue.length / 2.0) - 0.5) * weatherImageWidth);
+        let rightX = this.game.renderer.width - config()["toolbarWidth"] - uiXMargin - (weatherImageWidth / 2);
         for (let i = 0; i < this.gardenGame.weatherQueue.length; i++) {
-            this.weatherImages.push(this.add.image(leftX + (i * weatherImageWidth), weatherPreviewY, 
+            let pos = this.gardenGame.weatherQueue.length - i - 1;
+            this.weatherImages.push(this.add.image(rightX - (pos * weatherImageWidth), uiY, 
                 this.gardenGame.weatherQueue[i] + "Preview"));
         }
     }
