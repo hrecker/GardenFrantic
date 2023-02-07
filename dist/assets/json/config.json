@@ -21,8 +21,11 @@
     "weatherDurationMs": 2000,
     "defaultWeather": "partlyCloudy",
 
+    "scoreBumpIntervalMs": 1000,
+    "maxScoreBumpPerPlant": 10,
+
     "fruitProgressRate": 15,
-    "fruitHarvestPoints": 10,
+    "fruitHarvestPoints": 100,
 
     "healthGrowthRate": 5,
     "healthDecayRateBase": 5,

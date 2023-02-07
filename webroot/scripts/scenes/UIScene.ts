@@ -28,7 +28,6 @@ export class UIScene extends Phaser.Scene {
     }
 
     create() {
-        let uiCenterX = (this.game.renderer.width - config()["toolbarWidth"]) / 2;
         this.scoreText = this.add.bitmapText(uiXMargin, uiY - 8,
             "uiFont", "0", 48).setOrigin(0, 0.5);//.setTintFill(parseInt(config()["uiFontColor"], 16));
         // Weather queue images

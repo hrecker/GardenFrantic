@@ -26,6 +26,8 @@ export type GardenGame = {
     currentHazardDurationMs: number;
     /** Time until the next hazard should start */
     nextHazardDuration: number;
+    /** Time since last score bump */
+    timeSinceLastScoreBump: number;
     /** Current score */
     score: number;
 }
@@ -42,6 +44,7 @@ export function newGame(): GardenGame {
         currentHazardDurationMs: 0,
         nextHazardDuration: getNextHazardDurationMs(),
         score: 0,
+        timeSinceLastScoreBump: 0
     };
     weatherUpdateEvent(game.weather, game.weatherQueue);
     return game;
@@ -159,6 +162,20 @@ export function update(game: GardenGame, delta: number) {
             game.plants[targetPlant].activeHazardIds.push(activeHazard.id);
             hazardCreatedEvent(activeHazard.id);
         }
+    }
+
+    // Score updates
+    game.timeSinceLastScoreBump += delta;
+    if (game.timeSinceLastScoreBump >= config()["scoreBumpIntervalMs"]) {
+        // Calculate score to be added
+        let maxScorePerPlant = config()["maxScoreBumpPerPlant"];
+        let plantScore = 0;
+        Object.keys(game.plants).forEach(id => {
+            let plant: Plant = game.plants[id];
+            plantScore += maxScorePerPlant * (plant.levels[Status.Health] / config()["maxLevel"]);
+        });
+        addScore(game, Math.floor(plantScore));
+        game.timeSinceLastScoreBump = 0;
     }
 }
 
