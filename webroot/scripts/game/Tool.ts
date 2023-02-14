@@ -15,31 +15,19 @@ export enum Tool {
 export enum ToolCategory {
     Water = "water",
     Light = "light",
-    SingleUse = "singleuse"
+    Harvest = "harvest",
+    HazardRemoval = "hazardremoval"
 }
 
 export let startingTools = [Tool.Basket, Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan, Tool.Scarecrow, Tool.Weedkiller, Tool.Pesticide];
-
-export type ActiveTool = {
-    tool: Tool;
-    gameObject: Phaser.GameObjects.Image;
-}
 
 export function getCategory(tool: Tool): ToolCategory {
     return config()["tools"][tool]["category"];
 }
 
-export function isDecayPrevented(tool: Tool, category: ToolCategory): boolean {
-    return getCategory(tool) == category &&
-        config()["tools"][tool]["preventive"];
-}
-
-/** Get the water decay rate for a given tool */
-export function getDecayRate(tool: Tool, category: ToolCategory): number {
-    if (getCategory(tool) == category) {
-        return config()["tools"][tool]["decayRate"];
-    }
-    return 0;
+/** Get the delta in status for a given tool */
+export function getDelta(tool: Tool): number {
+    return config()["tools"][tool]["delta"];
 }
 
 export function getToolName(tool: Tool): string {

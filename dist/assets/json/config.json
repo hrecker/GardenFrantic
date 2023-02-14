@@ -18,7 +18,7 @@
     "lowWarning": 20,
     "highWarning": 80,
     
-    "weatherDurationMs": 2000,
+    "weatherDurationMs": 5000,
     "defaultWeather": "partlyCloudy",
 
     "scoreBumpIntervalMs": 1000,
@@ -44,20 +44,20 @@
 
     "weatherDecayRates": {
         "partlyCloudy": {
-            "water": 3,
-            "light": -1
-        },
-        "cloudy": {
-            "water": 3,
-            "light": 2
-        },
-        "heat": {
             "water": 5,
             "light": -3
         },
+        "cloudy": {
+            "water": 3,
+            "light": 5
+        },
+        "heat": {
+            "water": 7,
+            "light": -7
+        },
         "rain": {
-            "water": -4,
-            "light": 2
+            "water": -5,
+            "light": 5
         }
     },
 
@@ -66,33 +66,34 @@
     "tools": {
         "lamp": {
             "category": "light",
-            "decayRate": -3
+            "delta": 10
         },
         "shade": {
             "category": "light",
-            "preventive": true,
-            "decayRate": 2
+            "delta": -10
         },
         "umbrella": {
             "category": "water",
-            "preventive": true,
-            "decayRate": 3
+            "delta": -10
         },
         "wateringCan": {
             "category": "water",
-            "decayRate": -6
+            "delta": 10
         },
         "basket": {
-            "category": "singleuse"
+            "category": "harvest"
         },
         "scarecrow": {
-            "category": "singleuse"
+            "category": "hazardremoval",
+            "target": "birds"
         },
         "pesticide": {
-            "category": "singleuse"
+            "category": "hazardremoval",
+            "target": "bugs"
         },
         "weedkiller": {
-            "category": "singleuse"
+            "category": "hazardremoval",
+            "target": "weeds"
         }
     },
 

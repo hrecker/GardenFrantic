@@ -2,7 +2,6 @@ import * as game from "../game/Game";
 import { Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
-import { ActiveTool, getCategory } from "../game/Tool";
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 import { ActiveHazard } from "../game/Hazard";
@@ -60,24 +59,9 @@ export class MainScene extends Phaser.Scene {
 
         plant.gameObject.setInteractive();
         plant.gameObject.on("pointerdown", () => {
-            let newActiveTool = game.useSelectedTool(this.gardenGame, plant);
-            if (newActiveTool != null) {
-                // Create a gameobject to represent the active tool
-                this.createActiveToolGameObject(newActiveTool, plant);
-            }
+            game.useSelectedTool(this.gardenGame, plant);
         });
         return plant;
-    }
-
-    createActiveToolGameObject(activeTool: ActiveTool, plant: Plant) {
-        let topLeft = plant.gameObject.getTopLeft();
-        let toolImage = this.add.image(topLeft.x,
-            topLeft.y + toolYByCategory[getCategory(activeTool.tool)], activeTool.tool);
-        activeTool.gameObject = toolImage;
-        toolImage.setInteractive();
-        toolImage.on("pointerdown", () => {
-            game.removeActiveTool(this.gardenGame, plant, getCategory(activeTool.tool));
-        });
     }
 
     createStatusBar(plant: Plant, backgroundY: number, iconTexture: string): StatusBar {
