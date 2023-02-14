@@ -142,6 +142,11 @@ export class MainScene extends Phaser.Scene {
         tweenConfig.targets = hazardImage;
         scene.tweens.add(tweenConfig);
         scene.hazardImages[hazardId] = hazardImage;
+        hazardImage.setInteractive();
+        hazardImage.on("pointerdown", () => {
+            console.log("clicked");
+            game.removeHazardIfRightToolSelected(scene.gardenGame, activeHazard);
+        });
     }
 
     handleHazardDestroy(scene: MainScene, hazardId: number) {

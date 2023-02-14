@@ -2,7 +2,7 @@ import { hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateE
 import { config } from "../model/Config";
 import { ActiveHazard, getNextHazardDurationMs, getRandomizedHazards, Hazard } from "./Hazard";
 import { getNewId } from "./Id";
-import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazard } from "./Plant";
+import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazardByType, removeHazardById } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
@@ -205,7 +205,7 @@ function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): number {
     return decayRate + hazardDecayRate;
 }
 
-/** Use the currently selected tool. */
+/** Use the currently selected tool on the given plant. */
 export function useSelectedTool(game: GardenGame, plant: Plant) {
     if (! game.selectedTool) {
         return;
@@ -219,7 +219,7 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
             }
             break;
         case tool.ToolCategory.HazardRemoval:
-            removeHazard(game, plant, config()["tools"][game.selectedTool]["target"]);
+            removeHazardByType(game, plant, config()["tools"][game.selectedTool]["target"]);
             break;
         // Otherwise, update the plant's status
         case tool.ToolCategory.Water:
@@ -228,6 +228,24 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
         case tool.ToolCategory.Light:
             updateStatusLevel(plant, Status.Light, tool.getDelta(game.selectedTool));
             break;
+    }
+}
+
+export function removeHazardIfRightToolSelected(game: GardenGame, hazard: ActiveHazard) {
+    if (! game.selectedTool || tool.getCategory(game.selectedTool) != tool.ToolCategory.HazardRemoval) {
+        return;
+    }
+
+    console.log("Let's see: " + config()["tools"][game.selectedTool]["target"]);
+    if (config()["tools"][game.selectedTool]["target"] == hazard.hazard) {
+        console.log("Removing");
+        let plantIds = Object.keys(game.plants);
+        for (let i = 0; i < plantIds.length; i++) {
+            if (removeHazardById(game, game.plants[plantIds[i]], hazard.id)) {
+                console.log("Removed");
+                break;
+            }
+        }
     }
 }
 

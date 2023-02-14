@@ -92,7 +92,7 @@ function hasActiveHazards(game: GardenGame, plant: Plant) {
     return false;
 }
 
-export function removeHazard(game: GardenGame, plant: Plant, type: Hazard) {
+export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard) {
     let toRemoveIndices = [];
     for (let i = 0; i < plant.activeHazardIds.length; i++) {
         let id = plant.activeHazardIds[i];
@@ -108,7 +108,26 @@ export function removeHazard(game: GardenGame, plant: Plant, type: Hazard) {
         delete game.activeHazards[id];
         hazardDestroyedEvent(id);
     }
-    return false;
+}
+
+/** Return true if a hazard was removed for this plant, false otherwise. */
+export function removeHazardById(game: GardenGame, plant: Plant, hazardId: number): boolean {
+    let idIndex = -1;
+    for (let i = 0; i < plant.activeHazardIds.length; i++) {
+        if (plant.activeHazardIds[i] == hazardId) {
+            idIndex = i;
+            break;
+        }
+    }
+
+    if (idIndex == -1) {
+        return false;
+    }
+    
+    plant.activeHazardIds.splice(idIndex, 1);
+    delete game.activeHazards[hazardId];
+    hazardDestroyedEvent(hazardId);
+    return true;
 }
 
 export function isInWarningZone(status: Status, level: number) {
