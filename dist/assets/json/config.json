@@ -7,7 +7,11 @@
     "warningLevelColor": "0xf0a49c",
     "highlightColor": "0x6ee7f5",
 
-    "disablePlantDeath": false,
+    "invinciblePlants": false,
+    "automaticRestart": {
+        "enabled": true,
+        "restartTime": 3000
+    },
 
     "toolbarWidth": 150,
 

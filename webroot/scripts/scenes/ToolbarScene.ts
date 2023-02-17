@@ -1,3 +1,4 @@
+import { addGameResetListener } from "../events/EventMessenger";
 import * as game from "../game/Game";
 import * as tool from "../game/Tool";
 import { config } from "../model/Config";
@@ -10,6 +11,8 @@ export class ToolbarScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     lastSelectedToolbox: Phaser.GameObjects.Image;
     currentToolText: Phaser.GameObjects.BitmapText;
+    toolIcons: Phaser.GameObjects.Image[];
+    toolBoxes: Phaser.GameObjects.Image[];
 
     constructor() {
         super({
@@ -29,6 +32,8 @@ export class ToolbarScene extends Phaser.Scene {
         //this.currentToolText = this.add.text(toolbarX, toolYAnchor - 50, "").setOrigin(0.5).setColor("black").setFontSize(24);
         this.currentToolText = this.add.bitmapText(toolbarX, toolYAnchor - 50, "uiFont", "", 48).setOrigin(0.5);
         
+        this.toolIcons = [];
+        this.toolBoxes = [];
         for (let i = 0; i < tool.startingTools.length; i++) {
             let x, y;
             if (i % 2 == 0) {
@@ -38,8 +43,10 @@ export class ToolbarScene extends Phaser.Scene {
             }
             y = toolYAnchor + (Math.floor(i / 2) * toolMargin);
             let toolIcon = this.add.image(x, y, tool.startingTools[i]);
+            this.toolIcons.push(toolIcon);
             // Add box background
             let toolbox = this.add.image(x, y, "toolbox");
+            this.toolBoxes.push(toolbox);
             toolIcon.setInteractive();
             toolIcon.on("pointerdown", () => {
                 let toolValue = toolIcon.texture.key as tool.Tool;
@@ -57,12 +64,24 @@ export class ToolbarScene extends Phaser.Scene {
                     this.currentToolText.setFontSize(Math.min(30 - toolName.length, 26));
                 } else {
                     this.gardenGame.selectedTool = tool.Tool.NoTool;
-                    this.input.setDefaultCursor("auto");
-                    toolbox.setTexture("toolbox");
-                    this.lastSelectedToolbox = null;
-                    this.currentToolText.setText("");
+                    this.deselectIcon(i);
                 }
             });
+        }
+
+        addGameResetListener(this.resetGame, this);
+    }
+
+    deselectIcon(iconIndex: number) {
+        this.input.setDefaultCursor("auto");
+        this.toolBoxes[iconIndex].setTexture("toolbox");
+        this.lastSelectedToolbox = null;
+        this.currentToolText.setText("");
+    }
+
+    resetGame(scene: ToolbarScene) {
+        for (let i = 0; i < scene.toolIcons.length; i++) {
+            scene.deselectIcon(i);
         }
     }
 }

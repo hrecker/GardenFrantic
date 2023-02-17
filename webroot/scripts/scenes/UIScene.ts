@@ -1,4 +1,4 @@
-import { addScoreUpdateListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { addGameResetListener, addScoreUpdateListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import * as game from "../game/Game";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
@@ -25,6 +25,7 @@ export class UIScene extends Phaser.Scene {
         // Event listeners
         addScoreUpdateListener(this.handleScoreUpdate, this);
         addWeatherUpdateListener(this.handleWeatherUpdate, this);
+        addGameResetListener(this.resetGameListener, this);
     }
 
     create() {
@@ -37,6 +38,13 @@ export class UIScene extends Phaser.Scene {
             let pos = this.gardenGame.weatherQueue.length - i - 1;
             this.weatherImages.push(this.add.image(rightX - (pos * weatherImageWidth), uiY, 
                 this.gardenGame.weatherQueue[i] + "Preview"));
+        }
+    }
+
+    resetGameListener(scene: UIScene) {
+        scene.scoreText.setText("0");
+        for (let i = 0; i < scene.gardenGame.weatherQueue.length; i++) {
+            scene.weatherImages[i].setTexture(scene.gardenGame.weatherQueue[i] + "Preview");
         }
     }
 

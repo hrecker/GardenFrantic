@@ -12,6 +12,8 @@ const statusBarYMargin = 27;
 const statusIconXMargin = 25;
 const hazardToolClickRadius = 100;
 
+let listenersInitialized = false;
+
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
@@ -29,12 +31,15 @@ export class MainScene extends Phaser.Scene {
     init(data) {
         this.gardenGame = data.gardenGame;
         // Event listeners
-        addPlantDestroyListener(this.handlePlantDestroy, this);
-        addWeatherUpdateListener(this.handleWeatherUpdate, this);
-        addFruitGrowthListener(this.handleFruitGrowth, this);
-        addFruitHarvestListener(this.handleFruitHarvest, this);
-        addHazardCreatedListener(this.handleHazardCreated, this);
-        addHazardDestroyedListener(this.handleHazardDestroy, this);
+        if (! listenersInitialized) {
+            addPlantDestroyListener(this.handlePlantDestroy, this);
+            addWeatherUpdateListener(this.handleWeatherUpdate, this);
+            addFruitGrowthListener(this.handleFruitGrowth, this);
+            addFruitHarvestListener(this.handleFruitHarvest, this);
+            addHazardCreatedListener(this.handleHazardCreated, this);
+            addHazardDestroyedListener(this.handleHazardDestroy, this);
+            listenersInitialized = true;
+        }
     }
 
     create() {
@@ -45,7 +50,6 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0);
 
-        //this.createPlant(200, 350);
         this.createPlant((this.game.renderer.width - config()["toolbarWidth"]) / 2, 260);
     }
 
@@ -175,10 +179,18 @@ export class MainScene extends Phaser.Scene {
     
     /** Main game update loop */
     update(time, delta) {
-        game.update(this.gardenGame, delta);
+        if (Object.keys(this.gardenGame.plants).length > 0) {
+            game.update(this.gardenGame, delta);
+            Object.keys(this.gardenGame.plants).forEach(id => {
+                updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id]);
+            });
 
-        Object.keys(this.gardenGame.plants).forEach(id => {
-            updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id]);
-        })
+        } else if (config()["automaticRestart"]["enabled"]) {
+            this.time.delayedCall(config()["automaticRestart"]["restartTime"],
+                () => {
+                    game.resetGame(this.gardenGame);
+                    this.scene.restart()
+                });
+        }
     }
 }

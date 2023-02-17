@@ -1,4 +1,4 @@
-import { hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
+import { gameResetEvent, hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { ActiveHazard, getNextHazardDurationMs, getRandomizedHazards, Hazard } from "./Hazard";
 import { getNewId } from "./Id";
@@ -30,8 +30,8 @@ export type GardenGame = {
     score: number;
 }
 
-export function newGame(): GardenGame {
-    let game: GardenGame = {
+function defaultGame(): GardenGame {
+    return {
         plants: {},
         selectedTool: tool.Tool.NoTool,
         weather: weather.getDefaultWeather(),
@@ -43,8 +43,28 @@ export function newGame(): GardenGame {
         score: 0,
         timeSinceLastScoreBump: 0
     };
+}
+
+export function newGame(): GardenGame {
+    let game = defaultGame();
     weatherUpdateEvent(game.weather, game.weatherQueue);
     return game;
+}
+
+export function resetGame(game: GardenGame) {
+    let base = defaultGame();
+    game.plants = base.plants;
+    game.selectedTool = base.selectedTool;
+    game.weather = base.weather;
+    game.weatherQueue = base.weatherQueue;
+    game.currentWeatherDurationMs = base.currentWeatherDurationMs;
+    game.activeHazards = base.activeHazards;
+    game.currentHazardDurationMs = base.currentHazardDurationMs;
+    game.nextHazardDuration = base.nextHazardDuration;
+    game.score = base.score;
+    game.timeSinceLastScoreBump = base.timeSinceLastScoreBump;
+    weatherUpdateEvent(game.weather, game.weatherQueue);
+    gameResetEvent();
 }
 
 function initialWeatherQueue(): weather.Weather[] {
@@ -75,7 +95,7 @@ export function update(game: GardenGame, delta: number) {
     
     Object.keys(game.plants).forEach(id => {
         let plant: Plant = game.plants[id];
-        if (plant.shouldDestroy && ! config()["disablePlantDeath"]) {
+        if (plant.shouldDestroy && ! config()["invinciblePlants"]) {
             plant.gameObject.destroy();
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));
