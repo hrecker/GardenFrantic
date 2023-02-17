@@ -21,6 +21,11 @@ export type ActiveHazard = {
     targetPlantId: number;
 }
 
+export type HazardPath = {
+    start: Phaser.Types.Math.Vector2Like;
+    end: Phaser.Types.Math.Vector2Like;
+}
+
 /** Get a duration before the next hazard appears, based on the range */
 export function getNextHazardDurationMs(): number {
     let low = config()["hazardGapDurationMs"]["low"];
@@ -43,4 +48,31 @@ export function getRandomizedHazards(): Hazard[] {
 
 export function getHazardMotion(hazard: Hazard): HazardMotion {
     return config()["hazards"][hazard.toString()]["motion"] as HazardMotion
+}
+
+export function getHazardPath(plant: Phaser.GameObjects.Image, motion: HazardMotion): HazardPath {
+    let path: HazardPath = {
+        start: {
+            x: 0,
+            y: 0
+        },
+        end: {
+            x: plant.x,
+            y: plant.y
+        }
+    }
+    switch(motion) {
+        case HazardMotion.Walk:
+            path.start.y = plant.y;
+            break;
+        case HazardMotion.Swoop:
+            path.end.y = plant.getTopCenter().y;
+            break;
+        case HazardMotion.Grow:
+            path.start.x = plant.x;
+            path.start.y = plant.getBottomCenter().y + 100;
+            path.end.y = plant.getBottomCenter().y;
+            break;
+    }
+    return path;
 }

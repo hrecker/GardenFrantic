@@ -4,7 +4,7 @@ import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
-import { ActiveHazard } from "../game/Hazard";
+import { ActiveHazard, getHazardMotion, getHazardPath } from "../game/Hazard";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -105,39 +105,20 @@ export class MainScene extends Phaser.Scene {
         let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
         let plant: Plant = scene.gardenGame.plants[activeHazard.targetPlantId];
         let plantImage: Phaser.GameObjects.Image = plant.gameObject;
-        let hazardImage: Phaser.GameObjects.Image;
-        let tweenConfig: any = {
-            duration: config()["hazardTimeToActiveMs"]
-        }
-        switch(config()["hazards"][activeHazard.hazard.toString()]["motion"]) {
-            case "walk":
-                hazardImage = scene.add.image(0, plantImage.y, activeHazard.hazard.toString());
-                tweenConfig.x = {
-                    from: hazardImage.x,
-                    to: plantImage.getCenter().x
-                }
-                break;
-            case "swoop":
-                hazardImage = scene.add.image(0, 0, activeHazard.hazard.toString());
-                tweenConfig.x = {
-                    from: hazardImage.x,
-                    to: plantImage.getTopCenter().x
-                }
-                tweenConfig.y = {
-                    from: hazardImage.y,
-                    to: plantImage.getTopCenter().y
-                }
-                break;
-            case "grow":
-                hazardImage = scene.add.image(plantImage.x, plantImage.getBottomCenter().y + 100, activeHazard.hazard.toString());
-                tweenConfig.y = {
-                    from: hazardImage.y,
-                    to: plantImage.getBottomCenter().y
-                }
-                break;
-        }
-        tweenConfig.targets = hazardImage;
-        scene.tweens.add(tweenConfig);
+        let path = getHazardPath(plantImage, getHazardMotion(activeHazard.hazard));
+        let hazardImage = scene.add.image(path.start.x, path.start.y, activeHazard.hazard.toString());
+        scene.tweens.add({
+            duration: config()["hazardTimeToActiveMs"],
+            x: {
+                from: path.start.x,
+                to: path.end.x
+            },
+            y: {
+                from: path.start.y,
+                to: path.end.y
+            },
+            targets: hazardImage,
+        });
         scene.hazardImages[hazardId] = hazardImage;
         hazardImage.setInteractive();
         hazardImage.on("pointerdown", () => {
