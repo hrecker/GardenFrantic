@@ -6,7 +6,6 @@ import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, S
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
-import { updateStatusBars } from "./PlantStatusBar";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -237,22 +236,20 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
     }
 }
 
-export function removeHazardIfRightToolSelected(game: GardenGame, hazard: ActiveHazard) {
+export function removeHazardIfRightToolSelected(game: GardenGame, hazard: ActiveHazard): boolean {
     if (! game.selectedTool || tool.getCategory(game.selectedTool) != tool.ToolCategory.HazardRemoval) {
         return;
     }
 
-    console.log("Let's see: " + config()["tools"][game.selectedTool]["target"]);
     if (config()["tools"][game.selectedTool]["target"] == hazard.hazard) {
-        console.log("Removing");
         let plantIds = Object.keys(game.plants);
         for (let i = 0; i < plantIds.length; i++) {
             if (removeHazardById(game, game.plants[plantIds[i]], hazard.id)) {
-                console.log("Removed");
-                break;
+                return true;
             }
         }
     }
+    return false;
 }
 
 function addScore(game: GardenGame, toAdd: number) {

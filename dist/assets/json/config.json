@@ -98,6 +98,10 @@
         "weedkiller": {
             "category": "hazardremoval",
             "target": "weeds"
+        },
+        "dog": {
+            "category": "hazardremoval",
+            "target": "bunny"
         }
     },
 
@@ -119,6 +123,10 @@
         },
         "weeds": {
             "motion": "grow",
+            "healthDamageRate": 4
+        },
+        "bunny": {
+            "motion": "walk",
             "healthDamageRate": 4
         }
     }

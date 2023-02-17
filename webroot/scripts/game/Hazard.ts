@@ -1,11 +1,11 @@
 import { config } from "../model/Config";
 import { shuffleArray } from "../util/Util";
-import { GardenGame } from "./Game";
 
 export enum Hazard {
     Bugs = "bugs",
     Birds = "birds",
-    Weeds = "weeds"
+    Weeds = "weeds",
+    Bunny = "bunny"
 }
 
 export enum HazardMotion {
@@ -34,7 +34,8 @@ export function getRandomizedHazards(): Hazard[] {
     let allHazards = [
         Hazard.Birds,
         Hazard.Bugs,
-        Hazard.Weeds
+        Hazard.Weeds,
+        Hazard.Bunny
     ];
     shuffleArray(allHazards);
     return allHazards;
