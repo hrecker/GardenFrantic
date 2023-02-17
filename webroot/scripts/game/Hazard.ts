@@ -1,5 +1,5 @@
 import { config } from "../model/Config";
-import { shuffleArray } from "../util/Util";
+import { randomInRange, shuffleArray } from "../util/Util";
 
 export enum Hazard {
     Bugs = "bugs",
@@ -28,10 +28,7 @@ export type HazardPath = {
 
 /** Get a duration before the next hazard appears, based on the range */
 export function getNextHazardDurationMs(): number {
-    let low = config()["hazardGapDurationMs"]["low"];
-    let high = config()["hazardGapDurationMs"]["high"];
-    let range = high - low;
-    return Math.floor(Math.random() * range) + low;
+    return randomInRange(config()["hazardGapDurationMs"]["low"], config()["hazardGapDurationMs"]["high"]);
 }
 
 /** Get a randomly ordered list of hazards */
@@ -61,15 +58,21 @@ export function getHazardPath(plant: Phaser.GameObjects.Image, motion: HazardMot
             y: plant.y
         }
     }
+    let randomHigh = config()["hazardPositionRange"] / 2;
+    let randomLow = -randomHigh;
     switch(motion) {
         case HazardMotion.Walk:
-            path.start.y = plant.y;
+            path.start.y = plant.y + randomInRange(randomLow, randomHigh);
+            path.end.y = path.start.y;
+            path.end.x = plant.x + randomInRange(randomLow, randomHigh);
             break;
         case HazardMotion.Swoop:
             path.end.y = plant.getTopCenter().y;
+            path.end.x = plant.x + randomInRange(randomLow, randomHigh);
             break;
         case HazardMotion.Grow:
-            path.start.x = plant.x;
+            path.start.x = plant.x + randomInRange(randomLow, randomHigh);
+            path.end.x = path.start.x;
             path.start.y = plant.getBottomCenter().y + 100;
             path.end.y = plant.getBottomCenter().y;
             break;

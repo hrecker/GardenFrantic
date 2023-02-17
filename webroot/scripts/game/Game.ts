@@ -75,7 +75,7 @@ export function update(game: GardenGame, delta: number) {
     
     Object.keys(game.plants).forEach(id => {
         let plant: Plant = game.plants[id];
-        if (plant.shouldDestroy) {
+        if (plant.shouldDestroy && ! config()["disablePlantDeath"]) {
             plant.gameObject.destroy();
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));

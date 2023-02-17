@@ -13,3 +13,8 @@ export function shuffleArray(array) {
         array[j] = temp;
     }
 }
+
+export function randomInRange(low: number, high: number): number {
+    let range = high - low;
+    return Math.random() * range + low;
+}

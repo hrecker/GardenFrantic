@@ -7,6 +7,8 @@
     "warningLevelColor": "0xf0a49c",
     "highlightColor": "0x6ee7f5",
 
+    "disablePlantDeath": false,
+
     "toolbarWidth": 150,
 
     "minLevel": 0,
@@ -111,6 +113,8 @@
     },
 
     "hazardTimeToActiveMs": 3000,
+
+    "hazardPositionRange": 75,
 
     "hazards": {
         "bugs": {
