@@ -10,11 +10,7 @@ const statusBarXPadding = 14;
 const statusBarYPadding = 2;
 const statusBarYMargin = 27;
 const statusIconXMargin = 25;
-
-const toolYByCategory = {
-    "water": 50,
-    "light": 100
-};
+const hazardToolClickRadius = 100;
 
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
@@ -107,7 +103,8 @@ export class MainScene extends Phaser.Scene {
     /** Handle hazard being created */
     handleHazardCreated(scene: MainScene, hazardId: number) {
         let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
-        let plantImage: Phaser.GameObjects.Image = scene.gardenGame.plants[activeHazard.targetPlantId].gameObject;
+        let plant: Plant = scene.gardenGame.plants[activeHazard.targetPlantId];
+        let plantImage: Phaser.GameObjects.Image = plant.gameObject;
         let hazardImage: Phaser.GameObjects.Image;
         let tweenConfig: any = {
             duration: config()["hazardTimeToActiveMs"]
@@ -144,8 +141,13 @@ export class MainScene extends Phaser.Scene {
         scene.hazardImages[hazardId] = hazardImage;
         hazardImage.setInteractive();
         hazardImage.on("pointerdown", () => {
-            console.log("clicked");
-            game.removeHazardIfRightToolSelected(scene.gardenGame, activeHazard);
+            // If this hazard is relatively close to the plant, just treat it like a click on the plant itself
+            // This allows using non-hazard related tools when clicking on a hazard
+            if (Phaser.Math.Distance.Between(plantImage.x, plantImage.y, hazardImage.x, hazardImage.y) < hazardToolClickRadius) {
+                game.useSelectedTool(scene.gardenGame, plant);
+            } else {
+                game.removeHazardIfRightToolSelected(scene.gardenGame, activeHazard);
+            }
         });
     }
 

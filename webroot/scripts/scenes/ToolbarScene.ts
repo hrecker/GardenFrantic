@@ -3,7 +3,7 @@ import * as tool from "../game/Tool";
 import { config } from "../model/Config";
 
 const toolYAnchor = 75;
-const toolMargin = 65;
+const toolMargin = 60;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -32,9 +32,9 @@ export class ToolbarScene extends Phaser.Scene {
         for (let i = 0; i < tool.startingTools.length; i++) {
             let x, y;
             if (i % 2 == 0) {
-                x = toolbarX - 30;
+                x = toolbarX - toolMargin / 2;
             } else {
-                x = toolbarX + 30;
+                x = toolbarX + toolMargin / 2;
             }
             y = toolYAnchor + (Math.floor(i / 2) * toolMargin);
             let toolIcon = this.add.image(x, y, tool.startingTools[i]);

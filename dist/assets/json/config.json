@@ -80,6 +80,10 @@
             "category": "water",
             "delta": 10
         },
+        "fertilizer": {
+            "category": "growth",
+            "delta": 5
+        },
         "basket": {
             "category": "harvest"
         },
@@ -98,8 +102,8 @@
     },
 
     "hazardGapDurationMs": {
-        "low": 3000,
-        "high": 5000
+        "low": 4000,
+        "high": 6000
     },
 
     "hazardTimeToActiveMs": 3000,

@@ -6,6 +6,7 @@ import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, S
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
+import { updateStatusBars } from "./PlantStatusBar";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -227,6 +228,11 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
             break;
         case tool.ToolCategory.Light:
             updateStatusLevel(plant, Status.Light, tool.getDelta(game.selectedTool));
+            break;
+        case tool.ToolCategory.Growth:
+            if (! isFruitGrowthPaused(game, plant)) {
+                setFruitProgress(plant, plant.fruitProgress + tool.getDelta(game.selectedTool));
+            }
             break;
     }
 }

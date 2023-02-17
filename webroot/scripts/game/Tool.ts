@@ -9,17 +9,19 @@ export enum Tool {
     Basket = "basket",
     Scarecrow = "scarecrow",
     Weedkiller = "weedkiller",
-    Pesticide = "pesticide"
+    Pesticide = "pesticide",
+    Fertilizer = "fertilizer"
 }
 
 export enum ToolCategory {
     Water = "water",
     Light = "light",
+    Growth = "growth",
     Harvest = "harvest",
     HazardRemoval = "hazardremoval"
 }
 
-export let startingTools = [Tool.Basket, Tool.Lamp, Tool.Shade, Tool.Umbrella, Tool.WateringCan, Tool.Scarecrow, Tool.Weedkiller, Tool.Pesticide];
+export let startingTools = [Tool.Basket, Tool.Fertilizer, Tool.Lamp, Tool.Shade, Tool.WateringCan, Tool.Umbrella, Tool.Scarecrow, Tool.Weedkiller, Tool.Pesticide];
 
 export function getCategory(tool: Tool): ToolCategory {
     return config()["tools"][tool]["category"];
