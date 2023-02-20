@@ -20,6 +20,21 @@ export class UIScene extends Phaser.Scene {
         });
     }
 
+    /** Adjust any UI elements that need to change position based on the canvas size */
+    resize(force?: boolean) {
+        if (! this.scene.isActive() && ! force) {
+            return;
+        }
+        this.scoreText.setPosition(uiXMargin, uiY - 8);
+        
+        let rightX = this.game.renderer.width - config()["toolbarWidth"] - uiXMargin - (weatherImageWidth / 2);
+        console.log(rightX);
+        for (let i = 0; i < this.weatherImages.length; i++) {
+            let pos = this.weatherImages.length - i - 1;
+            this.weatherImages[i].setPosition(rightX - (pos * weatherImageWidth), uiY);
+        }
+    }
+
     init(data) {
         this.gardenGame = data.gardenGame;
         // Event listeners
@@ -29,16 +44,14 @@ export class UIScene extends Phaser.Scene {
     }
 
     create() {
-        this.scoreText = this.add.bitmapText(uiXMargin, uiY - 8,
-            "uiFont", "0", 48).setOrigin(0, 0.5);//.setTintFill(parseInt(config()["uiFontColor"], 16));
+        this.scoreText = this.add.bitmapText(0, 0, "uiFont", "0", 48).setOrigin(0, 0.5);
         // Weather queue images
         this.weatherImages = [];
-        let rightX = this.game.renderer.width - config()["toolbarWidth"] - uiXMargin - (weatherImageWidth / 2);
         for (let i = 0; i < this.gardenGame.weatherQueue.length; i++) {
-            let pos = this.gardenGame.weatherQueue.length - i - 1;
-            this.weatherImages.push(this.add.image(rightX - (pos * weatherImageWidth), uiY, 
-                this.gardenGame.weatherQueue[i] + "Preview"));
+            this.weatherImages.push(this.add.image(0, 0, this.gardenGame.weatherQueue[i] + "Preview"));
         }
+        this.resize(true);
+        this.scale.on("resize", this.resize, this);
     }
 
     resetGameListener(scene: UIScene) {

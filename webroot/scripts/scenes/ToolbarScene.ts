@@ -5,6 +5,7 @@ import { config } from "../model/Config";
 
 const toolYAnchor = 75;
 const toolMargin = 60;
+const toolTextY = toolYAnchor - 50;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -13,6 +14,7 @@ export class ToolbarScene extends Phaser.Scene {
     currentToolText: Phaser.GameObjects.BitmapText;
     toolIcons: Phaser.GameObjects.Image[];
     toolBoxes: Phaser.GameObjects.Image[];
+    toolbar: Phaser.GameObjects.Rectangle;
 
     constructor() {
         super({
@@ -20,20 +22,17 @@ export class ToolbarScene extends Phaser.Scene {
         });
     }
 
-    init(data) {
-        this.gardenGame = data.gardenGame;
-    }
-
-    create() {
-        let toolbarX = this.game.renderer.width - (config()["toolbarWidth"] / 2);
-        this.add.rectangle(toolbarX, this.game.renderer.height / 2,
-            config()["toolbarWidth"], this.game.renderer.height, parseInt(config()["toolbarColor"], 16));
-
-        //this.currentToolText = this.add.text(toolbarX, toolYAnchor - 50, "").setOrigin(0.5).setColor("black").setFontSize(24);
-        this.currentToolText = this.add.bitmapText(toolbarX, toolYAnchor - 50, "uiFont", "", 48).setOrigin(0.5);
+    /** Adjust any UI elements that need to change position based on the canvas size */
+    resize(force?: boolean) {
+        if (! this.scene.isActive() && ! force) {
+            return;
+        }
         
-        this.toolIcons = [];
-        this.toolBoxes = [];
+        let toolbarX = this.game.renderer.width - (config()["toolbarWidth"] / 2);
+        this.toolbar.setPosition(toolbarX, this.game.renderer.height / 2);
+        this.toolbar.setSize(config()["toolbarWidth"], this.game.renderer.height);
+        this.currentToolText.setPosition(toolbarX, toolTextY);
+
         for (let i = 0; i < tool.startingTools.length; i++) {
             let x, y;
             if (i % 2 == 0) {
@@ -42,10 +41,27 @@ export class ToolbarScene extends Phaser.Scene {
                 x = toolbarX + toolMargin / 2;
             }
             y = toolYAnchor + (Math.floor(i / 2) * toolMargin);
-            let toolIcon = this.add.image(x, y, tool.startingTools[i]);
+            this.toolIcons[i].setPosition(x, y);
+            this.toolBoxes[i].setPosition(x, y);
+        }
+    }
+
+    init(data) {
+        this.gardenGame = data.gardenGame;
+    }
+
+    create() {
+        this.toolbar = this.add.rectangle(0, 0,
+            config()["toolbarWidth"], 0, parseInt(config()["toolbarColor"], 16));
+        this.currentToolText = this.add.bitmapText(0, 0, "uiFont", "", 48).setOrigin(0.5);
+        
+        this.toolIcons = [];
+        this.toolBoxes = [];
+        for (let i = 0; i < tool.startingTools.length; i++) {
+            let toolIcon = this.add.image(0, 0, tool.startingTools[i]);
             this.toolIcons.push(toolIcon);
             // Add box background
-            let toolbox = this.add.image(x, y, "toolbox");
+            let toolbox = this.add.image(0, 0, "toolbox");
             this.toolBoxes.push(toolbox);
             toolIcon.setInteractive();
             toolIcon.on("pointerdown", () => {
@@ -70,6 +86,8 @@ export class ToolbarScene extends Phaser.Scene {
         }
 
         addGameResetListener(this.resetGame, this);
+        this.resize(true);
+        this.scale.on("resize", this.resize, this);
     }
 
     deselectIcon(iconIndex: number) {

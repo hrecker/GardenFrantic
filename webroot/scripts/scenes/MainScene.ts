@@ -11,6 +11,7 @@ const statusBarYPadding = 2;
 const statusBarYMargin = 27;
 const statusIconXMargin = 25;
 const hazardToolClickRadius = 100;
+const plantYMargin = 100;
 
 let listenersInitialized = false;
 
@@ -42,6 +43,38 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    /** Adjust any UI elements that need to change position based on the canvas size */
+    resize(force?: boolean) {
+        if (! this.scene.isActive() && ! force) {
+            return;
+        }
+        
+        let width = this.background.width;
+        let height = this.background.height;
+        let gameWidth = this.game.renderer.width - config()["toolbarWidth"];
+        let xScale, yScale = 1;
+        if (width < gameWidth) {
+            xScale = gameWidth / width;
+        }
+        if (height < this.game.renderer.height) {
+            yScale = this.game.renderer.height / height;
+        }
+        this.background.setScale(xScale, yScale);
+
+        let plantXAnchor = (this.game.renderer.width - config()["toolbarWidth"]) / 2;
+        let plantY = this.game.renderer.height - plantYMargin;
+
+        let ids = Object.keys(this.gardenGame.plants).map(Number);
+        for (let i = 0; i < ids.length; i++) {
+            let id: number = ids[i];
+            //TODO positioning the plants after the first one based on i value
+            let plantX = plantXAnchor;
+            this.gardenGame.plants[id].gameObject.setPosition(plantX, plantY);
+            this.setStatusBarsPosition(this.plantStatusBars[id], this.gardenGame.plants[id]);
+            //TODO resizing hazards?
+        }
+    }
+
     create() {
         this.plantStatusBars = {};
         this.plantFruitImages = {};
@@ -50,7 +83,10 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0);
 
-        this.createPlant((this.game.renderer.width - config()["toolbarWidth"]) / 2, 260);
+        this.createPlant(0, 0);
+
+        this.resize(true);
+        this.scale.on("resize", this.resize, this);
     }
 
     createPlant(x: number, y: number): Plant {
@@ -64,15 +100,11 @@ export class MainScene extends Phaser.Scene {
         return plant;
     }
 
-    createStatusBar(plant: Plant, backgroundY: number, iconTexture: string): StatusBar {
-        let barBackground = this.add.image(plant.gameObject.x,
-            backgroundY, "statusBarBackground").setOrigin(0.5);
-        let bar = this.add.rectangle(barBackground.getTopLeft().x + statusBarXPadding,
-            barBackground.y,
-            barBackground.width / 2 - statusBarXPadding,
-            barBackground.height - (statusBarYPadding * 2),
+    createStatusBar(iconTexture: string): StatusBar {
+        let barBackground = this.add.image(0, 0, "statusBarBackground").setOrigin(0.5);
+        let bar = this.add.rectangle(0, 0, 0, 0,
             parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
-        let icon = this.add.image(barBackground.getTopLeft().x - statusIconXMargin, barBackground.y, iconTexture);
+        let icon = this.add.image(0, 0, iconTexture);
         return {
             statusBarBackground: barBackground,
             statusBar: bar,
@@ -80,15 +112,32 @@ export class MainScene extends Phaser.Scene {
         };
     }
 
+    setStatusBarsPosition(statusBar: PlantStatusBar, plant: Plant) {
+        this.setStatusBarPosition(statusBar.waterStatusBar,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 4), plant);
+        this.setStatusBarPosition(statusBar.lightStatusBar,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 3), plant);
+        this.setStatusBarPosition(statusBar.fruitStatusBar,
+            plant.gameObject.getTopCenter().y - (statusBarYMargin * 2), plant);
+        this.setStatusBarPosition(statusBar.healthStatusBar,
+            plant.gameObject.getTopCenter().y - statusBarYMargin, plant);
+    }
+
+    setStatusBarPosition(statusBar: StatusBar, backgroundY: number, plant: Plant) {
+        statusBar.statusBarBackground.setPosition(plant.gameObject.x, backgroundY);
+        statusBar.statusBar.setPosition(statusBar.statusBarBackground.getTopLeft().x + statusBarXPadding,
+            statusBar.statusBarBackground.y);
+        statusBar.statusBar.setSize(statusBar.statusBarBackground.width / 2 - statusBarXPadding,
+            statusBar.statusBarBackground.height - (statusBarYPadding * 2));
+        statusBar.icon.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusIconXMargin,
+            statusBar.statusBarBackground.y);
+    }
+
     createStatusBars(plant: Plant) {
-        let waterBar = this.createStatusBar(plant,
-            plant.gameObject.getTopCenter().y - (statusBarYMargin * 4), "waterIcon");
-        let lightBar = this.createStatusBar(plant,
-            plant.gameObject.getTopCenter().y - (statusBarYMargin * 3), "lightIcon");
-        let fruitBar = this.createStatusBar(plant,
-            plant.gameObject.getTopCenter().y - (statusBarYMargin * 2), "fruitIcon");
-        let healthBar = this.createStatusBar(plant,
-            plant.gameObject.getTopCenter().y - statusBarYMargin, "healthIcon");
+        let waterBar = this.createStatusBar("waterIcon");
+        let lightBar = this.createStatusBar("lightIcon");
+        let fruitBar = this.createStatusBar("fruitIcon");
+        let healthBar = this.createStatusBar("healthIcon");
         this.plantStatusBars[plant.id] = {
             waterStatusBar: waterBar,
             lightStatusBar: lightBar,
@@ -96,6 +145,7 @@ export class MainScene extends Phaser.Scene {
             healthStatusBar: healthBar,
             maxStatusBarWidth: waterBar.statusBarBackground.width - (statusBarXPadding * 2)
         }
+        this.setStatusBarsPosition(this.plantStatusBars[plant.id], plant);
     }
 
     destroyStatusBar(statusBar: StatusBar) {
