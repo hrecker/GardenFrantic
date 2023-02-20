@@ -69,13 +69,7 @@
 
     "weatherQueueLength": 5,
 
-    "weatherPreviewTints": [
-        "0xffffff",
-        "0xdddddd",
-        "0xbbbbbb",
-        "0x999999",
-        "0x777777"
-    ],
+    "weatherPreviewTint": "0xb0b0b0",
     
     "tools": {
         "lamp": {

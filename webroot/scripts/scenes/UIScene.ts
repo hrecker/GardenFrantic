@@ -14,7 +14,7 @@ export class UIScene extends Phaser.Scene {
 
     weatherImages: Phaser.GameObjects.Image[];
     weatherImageBorders: Phaser.GameObjects.Image[];
-    weatherCountdownText: Phaser.GameObjects.BitmapText;
+    countdownGraphics: Phaser.GameObjects.Graphics;
 
     constructor() {
         super({
@@ -30,13 +30,12 @@ export class UIScene extends Phaser.Scene {
         this.scoreText.setPosition(uiXMargin, uiY - 8);
         
         let rightX = this.game.renderer.width - config()["toolbarWidth"] - uiXMargin - (weatherImageWidth / 2);
-        console.log(rightX);
         for (let i = 0; i < this.weatherImages.length; i++) {
             let pos = this.weatherImages.length - i - 1;
             this.weatherImages[i].setPosition(rightX - (pos * weatherImageWidth), uiY);
             this.weatherImageBorders[i].setPosition(this.weatherImages[i].x, this.weatherImages[i].y);
         }
-        this.weatherCountdownText.setPosition(this.weatherImages[0].x, this.weatherImages[0].y - 5);
+
     }
 
     init(data) {
@@ -54,12 +53,70 @@ export class UIScene extends Phaser.Scene {
         this.weatherImageBorders = [];
         let tints = config()["weatherPreviewTints"];
         for (let i = 0; i < this.gardenGame.weatherQueue.length; i++) {
-            this.weatherImages.push(this.add.image(0, 0, this.gardenGame.weatherQueue[i] + "Preview").setTint(parseInt(tints[i], 16)));
+            let tint = parseInt(config()["weatherPreviewTint"], 16);
+            this.weatherImages.push(this.add.image(0, 0, this.gardenGame.weatherQueue[i] + "Preview").
+                setTint(i == 0 ? 0xffffff : tint));
             this.weatherImageBorders.push(this.add.image(0, 0, "toolbox"));
         }
-        this.weatherCountdownText = this.add.bitmapText(0, 0, "uiFont", "", 36).setOrigin(0.5);
+        this.countdownGraphics = this.add.graphics();
+
         this.resize(true);
         this.scale.on("resize", this.resize, this);
+    }
+
+    updateCooldownGraphics() {
+        let angle = this.gardenGame.currentWeatherDurationMs * 2 * Math.PI / config()["weatherDurationMs"];
+
+        this.countdownGraphics.clear();
+        this.countdownGraphics.fillStyle(0x000000, 0.4);
+        this.countdownGraphics.beginPath();
+        this.countdownGraphics.moveTo(this.weatherImages[0].x, this.weatherImages[0].y);
+
+        if (angle <= Math.PI / 4) {
+            let y = this.weatherImages[0].getTopCenter().y;
+            let yDiff = this.weatherImages[0].y - y;
+            this.countdownGraphics.lineTo(this.weatherImages[0].x + (yDiff * Math.tan(angle)), y);
+            this.lineToWeatherImageTop(4);
+        } else if (angle <= 3 * Math.PI / 4) {
+            let x = this.weatherImages[0].getRightCenter().x;
+            let xDiff = x - this.weatherImages[0].x;
+            this.countdownGraphics.lineTo(x, this.weatherImages[0].y - (xDiff / Math.tan(angle)));
+            this.lineToWeatherImageTop(3);
+        } else if (angle <= 5 * Math.PI / 4) {
+            let y = this.weatherImages[0].getBottomCenter().y;
+            let yDiff = this.weatherImages[0].y - y;
+            this.countdownGraphics.lineTo(this.weatherImages[0].x + (yDiff * Math.tan(angle)), y);
+            this.lineToWeatherImageTop(2);
+        } else if (angle <= 7 * Math.PI / 4) {
+            let x = this.weatherImages[0].getLeftCenter().x;
+            let xDiff = x - this.weatherImages[0].x;
+            this.countdownGraphics.lineTo(x, this.weatherImages[0].y - (xDiff / Math.tan(angle)));
+            this.lineToWeatherImageTop(1);
+        } else {
+            let y = this.weatherImages[0].getTopCenter().y;
+            let yDiff = this.weatherImages[0].y - y;
+            this.countdownGraphics.lineTo(this.weatherImages[0].x + (yDiff * Math.tan(angle)), y);
+            this.lineToWeatherImageTop(0);
+        }
+
+        this.countdownGraphics.closePath();
+        this.countdownGraphics.fillPath();
+    }
+
+    lineToWeatherImageTop(numCornersToAdd: number) {
+        if (numCornersToAdd >= 4) {
+            this.countdownGraphics.lineTo(this.weatherImages[0].getTopRight().x, this.weatherImages[0].getTopRight().y);
+        }
+        if (numCornersToAdd >= 3) {
+            this.countdownGraphics.lineTo(this.weatherImages[0].getBottomRight().x, this.weatherImages[0].getBottomRight().y);
+        }
+        if (numCornersToAdd >= 2) {
+            this.countdownGraphics.lineTo(this.weatherImages[0].getBottomLeft().x, this.weatherImages[0].getBottomLeft().y);
+        }
+        if (numCornersToAdd >= 1) {
+            this.countdownGraphics.lineTo(this.weatherImages[0].getTopLeft().x, this.weatherImages[0].getTopLeft().y);
+        }
+        this.countdownGraphics.lineTo(this.weatherImages[0].getTopCenter().x, this.weatherImages[0].getTopCenter().y);
     }
 
     resetGameListener(scene: UIScene) {
@@ -78,11 +135,10 @@ export class UIScene extends Phaser.Scene {
         for (let i = 0; i < weatherQueue.length; i++) {
             scene.weatherImages[i].setTexture(weatherQueue[i] + "Preview");
         }
-        scene.weatherCountdownText.setText(Math.ceil(config()["weatherDurationMs"] / 1000).toString());
+        scene.updateCooldownGraphics();
     }
 
     update() {
-        let weatherTimeRemaining = config()["weatherDurationMs"] - this.gardenGame.currentWeatherDurationMs;
-        this.weatherCountdownText.setText(Math.ceil(weatherTimeRemaining / 1000).toString());
+        this.updateCooldownGraphics();
     }
 }
