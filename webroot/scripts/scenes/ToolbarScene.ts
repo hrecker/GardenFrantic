@@ -99,7 +99,7 @@ export class ToolbarScene extends Phaser.Scene {
         this.scrollZone.on('pointermove', pointer => {
             if (pointer.isDown) {
                 // Scroll
-                this.scrollTools(pointer.velocity.y / 10);
+                this.scrollTools(pointer.position.y - pointer.prevPosition.y);
             }
         });
 
