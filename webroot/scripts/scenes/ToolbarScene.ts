@@ -6,6 +6,8 @@ import { config } from "../model/Config";
 const toolYAnchor = 75;
 const toolMargin = 60;
 const toolTextY = toolYAnchor - 50;
+const scrollMaskY = toolTextY + 25;
+const toolYScrollMargin = 45;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -15,6 +17,11 @@ export class ToolbarScene extends Phaser.Scene {
     toolIcons: Phaser.GameObjects.Image[];
     toolBoxes: Phaser.GameObjects.Image[];
     toolbar: Phaser.GameObjects.Rectangle;
+    toolbarMask: Phaser.GameObjects.Graphics;
+    scrollZone: Phaser.GameObjects.Zone;
+
+    maxTopY: number;
+    minBottomY: number;
 
     constructor() {
         super({
@@ -35,15 +42,45 @@ export class ToolbarScene extends Phaser.Scene {
 
         for (let i = 0; i < tool.startingTools.length; i++) {
             let x, y;
-            if (i % 2 == 0) {
+            //TODO add this back later when not testing scrollbar
+            /*if (i % 2 == 0) {
                 x = toolbarX - toolMargin / 2;
             } else {
                 x = toolbarX + toolMargin / 2;
             }
-            y = toolYAnchor + (Math.floor(i / 2) * toolMargin);
+            y = toolYAnchor + (Math.floor(i / 2) * toolMargin);*/
+            x = toolbarX;
+            y = toolYAnchor + (i * toolMargin)
             this.toolIcons[i].setPosition(x, y);
             this.toolBoxes[i].setPosition(x, y);
         }
+        this.toolbarMask.fillRect(this.game.renderer.width - config()["toolbarWidth"], scrollMaskY,
+            config()["toolbarWidth"], this.game.renderer.height);
+
+        this.maxTopY = this.toolIcons[0].y;
+        this.minBottomY = this.game.renderer.height - toolYScrollMargin;
+    }
+
+    scrollTools(yDiff: number) {
+        if (yDiff == 0) {
+            return;
+        }
+
+        let finalTopY = this.toolIcons[0].y + yDiff;
+        let finalBottomY = this.toolIcons[this.toolIcons.length - 1].y + yDiff;
+        if (yDiff < 0 && finalBottomY < this.minBottomY) {
+            yDiff = this.minBottomY - this.toolIcons[this.toolIcons.length - 1].y;
+        } else if (yDiff > 0 && finalTopY > this.maxTopY) {
+            yDiff = this.maxTopY - this.toolIcons[0].y;
+        }
+
+        // Move the icons and boxes
+        this.toolIcons.forEach(icon => {
+            icon.y += yDiff;
+        });
+        this.toolBoxes.forEach(box => {
+            box.y += yDiff;
+        });
     }
 
     init(data) {
@@ -51,10 +88,21 @@ export class ToolbarScene extends Phaser.Scene {
     }
 
     create() {
+        // Allow events to pass through to make scrolling work
+        this.input.setTopOnly(false);
         this.toolbar = this.add.rectangle(0, 0,
             config()["toolbarWidth"], 0, parseInt(config()["toolbarColor"], 16));
         this.currentToolText = this.add.bitmapText(0, 0, "uiFont", "", 48).setOrigin(0.5);
-        
+
+        this.scrollZone = this.add.zone(this.game.renderer.width - config()["toolbarWidth"], toolYAnchor - toolMargin,
+        config()["toolbarWidth"], this.game.renderer.height).setOrigin(0).setInteractive();
+        this.scrollZone.on('pointermove', pointer => {
+            if (pointer.isDown) {
+                // Scroll
+                this.scrollTools(pointer.velocity.y / 10);
+            }
+        });
+
         this.toolIcons = [];
         this.toolBoxes = [];
         for (let i = 0; i < tool.startingTools.length; i++) {
@@ -84,6 +132,15 @@ export class ToolbarScene extends Phaser.Scene {
                 }
             });
         }
+
+        this.toolbarMask = this.add.graphics().setAlpha(0);
+        let mask = new Phaser.Display.Masks.GeometryMask(this, this.toolbarMask);
+        this.toolIcons.forEach(icon => {
+            icon.setMask(mask);
+        });
+        this.toolBoxes.forEach(box => {
+            box.setMask(mask);
+        });
 
         addGameResetListener(this.resetGame, this);
         this.resize(true);
