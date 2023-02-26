@@ -216,16 +216,18 @@ export class ToolbarScene extends Phaser.Scene {
     }
 
     update() {
-        if (this.isScrolling) {
-            this.scrollSpeed = this.toolIcons[0].y - this.lastTopIconY;
-        } else if (this.scrollSpeed != 0) {
-            this.scrollTools(this.scrollSpeed);
-            if (this.scrollSpeed > 0) {
-                this.scrollSpeed = Math.max(this.scrollSpeed - scrollSpeedDecay, 0);
-            } else if (this.scrollSpeed < 0) {
-                this.scrollSpeed = Math.min(this.scrollSpeed + scrollSpeedDecay, 0);
+        if (this.canScroll) {
+            if (this.isScrolling) {
+                this.scrollSpeed = this.toolIcons[0].y - this.lastTopIconY;
+            } else if (this.scrollSpeed != 0) {
+                this.scrollTools(this.scrollSpeed);
+                if (this.scrollSpeed > 0) {
+                    this.scrollSpeed = Math.max(this.scrollSpeed - scrollSpeedDecay, 0);
+                } else if (this.scrollSpeed < 0) {
+                    this.scrollSpeed = Math.min(this.scrollSpeed + scrollSpeedDecay, 0);
+                }
             }
+            this.lastTopIconY = this.toolIcons[0].y;
         }
-        this.lastTopIconY = this.toolIcons[0].y;
     }
 }
