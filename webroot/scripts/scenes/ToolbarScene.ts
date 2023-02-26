@@ -11,6 +11,7 @@ const toolYScrollMargin = 29;
 const scrollIndicatorWidth = 5;
 const scrollIndicatorMargin = 3;
 const scrollSpeedDecay = 1;
+const scrollWheelSpeed = 0.4;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -151,6 +152,10 @@ export class ToolbarScene extends Phaser.Scene {
         });
         this.scrollZone.on('pointerout', () => {
             this.isScrolling = false;
+        });
+
+        this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+            this.scrollTools(-deltaY * scrollWheelSpeed);
         });
 
         this.toolIcons = [];
