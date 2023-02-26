@@ -2,6 +2,7 @@
     "backgroundColor": "#f5f1d0",
     "toolbarColor": "0xFFB27F",
     "uiFontColor": "0xFFF7E4",
+    "toolbarScrollIndicatorColor": "0xFFFFFF",
 
     "healthyLevelColor": "0x9cf0aa",
     "warningLevelColor": "0xf0a49c",

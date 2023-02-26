@@ -7,7 +7,9 @@ const toolYAnchor = 75;
 const toolMargin = 60;
 const toolTextY = toolYAnchor - 50;
 const scrollMaskY = toolTextY + 25;
-const toolYScrollMargin = 45;
+const toolYScrollMargin = 29;
+const scrollIndicatorWidth = 5;
+const scrollIndicatorMargin = 3;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -19,9 +21,13 @@ export class ToolbarScene extends Phaser.Scene {
     toolbar: Phaser.GameObjects.Rectangle;
     toolbarMask: Phaser.GameObjects.Graphics;
     scrollZone: Phaser.GameObjects.Zone;
+    scrollIndicator: Phaser.GameObjects.Rectangle;
 
+    canScroll: boolean;
     maxTopY: number;
     minBottomY: number;
+    scrollIndicatorYRange: number;
+    iconMoveRange: number;
 
     constructor() {
         super({
@@ -59,10 +65,39 @@ export class ToolbarScene extends Phaser.Scene {
 
         this.maxTopY = this.toolIcons[0].y;
         this.minBottomY = this.game.renderer.height - toolYScrollMargin;
+
+        let viewableRange = this.minBottomY - this.maxTopY;
+        this.iconMoveRange = this.toolIcons[this.toolIcons.length - 1].y - this.minBottomY;
+        let percentage = viewableRange / (this.toolIcons[this.toolIcons.length - 1].y - this.maxTopY);
+        if (percentage >= 1) {
+            this.scrollIndicator.setVisible(false);
+            this.canScroll = false;
+        } else {
+            this.scrollIndicator.setVisible(true);
+            this.canScroll = true;
+            let scrollIndicatorMaxHeight = this.game.renderer.height - scrollMaskY;
+            let indicatorHeight = percentage * scrollIndicatorMaxHeight;
+            this.scrollIndicatorYRange = scrollIndicatorMaxHeight - indicatorHeight - scrollIndicatorMargin;
+
+            this.scrollIndicator.setPosition(this.game.renderer.width - scrollIndicatorWidth, scrollMaskY);
+            this.scrollIndicator.setSize(scrollIndicatorWidth, indicatorHeight);
+            this.updateScrollIndicatorPosition();
+        }
+    }
+
+    updateScrollIndicatorPosition() {
+        if (! this.canScroll) {
+            return;
+        }
+
+        let totalYDiff = this.maxTopY - this.toolIcons[0].y;
+        let percentage = totalYDiff / this.iconMoveRange;
+        this.scrollIndicator.setPosition(this.game.renderer.width - scrollIndicatorWidth,
+            scrollMaskY + (this.scrollIndicatorYRange * percentage));
     }
 
     scrollTools(yDiff: number) {
-        if (yDiff == 0) {
+        if (yDiff == 0 || ! this.canScroll) {
             return;
         }
 
@@ -81,6 +116,9 @@ export class ToolbarScene extends Phaser.Scene {
         this.toolBoxes.forEach(box => {
             box.y += yDiff;
         });
+
+        // Move the indicator
+        this.updateScrollIndicatorPosition();
     }
 
     init(data) {
@@ -141,6 +179,9 @@ export class ToolbarScene extends Phaser.Scene {
         this.toolBoxes.forEach(box => {
             box.setMask(mask);
         });
+
+        this.scrollIndicator = this.add.rectangle(0, 0, 0, 0,
+            parseInt(config()["toolbarScrollIndicatorColor"], 16)).setOrigin(0.5, 0);
 
         addGameResetListener(this.resetGame, this);
         this.resize(true);
