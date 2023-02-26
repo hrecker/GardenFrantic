@@ -10,6 +10,7 @@ const scrollMaskY = toolTextY + 25;
 const toolYScrollMargin = 29;
 const scrollIndicatorWidth = 5;
 const scrollIndicatorMargin = 3;
+const scrollSpeedDecay = 1;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -28,6 +29,9 @@ export class ToolbarScene extends Phaser.Scene {
     minBottomY: number;
     scrollIndicatorYRange: number;
     iconMoveRange: number;
+    isScrolling: boolean;
+    lastTopIconY: number;
+    scrollSpeed: number;
 
     constructor() {
         super({
@@ -64,6 +68,7 @@ export class ToolbarScene extends Phaser.Scene {
             config()["toolbarWidth"], this.game.renderer.height);
 
         this.maxTopY = this.toolIcons[0].y;
+        this.lastTopIconY = this.toolIcons[0].y;
         this.minBottomY = this.game.renderer.height - toolYScrollMargin;
 
         let viewableRange = this.minBottomY - this.maxTopY;
@@ -138,7 +143,14 @@ export class ToolbarScene extends Phaser.Scene {
             if (pointer.isDown) {
                 // Scroll
                 this.scrollTools(pointer.position.y - pointer.prevPosition.y);
+                this.isScrolling = true;
             }
+        });
+        this.scrollZone.on('pointerup', () => {
+            this.isScrolling = false;
+        });
+        this.scrollZone.on('pointerout', () => {
+            this.isScrolling = false;
         });
 
         this.toolIcons = [];
@@ -183,6 +195,8 @@ export class ToolbarScene extends Phaser.Scene {
         this.scrollIndicator = this.add.rectangle(0, 0, 0, 0,
             parseInt(config()["toolbarScrollIndicatorColor"], 16)).setOrigin(0.5, 0);
 
+        this.scrollSpeed = 0;
+
         addGameResetListener(this.resetGame, this);
         this.resize(true);
         this.scale.on("resize", this.resize, this);
@@ -199,5 +213,19 @@ export class ToolbarScene extends Phaser.Scene {
         for (let i = 0; i < scene.toolIcons.length; i++) {
             scene.deselectIcon(i);
         }
+    }
+
+    update() {
+        if (this.isScrolling) {
+            this.scrollSpeed = this.toolIcons[0].y - this.lastTopIconY;
+        } else if (this.scrollSpeed != 0) {
+            this.scrollTools(this.scrollSpeed);
+            if (this.scrollSpeed > 0) {
+                this.scrollSpeed = Math.max(this.scrollSpeed - scrollSpeedDecay, 0);
+            } else if (this.scrollSpeed < 0) {
+                this.scrollSpeed = Math.min(this.scrollSpeed + scrollSpeedDecay, 0);
+            }
+        }
+        this.lastTopIconY = this.toolIcons[0].y;
     }
 }
