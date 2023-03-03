@@ -12,7 +12,8 @@ export enum Tool {
     Pesticide = "pesticide",
     Fertilizer = "fertilizer",
     Dog = "dog",
-    Missile = "missile"
+    Missile = "missile",
+    Hammer = "hammer",
 }
 
 export enum ToolCategory {
@@ -34,7 +35,9 @@ export let startingTools = [
     Tool.Weedkiller,
     Tool.Pesticide,
     Tool.Dog,
-    Tool.Missile];
+    Tool.Missile,
+    Tool.Hammer,
+];
 
 export function getCategory(tool: Tool): ToolCategory {
     return config()["tools"][tool]["category"];
@@ -69,6 +72,8 @@ export function getToolName(tool: Tool): string {
             return "Dog";
         case Tool.Missile:
             return "Missile";
+        case Tool.Hammer:
+            return "Hammer";
         default:
             return "";
     }

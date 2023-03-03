@@ -6,7 +6,8 @@ export enum Hazard {
     Birds = "birds",
     Weeds = "weeds",
     Bunny = "bunny",
-    Meteor = "meteor"
+    Meteor = "meteor",
+    Mole = "mole",
 }
 
 export enum HazardMotion {
@@ -40,11 +41,12 @@ export function getNextHazardDurationMs(): number {
 /** Get a randomly ordered list of hazards */
 export function getRandomizedHazards(): Hazard[] {
     let allHazards = [
-        /*Hazard.Birds,
+        Hazard.Birds,
         Hazard.Bugs,
         Hazard.Weeds,
-        Hazard.Bunny,*/
-        Hazard.Meteor
+        Hazard.Bunny,
+        Hazard.Meteor,
+        Hazard.Mole,
     ];
     shuffleArray(allHazards);
     return allHazards;

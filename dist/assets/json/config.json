@@ -115,6 +115,10 @@
         "missile": {
             "category": "hazardremoval",
             "target": "meteor"
+        },
+        "hammer": {
+            "category": "hazardremoval",
+            "target": "mole"
         }
     },
 
@@ -155,6 +159,12 @@
             "healthDamageRate": 50,
             "timeToActive": 6000,
             "type": "impact"
+        },
+        "mole": {
+            "motion": "grow",
+            "healthDamageRate": 5,
+            "timeToActive": 3000,
+            "type": "constant"
         }
     }
 }
