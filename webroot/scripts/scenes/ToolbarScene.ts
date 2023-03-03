@@ -53,15 +53,12 @@ export class ToolbarScene extends Phaser.Scene {
 
         for (let i = 0; i < tool.startingTools.length; i++) {
             let x, y;
-            //TODO add this back later when not testing scrollbar
-            /*if (i % 2 == 0) {
+            if (i % 2 == 0) {
                 x = toolbarX - toolMargin / 2;
             } else {
                 x = toolbarX + toolMargin / 2;
             }
-            y = toolYAnchor + (Math.floor(i / 2) * toolMargin);*/
-            x = toolbarX;
-            y = toolYAnchor + (i * toolMargin)
+            y = toolYAnchor + (Math.floor(i / 2) * toolMargin);
             this.toolIcons[i].setPosition(x, y);
             this.toolBoxes[i].setPosition(x, y);
         }

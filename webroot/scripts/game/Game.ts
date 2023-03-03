@@ -1,6 +1,6 @@
 import { gameResetEvent, hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
-import { ActiveHazard, getNextHazardDurationMs, getRandomizedHazards, Hazard } from "./Hazard";
+import { ActiveHazard, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
 import { getNewId } from "./Id";
 import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazardByType, removeHazardById } from "./Plant";
 import * as tool from "./Tool";
@@ -127,6 +127,12 @@ export function update(game: GardenGame, delta: number) {
         let activeHazard: ActiveHazard = game.activeHazards[id];
         if (activeHazard.timeUntilActiveMs > 0) {
             activeHazard.timeUntilActiveMs -= delta;
+        } else {
+            if (getHazardType(activeHazard.hazard) == HazardType.Impact) {
+                // Impact hazards apply immediately
+                updateStatusLevel(game.plants[activeHazard.targetPlantId], Status.Health, -config()["hazards"][activeHazard.hazard.toString()]["healthDamageRate"]);
+                removeHazardById(game, game.plants[activeHazard.targetPlantId], activeHazard.id)
+            }
         }
     });
 
@@ -163,7 +169,7 @@ export function update(game: GardenGame, delta: number) {
             let activeHazard: ActiveHazard = {
                 id: getNewId(),
                 hazard: chosenHazard,
-                timeUntilActiveMs: config()["hazardTimeToActiveMs"],
+                timeUntilActiveMs: getHazardTimeToActive(chosenHazard),
                 targetPlantId: targetPlant,
             }
             game.activeHazards[activeHazard.id] = activeHazard;

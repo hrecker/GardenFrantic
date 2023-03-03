@@ -4,7 +4,7 @@ import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
-import { ActiveHazard, getHazardMotion, getHazardPath } from "../game/Hazard";
+import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive } from "../game/Hazard";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -162,7 +162,7 @@ export class MainScene extends Phaser.Scene {
         let path = getHazardPath(plantImage, getHazardMotion(activeHazard.hazard));
         let hazardImage = scene.add.image(path.start.x, path.start.y, activeHazard.hazard.toString());
         scene.tweens.add({
-            duration: config()["hazardTimeToActiveMs"],
+            duration: getHazardTimeToActive(activeHazard.hazard),
             x: {
                 from: path.start.x,
                 to: path.end.x

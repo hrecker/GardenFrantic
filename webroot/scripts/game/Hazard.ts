@@ -5,13 +5,19 @@ export enum Hazard {
     Bugs = "bugs",
     Birds = "birds",
     Weeds = "weeds",
-    Bunny = "bunny"
+    Bunny = "bunny",
+    Meteor = "meteor"
 }
 
 export enum HazardMotion {
     Walk = "walk",
     Swoop = "swoop",
     Grow = "grow"
+}
+
+export enum HazardType {
+    Constant = "constant",
+    Impact = "impact"
 }
 
 export type ActiveHazard = {
@@ -34,10 +40,11 @@ export function getNextHazardDurationMs(): number {
 /** Get a randomly ordered list of hazards */
 export function getRandomizedHazards(): Hazard[] {
     let allHazards = [
-        Hazard.Birds,
+        /*Hazard.Birds,
         Hazard.Bugs,
         Hazard.Weeds,
-        Hazard.Bunny
+        Hazard.Bunny,*/
+        Hazard.Meteor
     ];
     shuffleArray(allHazards);
     return allHazards;
@@ -45,6 +52,14 @@ export function getRandomizedHazards(): Hazard[] {
 
 export function getHazardMotion(hazard: Hazard): HazardMotion {
     return config()["hazards"][hazard.toString()]["motion"] as HazardMotion
+}
+
+export function getHazardTimeToActive(hazard: Hazard): number {
+    return config()["hazards"][hazard.toString()]["timeToActive"]
+}
+
+export function getHazardType(hazard: Hazard): HazardType {
+    return config()["hazards"][hazard.toString()]["type"] as HazardType
 }
 
 export function getHazardPath(plant: Phaser.GameObjects.Image, motion: HazardMotion): HazardPath {

@@ -56,6 +56,7 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture(Tool.Weedkiller);
         this.loadTexture(Tool.Pesticide);
         this.loadTexture(Tool.Dog);
+        this.loadTexture(Tool.Missile);
         this.loadTexture(Weather.PartlyCloudy);
         this.loadTexture(Weather.Cloudy);
         this.loadTexture(Weather.Heat);
@@ -68,6 +69,7 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture(Hazard.Bugs, "hazards/");
         this.loadTexture(Hazard.Weeds, "hazards/");
         this.loadTexture(Hazard.Bunny, "hazards/");
+        this.loadTexture(Hazard.Meteor, "hazards/");
 
         this.load.bitmapFont('uiFont', 'assets/fonts/uiFont.png', 'assets/fonts/uiFont.xml');
 

@@ -111,6 +111,10 @@
         "dog": {
             "category": "hazardremoval",
             "target": "bunny"
+        },
+        "missile": {
+            "category": "hazardremoval",
+            "target": "meteor"
         }
     },
 
@@ -119,26 +123,38 @@
         "high": 6000
     },
 
-    "hazardTimeToActiveMs": 3000,
-
     "hazardPositionRange": 75,
 
     "hazards": {
         "bugs": {
             "motion": "walk",
-            "healthDamageRate": 5
+            "healthDamageRate": 5,
+            "timeToActive": 3000,
+            "type": "constant"
         },
         "birds": {
             "motion": "swoop",
-            "healthDamageRate": 3
+            "healthDamageRate": 3,
+            "timeToActive": 2500,
+            "type": "constant"
         },
         "weeds": {
             "motion": "grow",
-            "healthDamageRate": 4
+            "healthDamageRate": 4,
+            "timeToActive": 4000,
+            "type": "constant"
         },
         "bunny": {
             "motion": "walk",
-            "healthDamageRate": 4
+            "healthDamageRate": 4,
+            "timeToActive": 2500,
+            "type": "constant"
+        },
+        "meteor": {
+            "motion": "swoop",
+            "healthDamageRate": 50,
+            "timeToActive": 6000,
+            "type": "impact"
         }
     }
 }
