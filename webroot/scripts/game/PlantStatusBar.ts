@@ -1,6 +1,6 @@
 import { config } from "../model/Config";
 import { GardenGame } from "./Game";
-import { isFruitGrowthPaused, isInWarningZone, Plant, Status } from "./Plant";
+import { FruitGrowthStage, isFruitGrowthPaused, isInWarningZone, Plant, Status } from "./Plant";
 
 export type PlantStatusBar = {
     maxStatusBarWidth: number;
@@ -24,7 +24,7 @@ export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, pl
     statusBar.fruitStatusBar.statusBar.width = plant.fruitProgress / 100.0 * statusBar.maxStatusBarWidth;
     let isWarning = updateStatusColor(statusBar.waterStatusBar.statusBar, plant.levels[Status.Water], Status.Water);
     isWarning = updateStatusColor(statusBar.lightStatusBar.statusBar, plant.levels[Status.Light], Status.Light) || isWarning;
-    if (plant.isFruitAvailable) {
+    if (plant.fruitGrowthStage == FruitGrowthStage.FullyGrown) {
         setHighlightColor(statusBar.fruitStatusBar.statusBar);
     } else if (isFruitGrowthPaused(game, plant)) {
         setWarningColor(statusBar.fruitStatusBar.statusBar);

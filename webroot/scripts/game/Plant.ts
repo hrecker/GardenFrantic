@@ -8,11 +8,18 @@ export type Plant = {
     id: number;
     levels: { [status: string] : number }
     fruitProgress: number;
-    isFruitAvailable: boolean;
     activeHazardIds: number[];
-    gameObject: Phaser.GameObjects.Image;
+    gameObject: Phaser.GameObjects.Sprite;
     // The game will handle destroying plants in its update loop.
     shouldDestroy?: boolean;
+    fruitGrowthStage: FruitGrowthStage;
+}
+
+export enum FruitGrowthStage {
+    None = 0,
+    Small = 1,
+    Medium = 2,
+    FullyGrown = 3
 }
 
 export enum Status {
@@ -25,7 +32,7 @@ function shouldWarnAtHighLevel(status: Status): boolean {
     return config()["statusProps"][status.toString()]["warnHigh"]
 }
 
-export function newPlant(gameObject: Phaser.GameObjects.Image): Plant {
+export function newPlant(gameObject: Phaser.GameObjects.Sprite): Plant {
     let levels: { [status: string] : number } = {};
     levels[Status.Water] = config()["defaultWaterLevel"];
     levels[Status.Light] = config()["defaultLightLevel"];
@@ -35,9 +42,9 @@ export function newPlant(gameObject: Phaser.GameObjects.Image): Plant {
         id: getNewId(),
         levels: levels,
         fruitProgress: config()["minLevel"],
-        isFruitAvailable: false,
         activeHazardIds: [],
-        gameObject: gameObject
+        gameObject: gameObject,
+        fruitGrowthStage: FruitGrowthStage.None,
     }
 }
 
@@ -57,14 +64,24 @@ export function setFruitProgress(plant: Plant, fruitProgress: number) {
     plant.fruitProgress = fruitProgress;
     if (plant.fruitProgress >= config()["maxLevel"]) {
         plant.fruitProgress = config()["maxLevel"];
-        plant.isFruitAvailable = true;
+        plant.fruitGrowthStage = FruitGrowthStage.FullyGrown;
         fruitGrowthEvent(plant);
+    } else if (plant.fruitProgress >= 0.66 * config()["maxLevel"]) {
+        if (plant.fruitGrowthStage != FruitGrowthStage.Medium) {
+            plant.fruitGrowthStage = FruitGrowthStage.Medium;
+            fruitGrowthEvent(plant);
+        }
+    } else if (plant.fruitProgress >= 0.33 * config()["maxLevel"]) {
+        if (plant.fruitGrowthStage != FruitGrowthStage.Small) {
+            plant.fruitGrowthStage = FruitGrowthStage.Small;
+            fruitGrowthEvent(plant);
+        }
     }
 }
 
 export function harvestFruit(plant: Plant) {
     plant.fruitProgress = config()["minLevel"];
-    plant.isFruitAvailable = false;
+    plant.fruitGrowthStage = FruitGrowthStage.None;
     fruitHarvestEvent(plant);
 }
 
@@ -80,7 +97,7 @@ export function numWarningStatus(plant: Plant): number {
 }
 
 export function isFruitGrowthPaused(game: GardenGame, plant: Plant) {
-    return numWarningStatus(plant) > 0 || plant.isFruitAvailable || hasActiveHazards(game, plant);
+    return numWarningStatus(plant) > 0 || plant.fruitGrowthStage == FruitGrowthStage.FullyGrown || hasActiveHazards(game, plant);
 }
 
 function hasActiveHazards(game: GardenGame, plant: Plant) {

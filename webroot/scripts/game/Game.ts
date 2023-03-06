@@ -2,7 +2,7 @@ import { gameResetEvent, hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent
 import { config } from "../model/Config";
 import { ActiveHazard, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
 import { getNewId } from "./Id";
-import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazardByType, removeHazardById } from "./Plant";
+import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazardByType, removeHazardById, FruitGrowthStage } from "./Plant";
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
@@ -239,7 +239,7 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
 
     switch (tool.getCategory(game.selectedTool)) {
         case tool.ToolCategory.Harvest:
-            if (plant.isFruitAvailable) {
+            if (plant.fruitGrowthStage == FruitGrowthStage.FullyGrown) {
                 harvestFruit(plant);
                 addScore(game, config()["fruitHarvestPoints"]);
             }

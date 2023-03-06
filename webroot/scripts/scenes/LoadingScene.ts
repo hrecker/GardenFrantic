@@ -38,7 +38,15 @@ export class LoadingScene extends Phaser.Scene {
         this.scale.on("resize", this.resize, this);
 
         // Images
-        this.loadTexture("plant");
+        this.loadTexture("plant1", "drawn/");
+        this.loadTexture("plant2", "drawn/");
+        this.loadTexture("plant3", "drawn/");
+        this.loadTexture("fruitsmall1", "drawn/");
+        this.loadTexture("fruitsmall2", "drawn/");
+        this.loadTexture("fruitmedium1", "drawn/");
+        this.loadTexture("fruitmedium2", "drawn/");
+        this.loadTexture("fruitlarge1", "drawn/");
+        this.loadTexture("fruitlarge2", "drawn/");
         this.loadTexture("statusBarBackground");
         this.loadTexture("waterIcon");
         this.loadTexture("lightIcon");

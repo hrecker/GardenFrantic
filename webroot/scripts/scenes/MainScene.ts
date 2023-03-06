@@ -1,5 +1,5 @@
 import * as game from "../game/Game";
-import { Plant } from "../game/Plant";
+import { FruitGrowthStage, Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
@@ -19,7 +19,7 @@ let listenersInitialized = false;
 export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     plantStatusBars: { [id: number] : PlantStatusBar }
-    plantFruitImages: { [id: number] : Phaser.GameObjects.Image }
+    plantFruitImages: { [id: number] : Phaser.GameObjects.Sprite }
     hazardImages: { [id: number] : Phaser.GameObjects.Image }
     background: Phaser.GameObjects.Image;
 
@@ -83,14 +83,45 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0);
 
+        this.createAnimations();
         this.createPlant(0, 0);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
     }
 
+    createAnimations() {
+        this.createSwayAnimation('plantsway', [
+                { key: 'plant1' },
+                { key: 'plant2' },
+                { key: 'plant3' },
+            ]);
+        this.createSwayAnimation('fruitsmallsway', [
+                { key: 'fruitsmall1' },
+                { key: 'fruitsmall2' },
+            ]);
+        this.createSwayAnimation('fruitmediumsway', [
+                { key: 'fruitmedium1' },
+                { key: 'fruitmedium2' },
+            ]);
+        this.createSwayAnimation('fruitlargesway', [
+                { key: 'fruitlarge1' },
+                { key: 'fruitlarge2' },
+            ]);
+    }
+
+    createSwayAnimation(key: string, frames: Phaser.Types.Animations.AnimationFrame[]) {
+        this.anims.create({
+            key: key,
+            frames: frames,
+            frameRate: 5,
+            repeat: -1
+        });
+    }
+
     createPlant(x: number, y: number): Plant {
-        let plant = game.addPlant(this.gardenGame, this.add.image(x, y, "plant"));
+        let sprite = this.add.sprite(x, y, 'plant1').setScale(0.25).play('plantsway');
+        let plant = game.addPlant(this.gardenGame, sprite);
         this.createStatusBars(plant);
 
         plant.gameObject.setInteractive();
@@ -218,7 +249,21 @@ export class MainScene extends Phaser.Scene {
     /** Handle a fruit being grown for a plant */
     handleFruitGrowth(scene: MainScene, plant: Plant) {
         let pos = plant.gameObject.getRightCenter();
-        scene.plantFruitImages[plant.id] = scene.add.image(pos.x, pos.y, "fruitIcon");
+        let sprite;
+        switch (plant.fruitGrowthStage) {
+            case FruitGrowthStage.Small:
+                sprite = scene.add.sprite(pos.x, pos.y, 'fruitsmall1').setScale(0.25).play('fruitsmallsway');
+                break;
+            case FruitGrowthStage.Medium:
+                sprite = scene.add.sprite(pos.x, pos.y, 'fruitmedium1').setScale(0.25).play('fruitmediumsway');
+                scene.plantFruitImages[plant.id].destroy()
+                break;
+            case FruitGrowthStage.FullyGrown:
+                sprite = scene.add.sprite(pos.x, pos.y, 'fruitlarge1').setScale(0.25).play('fruitlargesway');
+                scene.plantFruitImages[plant.id].destroy()
+                break;
+        }
+        scene.plantFruitImages[plant.id] = sprite;
     }
 
     /** Handle a fruit being harvested for a plant */
