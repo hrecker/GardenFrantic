@@ -2,6 +2,7 @@ import { addGameResetListener } from "../events/EventMessenger";
 import * as game from "../game/Game";
 import * as tool from "../game/Tool";
 import { config } from "../model/Config";
+import { createSwayAnimation } from "../util/Util";
 
 const toolYAnchor = 75;
 const toolMargin = 60;
@@ -16,9 +17,9 @@ const scrollWheelSpeed = 0.4;
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
-    lastSelectedToolbox: Phaser.GameObjects.Image;
+    lastSelectedToolIndex: number;
     currentToolText: Phaser.GameObjects.BitmapText;
-    toolIcons: Phaser.GameObjects.Image[];
+    toolIcons: Phaser.GameObjects.Sprite[];
     toolBoxes: Phaser.GameObjects.Image[];
     toolbar: Phaser.GameObjects.Rectangle;
     toolbarMask: Phaser.GameObjects.Graphics;
@@ -128,6 +129,11 @@ export class ToolbarScene extends Phaser.Scene {
         this.gardenGame = data.gardenGame;
     }
 
+    toolHasAnimation(checkTool: tool.Tool) {
+        return checkTool == tool.Tool.Basket || checkTool == tool.Tool.Lamp ||
+            checkTool == tool.Tool.Shade || checkTool == tool.Tool.Fertilizer;
+    }
+
     create() {
         // Allow events to pass through to make scrolling work
         this.input.setTopOnly(false);
@@ -157,27 +163,42 @@ export class ToolbarScene extends Phaser.Scene {
 
         this.toolIcons = [];
         this.toolBoxes = [];
+        this.lastSelectedToolIndex = -1;
         for (let i = 0; i < tool.startingTools.length; i++) {
-            let toolIcon = this.add.image(0, 0, tool.startingTools[i]);
+            let texture = tool.startingTools[i].toString();
+            let texturePath = texture;
+            if (this.toolHasAnimation(tool.startingTools[i])) {
+                createSwayAnimation(this, tool.startingTools[i] + "sway", [
+                        { key: tool.startingTools[i] + '1' },
+                        { key: tool.startingTools[i] + '2' },
+                    ]);
+                texture = tool.startingTools[i] + '1';
+                texturePath = "drawn/" + texture;
+            }
+            let toolIcon = this.add.sprite(0, 0, texture);
             this.toolIcons.push(toolIcon);
             // Add box background
             let toolbox = this.add.image(0, 0, "toolbox");
             this.toolBoxes.push(toolbox);
             toolIcon.setInteractive();
             toolIcon.on("pointerdown", () => {
-                let toolValue = toolIcon.texture.key as tool.Tool;
+                let toolValue = tool.startingTools[i];
                 if (this.gardenGame.selectedTool != toolValue) {
                     this.gardenGame.selectedTool = toolValue;
-                    let cursor = "url(assets/sprites/" + toolIcon.texture.key + ".png), pointer";
+                    let cursor = "url(assets/sprites/" + texturePath + ".png), pointer";
                     this.input.setDefaultCursor(cursor);
                     toolbox.setTexture("selectedToolbox");
-                    if (this.lastSelectedToolbox != null) {
-                        this.lastSelectedToolbox.setTexture("toolbox");
+                    if (this.lastSelectedToolIndex != -1) {
+                        this.toolBoxes[this.lastSelectedToolIndex].setTexture("toolbox");
+                        this.toolIcons[this.lastSelectedToolIndex].stop();
                     }
-                    this.lastSelectedToolbox = toolbox;
+                    this.lastSelectedToolIndex = i;
                     let toolName = tool.getToolName(toolValue);
                     this.currentToolText.setText(toolName);
                     this.currentToolText.setFontSize(Math.min(30 - toolName.length, 26));
+                    if (this.toolHasAnimation(tool.startingTools[i])) {
+                        toolIcon.play(tool.startingTools[i] + "sway");
+                    }
                 } else {
                     this.gardenGame.selectedTool = tool.Tool.NoTool;
                     this.deselectIcon(i);
@@ -207,8 +228,9 @@ export class ToolbarScene extends Phaser.Scene {
     deselectIcon(iconIndex: number) {
         this.input.setDefaultCursor("auto");
         this.toolBoxes[iconIndex].setTexture("toolbox");
-        this.lastSelectedToolbox = null;
+        this.lastSelectedToolIndex = -1;
         this.currentToolText.setText("");
+        this.toolIcons[iconIndex].stop();
     }
 
     resetGame(scene: ToolbarScene) {

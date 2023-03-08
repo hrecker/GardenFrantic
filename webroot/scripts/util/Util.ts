@@ -18,3 +18,12 @@ export function randomInRange(low: number, high: number): number {
     let range = high - low;
     return Math.random() * range + low;
 }
+
+export function createSwayAnimation(scene: Phaser.Scene, key: string, frames: Phaser.Types.Animations.AnimationFrame[]) {
+    scene.anims.create({
+        key: key,
+        frames: frames,
+        frameRate: 5,
+        repeat: -1
+    });
+}

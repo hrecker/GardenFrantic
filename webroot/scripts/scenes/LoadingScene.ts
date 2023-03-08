@@ -40,7 +40,6 @@ export class LoadingScene extends Phaser.Scene {
         // Images
         this.loadTexture("plant1", "drawn/");
         this.loadTexture("plant2", "drawn/");
-        this.loadTexture("plant3", "drawn/");
         this.loadTexture("fruitsmall1", "drawn/");
         this.loadTexture("fruitsmall2", "drawn/");
         this.loadTexture("fruitmedium1", "drawn/");
@@ -54,10 +53,15 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture("healthIcon");
         this.loadTexture("toolbox");
         this.loadTexture("selectedToolbox");
-        this.loadTexture(Tool.Basket);
+        this.loadTexture(Tool.Basket + "1", "drawn/");
+        this.loadTexture(Tool.Basket + "2", "drawn/");
         this.loadTexture(Tool.Fertilizer);
-        this.loadTexture(Tool.Lamp);
-        this.loadTexture(Tool.Shade);
+        this.loadTexture(Tool.Fertilizer + "1", "drawn/");
+        this.loadTexture(Tool.Fertilizer + "2", "drawn/");
+        this.loadTexture(Tool.Lamp + "1", "drawn/");
+        this.loadTexture(Tool.Lamp + "2", "drawn/");
+        this.loadTexture(Tool.Shade + "1", "drawn/");
+        this.loadTexture(Tool.Shade + "2", "drawn/");
         this.loadTexture(Tool.Umbrella);
         this.loadTexture(Tool.WateringCan);
         this.loadTexture(Tool.Scarecrow);

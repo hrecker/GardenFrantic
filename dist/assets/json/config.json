@@ -1,12 +1,12 @@
 {
     "backgroundColor": "#f5f1d0",
-    "toolbarColor": "0xFFB27F",
+    "toolbarColor": "0xD1B187",
     "uiFontColor": "0xFFF7E4",
-    "toolbarScrollIndicatorColor": "0xFFFFFF",
+    "toolbarScrollIndicatorColor": "0xAB9B8E",
 
-    "healthyLevelColor": "0x9cf0aa",
-    "warningLevelColor": "0xf0a49c",
-    "highlightColor": "0x6ee7f5",
+    "healthyLevelColor": "0xB3A555",
+    "warningLevelColor": "0xAE5D40",
+    "highlightColor": "0x8CABA1",
 
     "invinciblePlants": false,
     "automaticRestart": {

@@ -5,6 +5,7 @@ import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatus
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive } from "../game/Hazard";
+import { createSwayAnimation } from "../util/Util";
 
 const statusBarXPadding = 14;
 const statusBarYPadding = 2;
@@ -91,32 +92,22 @@ export class MainScene extends Phaser.Scene {
     }
 
     createAnimations() {
-        this.createSwayAnimation('plantsway', [
+        createSwayAnimation(this, 'plantsway', [
                 { key: 'plant1' },
                 { key: 'plant2' },
-                { key: 'plant3' },
             ]);
-        this.createSwayAnimation('fruitsmallsway', [
+        createSwayAnimation(this, 'fruitsmallsway', [
                 { key: 'fruitsmall1' },
                 { key: 'fruitsmall2' },
             ]);
-        this.createSwayAnimation('fruitmediumsway', [
+        createSwayAnimation(this, 'fruitmediumsway', [
                 { key: 'fruitmedium1' },
                 { key: 'fruitmedium2' },
             ]);
-        this.createSwayAnimation('fruitlargesway', [
+        createSwayAnimation(this, 'fruitlargesway', [
                 { key: 'fruitlarge1' },
                 { key: 'fruitlarge2' },
             ]);
-    }
-
-    createSwayAnimation(key: string, frames: Phaser.Types.Animations.AnimationFrame[]) {
-        this.anims.create({
-            key: key,
-            frames: frames,
-            frameRate: 5,
-            repeat: -1
-        });
     }
 
     createPlant(x: number, y: number): Plant {
