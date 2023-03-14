@@ -53,23 +53,18 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture("healthIcon");
         this.loadTexture("toolbox");
         this.loadTexture("selectedToolbox");
-        this.loadTexture(Tool.Basket + "1", "drawn/");
-        this.loadTexture(Tool.Basket + "2", "drawn/");
-        this.loadTexture(Tool.Fertilizer);
-        this.loadTexture(Tool.Fertilizer + "1", "drawn/");
-        this.loadTexture(Tool.Fertilizer + "2", "drawn/");
-        this.loadTexture(Tool.Lamp + "1", "drawn/");
-        this.loadTexture(Tool.Lamp + "2", "drawn/");
-        this.loadTexture(Tool.Shade + "1", "drawn/");
-        this.loadTexture(Tool.Shade + "2", "drawn/");
-        this.loadTexture(Tool.Umbrella);
-        this.loadTexture(Tool.WateringCan);
-        this.loadTexture(Tool.Scarecrow);
-        this.loadTexture(Tool.Weedkiller);
-        this.loadTexture(Tool.Pesticide);
-        this.loadTexture(Tool.Dog);
-        this.loadTexture(Tool.Missile);
-        this.loadTexture(Tool.Hammer);
+        this.loadToolTexture(Tool.Basket);
+        this.loadToolTexture(Tool.Fertilizer);
+        this.loadToolTexture(Tool.Lamp);
+        this.loadToolTexture(Tool.Shade);
+        this.loadToolTexture(Tool.Umbrella);
+        this.loadToolTexture(Tool.WateringCan);
+        this.loadToolTexture(Tool.Scarecrow);
+        this.loadToolTexture(Tool.Weedkiller);
+        this.loadToolTexture(Tool.Pesticide);
+        this.loadToolTexture(Tool.Dog);
+        this.loadToolTexture(Tool.Missile);
+        this.loadToolTexture(Tool.Hammer);
         this.loadTexture(Weather.PartlyCloudy);
         this.loadTexture(Weather.Cloudy);
         this.loadTexture(Weather.Heat);
@@ -89,6 +84,11 @@ export class LoadingScene extends Phaser.Scene {
 
         // Load json
         this.load.json("config", "assets/json/config.json");
+    }
+
+    loadToolTexture(tool: Tool) {
+        this.loadTexture(tool + "1", "drawn/");
+        this.loadTexture(tool + "2", "drawn/");
     }
 
     loadTexture(textureName: string, pathPrefix?: string) {

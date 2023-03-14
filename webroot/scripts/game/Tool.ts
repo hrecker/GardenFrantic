@@ -5,7 +5,7 @@ export enum Tool {
     Lamp = "lamp",
     Shade = "shade",
     Umbrella = "umbrella",
-    WateringCan = "wateringCan",
+    WateringCan = "wateringcan",
     Basket = "basket",
     Scarecrow = "scarecrow",
     Weedkiller = "weedkiller",

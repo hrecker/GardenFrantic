@@ -83,7 +83,7 @@ function advanceWeather(game: GardenGame) {
     game.weatherQueue[game.weatherQueue.length - 1] = weather.getRandomWeather();
 }
 
-export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.Image): Plant {
+export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.Sprite): Plant {
     let plant = newPlant(plantGameObject);
     game.plants[plant.id] = plant;
     return plant;

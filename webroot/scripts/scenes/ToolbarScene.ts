@@ -129,11 +129,6 @@ export class ToolbarScene extends Phaser.Scene {
         this.gardenGame = data.gardenGame;
     }
 
-    toolHasAnimation(checkTool: tool.Tool) {
-        return checkTool == tool.Tool.Basket || checkTool == tool.Tool.Lamp ||
-            checkTool == tool.Tool.Shade || checkTool == tool.Tool.Fertilizer;
-    }
-
     create() {
         // Allow events to pass through to make scrolling work
         this.input.setTopOnly(false);
@@ -165,16 +160,12 @@ export class ToolbarScene extends Phaser.Scene {
         this.toolBoxes = [];
         this.lastSelectedToolIndex = -1;
         for (let i = 0; i < tool.startingTools.length; i++) {
-            let texture = tool.startingTools[i].toString();
-            let texturePath = texture;
-            if (this.toolHasAnimation(tool.startingTools[i])) {
-                createSwayAnimation(this, tool.startingTools[i] + "sway", [
-                        { key: tool.startingTools[i] + '1' },
-                        { key: tool.startingTools[i] + '2' },
-                    ]);
-                texture = tool.startingTools[i] + '1';
-                texturePath = "drawn/" + texture;
-            }
+            createSwayAnimation(this, tool.startingTools[i] + "sway", [
+                    { key: tool.startingTools[i] + '1' },
+                    { key: tool.startingTools[i] + '2' },
+                ]);
+            let texture = tool.startingTools[i] + '1';
+            let texturePath = "drawn/" + texture;
             let toolIcon = this.add.sprite(0, 0, texture);
             this.toolIcons.push(toolIcon);
             // Add box background
@@ -196,9 +187,7 @@ export class ToolbarScene extends Phaser.Scene {
                     let toolName = tool.getToolName(toolValue);
                     this.currentToolText.setText(toolName);
                     this.currentToolText.setFontSize(Math.min(30 - toolName.length, 26));
-                    if (this.toolHasAnimation(tool.startingTools[i])) {
-                        toolIcon.play(tool.startingTools[i] + "sway");
-                    }
+                    toolIcon.play(tool.startingTools[i] + "sway");
                 } else {
                     this.gardenGame.selectedTool = tool.Tool.NoTool;
                     this.deselectIcon(i);

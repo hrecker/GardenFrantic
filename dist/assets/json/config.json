@@ -85,7 +85,7 @@
             "category": "water",
             "delta": -10
         },
-        "wateringCan": {
+        "wateringcan": {
             "category": "water",
             "delta": 10
         },
