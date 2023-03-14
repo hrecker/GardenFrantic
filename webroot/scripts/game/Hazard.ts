@@ -3,7 +3,7 @@ import { randomInRange, shuffleArray } from "../util/Util";
 
 export enum Hazard {
     Bugs = "bugs",
-    Birds = "birds",
+    Bird = "bird",
     Weeds = "weeds",
     Bunny = "bunny",
     Meteor = "meteor",
@@ -41,12 +41,12 @@ export function getNextHazardDurationMs(): number {
 /** Get a randomly ordered list of hazards */
 export function getRandomizedHazards(): Hazard[] {
     let allHazards = [
-        Hazard.Birds,
-        Hazard.Bugs,
+        Hazard.Bird,
+        /*Hazard.Bugs,
         Hazard.Weeds,
         Hazard.Bunny,
         Hazard.Meteor,
-        Hazard.Mole,
+        Hazard.Mole,*/
     ];
     shuffleArray(allHazards);
     return allHazards;

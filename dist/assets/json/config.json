@@ -98,7 +98,7 @@
         },
         "scarecrow": {
             "category": "hazardremoval",
-            "target": "birds"
+            "target": "bird"
         },
         "pesticide": {
             "category": "hazardremoval",
@@ -136,7 +136,7 @@
             "timeToActive": 3000,
             "type": "constant"
         },
-        "birds": {
+        "bird": {
             "motion": "swoop",
             "healthDamageRate": 3,
             "timeToActive": 2500,

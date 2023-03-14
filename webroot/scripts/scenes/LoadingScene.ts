@@ -73,7 +73,10 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture(Weather.Cloudy + "Preview");
         this.loadTexture(Weather.Heat + "Preview");
         this.loadTexture(Weather.Rain + "Preview");
-        this.loadTexture(Hazard.Birds, "hazards/");
+        this.loadTexture(Hazard.Bird + "approach1", "hazards/drawn/");
+        this.loadTexture(Hazard.Bird + "approach2", "hazards/drawn/");
+        this.loadTexture(Hazard.Bird + "idle1", "hazards/drawn/");
+        this.loadTexture(Hazard.Bird + "idle2", "hazards/drawn/");
         this.loadTexture(Hazard.Bugs, "hazards/");
         this.loadTexture(Hazard.Weeds, "hazards/");
         this.loadTexture(Hazard.Bunny, "hazards/");
