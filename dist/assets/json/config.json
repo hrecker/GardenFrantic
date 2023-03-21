@@ -134,37 +134,43 @@
             "motion": "walk",
             "healthDamageRate": 5,
             "timeToActive": 3000,
-            "type": "constant"
+            "type": "constant",
+            "hasApproachAnimation": false
         },
         "bird": {
             "motion": "swoop",
             "healthDamageRate": 3,
             "timeToActive": 2500,
-            "type": "constant"
+            "type": "constant",
+            "hasApproachAnimation": true
         },
         "weeds": {
             "motion": "grow",
             "healthDamageRate": 4,
             "timeToActive": 4000,
-            "type": "constant"
+            "type": "constant",
+            "hasApproachAnimation": false
         },
         "bunny": {
             "motion": "walk",
             "healthDamageRate": 4,
             "timeToActive": 2500,
-            "type": "constant"
+            "type": "constant",
+            "hasApproachAnimation": true
         },
         "meteor": {
             "motion": "swoop",
             "healthDamageRate": 50,
             "timeToActive": 6000,
-            "type": "impact"
+            "type": "impact",
+            "hasApproachAnimation": false
         },
         "mole": {
             "motion": "grow",
             "healthDamageRate": 5,
             "timeToActive": 3000,
-            "type": "constant"
+            "type": "constant",
+            "hasApproachAnimation": true
         }
     }
 }

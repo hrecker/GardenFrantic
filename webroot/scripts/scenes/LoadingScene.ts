@@ -73,13 +73,10 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture(Weather.Cloudy + "Preview");
         this.loadTexture(Weather.Heat + "Preview");
         this.loadTexture(Weather.Rain + "Preview");
-        this.loadTexture(Hazard.Bird + "approach1", "hazards/drawn/");
-        this.loadTexture(Hazard.Bird + "approach2", "hazards/drawn/");
-        this.loadTexture(Hazard.Bird + "idle1", "hazards/drawn/");
-        this.loadTexture(Hazard.Bird + "idle2", "hazards/drawn/");
-        this.loadTexture(Hazard.Bugs, "hazards/");
-        this.loadTexture(Hazard.Weeds, "hazards/");
-        this.loadTexture(Hazard.Bunny, "hazards/");
+        this.loadHazardTexture(Hazard.Bird, true);
+        this.loadHazardTexture(Hazard.Bugs, false);
+        this.loadHazardTexture(Hazard.Weeds, false);
+        this.loadHazardTexture(Hazard.Bunny, true);
         this.loadTexture(Hazard.Meteor, "hazards/");
         this.loadTexture(Hazard.Mole, "hazards/");
 
@@ -92,6 +89,18 @@ export class LoadingScene extends Phaser.Scene {
     loadToolTexture(tool: Tool) {
         this.loadTexture(tool + "1", "drawn/");
         this.loadTexture(tool + "2", "drawn/");
+    }
+
+    loadHazardTexture(hazard: Hazard, hasApproach: boolean) {
+        if (hasApproach) {
+            this.loadTexture(hazard + "approach1", "hazards/drawn/");
+            this.loadTexture(hazard + "approach2", "hazards/drawn/");
+            this.loadTexture(hazard + "idle1", "hazards/drawn/");
+            this.loadTexture(hazard + "idle2", "hazards/drawn/");
+        } else {
+            this.loadTexture(hazard + "1", "hazards/drawn/");
+            this.loadTexture(hazard + "2", "hazards/drawn/");
+        }
     }
 
     loadTexture(textureName: string, pathPrefix?: string) {

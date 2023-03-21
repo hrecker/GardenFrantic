@@ -4,7 +4,7 @@ import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
-import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, Hazard } from "../game/Hazard";
+import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation } from "../util/Util";
 
 const statusBarXPadding = 14;
@@ -108,25 +108,27 @@ export class MainScene extends Phaser.Scene {
                 { key: 'fruitlarge1' },
                 { key: 'fruitlarge2' },
             ]);
-        this.createHazardAnimations(Hazard.Bird);
-    }
-
-    hasAnimation(hazard: Hazard) {
-        return hazard == Hazard.Bird; //TODO
+        getRandomizedHazards().forEach(hazard => {
+            this.createHazardAnimations(hazard);
+        });
     }
 
     createHazardAnimations(hazard: Hazard) {
-        if (! this.hasAnimation(hazard)) { //TODO
-            return;
+        if (hasApproachAnimation(hazard)) {
+            createSwayAnimation(this, hazard + "approach", [
+                { key: hazard + "approach1" },
+                { key: hazard + "approach2" },
+            ]);
+            createSwayAnimation(this, hazard + "idle", [
+                { key: hazard + "idle1" },
+                { key: hazard + "idle2" },
+            ]);
+        } else {
+            createSwayAnimation(this, hazard + "idle", [
+                { key: hazard + "1" },
+                { key: hazard + "2" },
+            ]);
         }
-        createSwayAnimation(this, hazard + "approach", [
-            { key: hazard + "approach1" },
-            { key: hazard + "approach2" },
-        ]);
-        createSwayAnimation(this, hazard + "idle", [
-            { key: hazard + "idle1" },
-            { key: hazard + "idle2" },
-        ]);
     }
 
     createPlant(x: number, y: number): Plant {
@@ -201,14 +203,16 @@ export class MainScene extends Phaser.Scene {
         let plant: Plant = scene.gardenGame.plants[activeHazard.targetPlantId];
         let plantImage: Phaser.GameObjects.Image = plant.gameObject;
         let path = getHazardPath(plantImage, getHazardMotion(activeHazard.hazard));
-        let texture = activeHazard.hazard.toString();
-        let hasAnimation = scene.hasAnimation(activeHazard.hazard)
+        let texture = activeHazard.hazard.toString() + "1";
+        let hasAnimation = hasApproachAnimation(activeHazard.hazard);
         if (hasAnimation) {
             texture = activeHazard.hazard + "approach1";
         }
         let hazardImage = scene.add.sprite(path.start.x, path.start.y, texture);
         if (hasAnimation) {
             hazardImage.play(activeHazard.hazard + "approach");
+        } else {
+            hazardImage.play(activeHazard.hazard + "idle");
         }
         scene.tweens.add({
             duration: getHazardTimeToActive(activeHazard.hazard),

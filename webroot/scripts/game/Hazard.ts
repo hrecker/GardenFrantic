@@ -42,10 +42,10 @@ export function getNextHazardDurationMs(): number {
 export function getRandomizedHazards(): Hazard[] {
     let allHazards = [
         Hazard.Bird,
-        /*Hazard.Bugs,
+        Hazard.Bugs,
         Hazard.Weeds,
         Hazard.Bunny,
-        Hazard.Meteor,
+        /*Hazard.Meteor,
         Hazard.Mole,*/
     ];
     shuffleArray(allHazards);
@@ -62,6 +62,10 @@ export function getHazardTimeToActive(hazard: Hazard): number {
 
 export function getHazardType(hazard: Hazard): HazardType {
     return config()["hazards"][hazard.toString()]["type"] as HazardType
+}
+
+export function hasApproachAnimation(hazard: Hazard): boolean {
+    return config()["hazards"][hazard.toString()]["hasApproachAnimation"];
 }
 
 export function getHazardPath(plant: Phaser.GameObjects.Image, motion: HazardMotion): HazardPath {
@@ -91,7 +95,7 @@ export function getHazardPath(plant: Phaser.GameObjects.Image, motion: HazardMot
             path.start.x = plant.x + randomInRange(randomLow, randomHigh);
             path.end.x = path.start.x;
             path.start.y = plant.getBottomCenter().y + 100;
-            path.end.y = plant.getBottomCenter().y;
+            path.end.y = plant.getBottomCenter().y - 30;
             break;
     }
     return path;
