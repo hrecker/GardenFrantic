@@ -45,8 +45,8 @@ export function getRandomizedHazards(): Hazard[] {
         Hazard.Bugs,
         Hazard.Weeds,
         Hazard.Bunny,
-        /*Hazard.Meteor,
-        Hazard.Mole,*/
+        Hazard.Meteor,
+        Hazard.Mole,
     ];
     shuffleArray(allHazards);
     return allHazards;

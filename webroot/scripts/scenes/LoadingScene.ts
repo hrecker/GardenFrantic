@@ -77,8 +77,8 @@ export class LoadingScene extends Phaser.Scene {
         this.loadHazardTexture(Hazard.Bugs, false);
         this.loadHazardTexture(Hazard.Weeds, false);
         this.loadHazardTexture(Hazard.Bunny, true);
-        this.loadTexture(Hazard.Meteor, "hazards/");
-        this.loadTexture(Hazard.Mole, "hazards/");
+        this.loadHazardTexture(Hazard.Meteor, false);
+        this.loadHazardTexture(Hazard.Mole, true);
 
         this.load.bitmapFont('uiFont', 'assets/fonts/uiFont.png', 'assets/fonts/uiFont.xml');
 
