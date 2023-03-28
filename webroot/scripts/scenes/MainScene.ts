@@ -7,8 +7,6 @@ import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation } from "../util/Util";
 
-const statusBarXPadding = 14;
-const statusBarYPadding = 2;
 const statusBarYMargin = 27;
 const statusIconXMargin = 25;
 const hazardToolClickRadius = 100;
@@ -145,12 +143,15 @@ export class MainScene extends Phaser.Scene {
 
     createStatusBar(iconTexture: string): StatusBar {
         let barBackground = this.add.image(0, 0, "statusBarBackground").setOrigin(0.5);
-        let bar = this.add.rectangle(0, 0, 0, 0,
-            parseInt(config()["healthyLevelColor"], 16)).setOrigin(0, 0.5);
+        let bar = this.add.image(0, 0, "statusBarHealth").setOrigin(0.5);
+        bar.setTint(parseInt(config()["healthyLevelColor"], 16));
         let icon = this.add.image(0, 0, iconTexture);
+        let mask = this.add.graphics().setAlpha(0);
+        bar.setMask(new Phaser.Display.Masks.GeometryMask(this, mask));
         return {
             statusBarBackground: barBackground,
             statusBar: bar,
+            statusBarMask: mask,
             icon: icon
         };
     }
@@ -168,10 +169,9 @@ export class MainScene extends Phaser.Scene {
 
     setStatusBarPosition(statusBar: StatusBar, backgroundY: number, plant: Plant) {
         statusBar.statusBarBackground.setPosition(plant.gameObject.x, backgroundY);
-        statusBar.statusBar.setPosition(statusBar.statusBarBackground.getTopLeft().x + statusBarXPadding,
-            statusBar.statusBarBackground.y);
-        statusBar.statusBar.setSize(statusBar.statusBarBackground.width / 2 - statusBarXPadding,
-            statusBar.statusBarBackground.height - (statusBarYPadding * 2));
+        statusBar.statusBar.setPosition(plant.gameObject.x, backgroundY);
+        statusBar.statusBarMask.fillRect(statusBar.statusBarBackground.getTopLeft().x, statusBar.statusBarBackground.getTopLeft().y,
+            statusBar.statusBarBackground.width, statusBar.statusBarBackground.height);
         statusBar.icon.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusIconXMargin,
             statusBar.statusBarBackground.y);
     }
@@ -186,7 +186,6 @@ export class MainScene extends Phaser.Scene {
             lightStatusBar: lightBar,
             fruitStatusBar: fruitBar,
             healthStatusBar: healthBar,
-            maxStatusBarWidth: waterBar.statusBarBackground.width - (statusBarXPadding * 2)
         }
         this.setStatusBarsPosition(this.plantStatusBars[plant.id], plant);
     }

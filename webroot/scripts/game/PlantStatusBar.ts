@@ -3,7 +3,6 @@ import { GardenGame } from "./Game";
 import { FruitGrowthStage, isFruitGrowthPaused, isInWarningZone, Plant, Status } from "./Plant";
 
 export type PlantStatusBar = {
-    maxStatusBarWidth: number;
     waterStatusBar: StatusBar;
     lightStatusBar: StatusBar;
     fruitStatusBar: StatusBar;
@@ -11,17 +10,17 @@ export type PlantStatusBar = {
 }
 
 export type StatusBar = {
-    statusBar: Phaser.GameObjects.Rectangle;
+    statusBar: Phaser.GameObjects.Image;
+    statusBarMask: Phaser.GameObjects.Graphics;
     statusBarBackground: Phaser.GameObjects.Image;
     icon: Phaser.GameObjects.Image;
 }
 
 export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, plant: Plant) {
-    // Always display at least one for light/water so the bar never disappears completely
-    statusBar.waterStatusBar.statusBar.width = Math.max(plant.levels[Status.Water], 1) / 100.0 * statusBar.maxStatusBarWidth;
-    statusBar.lightStatusBar.statusBar.width = Math.max(plant.levels[Status.Light], 1) / 100.0 * statusBar.maxStatusBarWidth;
-    statusBar.healthStatusBar.statusBar.width = plant.levels[Status.Health] / 100.0 * statusBar.maxStatusBarWidth;
-    statusBar.fruitStatusBar.statusBar.width = plant.fruitProgress / 100.0 * statusBar.maxStatusBarWidth;
+    setStatusBarMask(statusBar.waterStatusBar.statusBarMask, statusBar.waterStatusBar.statusBarBackground, plant.levels[Status.Water] / 100.0);
+    setStatusBarMask(statusBar.lightStatusBar.statusBarMask, statusBar.lightStatusBar.statusBarBackground, plant.levels[Status.Light] / 100.0);
+    setStatusBarMask(statusBar.healthStatusBar.statusBarMask, statusBar.healthStatusBar.statusBarBackground, plant.levels[Status.Health] / 100.0);
+    setStatusBarMask(statusBar.fruitStatusBar.statusBarMask, statusBar.fruitStatusBar.statusBarBackground, plant.fruitProgress / 100.0);
     let isWarning = updateStatusColor(statusBar.waterStatusBar.statusBar, plant.levels[Status.Water], Status.Water);
     isWarning = updateStatusColor(statusBar.lightStatusBar.statusBar, plant.levels[Status.Light], Status.Light) || isWarning;
     if (plant.fruitGrowthStage == FruitGrowthStage.FullyGrown) {
@@ -34,8 +33,14 @@ export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, pl
     updateStatusColor(statusBar.healthStatusBar.statusBar, plant.levels[Status.Health], Status.Health);
 }
 
+function setStatusBarMask(statusBarMask: Phaser.GameObjects.Graphics, statusBarBackground: Phaser.GameObjects.Image, percentage: number) {
+    statusBarMask.clear();
+    statusBarMask.fillRect(statusBarBackground.getTopLeft().x, statusBarBackground.getTopLeft().y,
+        statusBarBackground.width * percentage, statusBarBackground.height)
+}
+
 /** Update the status bar color based on if it is in the warning range. If it is in the warning range, return true, false otherwise. */
-function updateStatusColor(statusBar: Phaser.GameObjects.Rectangle, level: number, status: Status): boolean {
+function updateStatusColor(statusBar: Phaser.GameObjects.Image, level: number, status: Status): boolean {
     if (isInWarningZone(status, level)) {
         setWarningColor(statusBar);
         return true;
@@ -49,18 +54,18 @@ function updateStatusColor(statusBar: Phaser.GameObjects.Rectangle, level: numbe
     }
 }
 
-function setWarningColor(statusBar: Phaser.GameObjects.Rectangle) {
+function setWarningColor(statusBar: Phaser.GameObjects.Image) {
     setColor(statusBar, parseInt(config()["warningLevelColor"], 16));
 }
 
-function setHealthyColor(statusBar: Phaser.GameObjects.Rectangle) {
+function setHealthyColor(statusBar: Phaser.GameObjects.Image) {
     setColor(statusBar, parseInt(config()["healthyLevelColor"], 16));
 }
 
-function setHighlightColor(statusBar: Phaser.GameObjects.Rectangle) {
+function setHighlightColor(statusBar: Phaser.GameObjects.Image) {
     setColor(statusBar, parseInt(config()["highlightColor"], 16));
 }
 
-function setColor(statusBar: Phaser.GameObjects.Rectangle, color: number) {
-    statusBar.fillColor = color;
+function setColor(statusBar: Phaser.GameObjects.Image, color: number) {
+    statusBar.setTint(color);
 }
