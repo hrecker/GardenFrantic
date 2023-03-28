@@ -38,20 +38,20 @@ export class LoadingScene extends Phaser.Scene {
         this.scale.on("resize", this.resize, this);
 
         // Images
-        this.loadTexture("plant1", "drawn/");
-        this.loadTexture("plant2", "drawn/");
-        this.loadTexture("fruitsmall1", "drawn/");
-        this.loadTexture("fruitsmall2", "drawn/");
-        this.loadTexture("fruitmedium1", "drawn/");
-        this.loadTexture("fruitmedium2", "drawn/");
-        this.loadTexture("fruitlarge1", "drawn/");
-        this.loadTexture("fruitlarge2", "drawn/");
-        this.loadTexture("statusBarBackground");
-        this.loadTexture("statusBarHealth");
-        this.loadTexture("waterIcon");
-        this.loadTexture("lightIcon");
-        this.loadTexture("fruitIcon");
-        this.loadTexture("healthIcon");
+        this.loadTexture("plant1");
+        this.loadTexture("plant2");
+        this.loadTexture("fruitsmall1");
+        this.loadTexture("fruitsmall2");
+        this.loadTexture("fruitmedium1");
+        this.loadTexture("fruitmedium2");
+        this.loadTexture("fruitlarge1");
+        this.loadTexture("fruitlarge2");
+        this.loadTexture("statusBarBackground", "statusbar/");
+        this.loadTexture("statusBarHealth", "statusbar/");
+        this.loadTexture("waterIcon", "statusbar/");
+        this.loadTexture("lightIcon", "statusbar/");
+        this.loadTexture("fruitIcon", "statusbar/");
+        this.loadTexture("healthIcon", "statusbar/");
         this.loadTexture("toolbox");
         this.loadTexture("selectedToolbox");
         this.loadToolTexture(Tool.Basket);
@@ -66,14 +66,14 @@ export class LoadingScene extends Phaser.Scene {
         this.loadToolTexture(Tool.Dog);
         this.loadToolTexture(Tool.Missile);
         this.loadToolTexture(Tool.Hammer);
-        this.loadTexture(Weather.PartlyCloudy);
-        this.loadTexture(Weather.Cloudy);
-        this.loadTexture(Weather.Heat);
-        this.loadTexture(Weather.Rain);
-        this.loadTexture(Weather.PartlyCloudy + "Preview");
-        this.loadTexture(Weather.Cloudy + "Preview");
-        this.loadTexture(Weather.Heat + "Preview");
-        this.loadTexture(Weather.Rain + "Preview");
+        this.loadTexture(Weather.PartlyCloudy, "weather/");
+        this.loadTexture(Weather.Cloudy, "weather/");
+        this.loadTexture(Weather.Heat, "weather/");
+        this.loadTexture(Weather.Rain, "weather/");
+        this.loadTexture(Weather.PartlyCloudy + "Preview", "weather/");
+        this.loadTexture(Weather.Cloudy + "Preview", "weather/");
+        this.loadTexture(Weather.Heat + "Preview", "weather/");
+        this.loadTexture(Weather.Rain + "Preview", "weather/");
         this.loadHazardTexture(Hazard.Bird, true);
         this.loadHazardTexture(Hazard.Bugs, false);
         this.loadHazardTexture(Hazard.Weeds, false);
@@ -88,19 +88,19 @@ export class LoadingScene extends Phaser.Scene {
     }
 
     loadToolTexture(tool: Tool) {
-        this.loadTexture(tool + "1", "drawn/");
-        this.loadTexture(tool + "2", "drawn/");
+        this.loadTexture(tool + "1", "tools/");
+        this.loadTexture(tool + "2", "tools/");
     }
 
     loadHazardTexture(hazard: Hazard, hasApproach: boolean) {
         if (hasApproach) {
-            this.loadTexture(hazard + "approach1", "hazards/drawn/");
-            this.loadTexture(hazard + "approach2", "hazards/drawn/");
-            this.loadTexture(hazard + "idle1", "hazards/drawn/");
-            this.loadTexture(hazard + "idle2", "hazards/drawn/");
+            this.loadTexture(hazard + "approach1", "hazards/");
+            this.loadTexture(hazard + "approach2", "hazards/");
+            this.loadTexture(hazard + "idle1", "hazards/");
+            this.loadTexture(hazard + "idle2", "hazards/");
         } else {
-            this.loadTexture(hazard + "1", "hazards/drawn/");
-            this.loadTexture(hazard + "2", "hazards/drawn/");
+            this.loadTexture(hazard + "1", "hazards/");
+            this.loadTexture(hazard + "2", "hazards/");
         }
     }
 
