@@ -81,7 +81,8 @@ export class LoadingScene extends Phaser.Scene {
         this.loadHazardTexture(Hazard.Meteor, false);
         this.loadHazardTexture(Hazard.Mole, true);
 
-        this.load.bitmapFont('uiFont', 'assets/fonts/uiFont.png', 'assets/fonts/uiFont.xml');
+        this.load.bitmapFont('uiFont', 'assets/fonts/singkong_0.png', 'assets/fonts/singkong.fnt');
+        this.load.bitmapFont('uiFontWhite', 'assets/fonts/singkong-white_0.png', 'assets/fonts/singkong-white.fnt');
 
         // Load json
         this.load.json("config", "assets/json/config.json");

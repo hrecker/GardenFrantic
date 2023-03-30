@@ -47,7 +47,7 @@ export class UIScene extends Phaser.Scene {
     }
 
     create() {
-        this.scoreText = this.add.bitmapText(0, 0, "uiFont", "0", 48).setOrigin(0, 0.5);
+        this.scoreText = this.add.bitmapText(0, 0, "uiFont", "0", 64).setOrigin(0, 0.5);
         // Weather queue images
         this.weatherImages = [];
         this.weatherImageBorders = [];
@@ -121,6 +121,7 @@ export class UIScene extends Phaser.Scene {
 
     resetGameListener(scene: UIScene) {
         scene.scoreText.setText("0");
+        scene.scoreText.setFont("uiFont");
         for (let i = 0; i < scene.gardenGame.weatherQueue.length; i++) {
             scene.weatherImages[i].setTexture(scene.gardenGame.weatherQueue[i] + "Preview");
         }
@@ -131,11 +132,16 @@ export class UIScene extends Phaser.Scene {
     }
 
     /** Handle weather queue updating */
-    handleWeatherUpdate(scene: UIScene, _weather: Weather, weatherQueue: Weather[]) {
+    handleWeatherUpdate(scene: UIScene, currentWeather: Weather, weatherQueue: Weather[]) {
         for (let i = 0; i < weatherQueue.length; i++) {
             scene.weatherImages[i].setTexture(weatherQueue[i] + "Preview");
         }
         scene.updateCooldownGraphics();
+        if (currentWeather == Weather.Cloudy || currentWeather == Weather.Rain) {
+            scene.scoreText.setFont("uiFontWhite");
+        } else {
+            scene.scoreText.setFont("uiFont");
+        }
     }
 
     update() {

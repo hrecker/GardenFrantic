@@ -134,7 +134,7 @@ export class ToolbarScene extends Phaser.Scene {
         this.input.setTopOnly(false);
         this.toolbar = this.add.rectangle(0, 0,
             config()["toolbarWidth"], 0, parseInt(config()["toolbarColor"], 16));
-        this.currentToolText = this.add.bitmapText(0, 0, "uiFont", "", 48).setOrigin(0.5);
+        this.currentToolText = this.add.bitmapText(0, 0, "uiFont", "", 64).setOrigin(0.5);
 
         this.scrollZone = this.add.zone(this.game.renderer.width - config()["toolbarWidth"], toolYAnchor - toolMargin,
         config()["toolbarWidth"], this.game.renderer.height).setOrigin(0).setInteractive();
@@ -186,7 +186,7 @@ export class ToolbarScene extends Phaser.Scene {
                     this.lastSelectedToolIndex = i;
                     let toolName = tool.getToolName(toolValue);
                     this.currentToolText.setText(toolName);
-                    this.currentToolText.setFontSize(Math.min(30 - toolName.length, 26));
+                    this.currentToolText.setFontSize(Math.min(44 - toolName.length, 40));
                     toolIcon.play(tool.startingTools[i] + "sway");
                 } else {
                     this.gardenGame.selectedTool = tool.Tool.NoTool;
