@@ -6,11 +6,15 @@ import { config } from "../model/Config";
 const uiY = 35;
 const uiXMargin = 15;
 const weatherImageWidth = 50;
+const addScoreStartMargin = 100;
+const addScoreEndMargin = 20;
+const addScoreTweenDurationMs = 1200;
 
 /** UI scene */
 export class UIScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     scoreText: Phaser.GameObjects.BitmapText;
+    addScoreText: Phaser.GameObjects.BitmapText;
 
     weatherImages: Phaser.GameObjects.Image[];
     weatherImageBorders: Phaser.GameObjects.Image[];
@@ -48,10 +52,10 @@ export class UIScene extends Phaser.Scene {
 
     create() {
         this.scoreText = this.add.bitmapText(0, 0, "uiFont", "0", 64).setOrigin(0, 0.5);
+        this.addScoreText = this.add.bitmapText(0, 0, "uiFont", "", 48).setOrigin(0, 0.5);
         // Weather queue images
         this.weatherImages = [];
         this.weatherImageBorders = [];
-        let tints = config()["weatherPreviewTints"];
         for (let i = 0; i < this.gardenGame.weatherQueue.length; i++) {
             let tint = parseInt(config()["weatherPreviewTint"], 16);
             this.weatherImages.push(this.add.image(0, 0, this.gardenGame.weatherQueue[i] + "Preview").
@@ -128,7 +132,24 @@ export class UIScene extends Phaser.Scene {
     }
 
     handleScoreUpdate(scene: UIScene, score: number) {
+        let previousScore = parseInt(scene.scoreText.text);
+        let diff = score - previousScore;
         scene.scoreText.setText(score.toString());
+        if (diff > 0) {
+            scene.addScoreText.setText("+" + diff).setAlpha(1).setPosition(scene.scoreText.x, scene.scoreText.y + addScoreStartMargin);
+            scene.tweens.add({
+                duration: addScoreTweenDurationMs,
+                y: {
+                    from: scene.addScoreText.y,
+                    to: scene.scoreText.y + addScoreEndMargin,
+                },
+                alpha: {
+                    from: 1,
+                    to: 0
+                },
+                targets: scene.addScoreText
+            });
+        }
     }
 
     /** Handle weather queue updating */
@@ -139,8 +160,10 @@ export class UIScene extends Phaser.Scene {
         scene.updateCooldownGraphics();
         if (currentWeather == Weather.Cloudy || currentWeather == Weather.Rain) {
             scene.scoreText.setFont("uiFontWhite");
+            scene.addScoreText.setFont("uiFontWhite");
         } else {
             scene.scoreText.setFont("uiFont");
+            scene.addScoreText.setFont("uiFont");
         }
     }
 
