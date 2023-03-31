@@ -21,6 +21,7 @@ export class MainScene extends Phaser.Scene {
     plantFruitImages: { [id: number] : Phaser.GameObjects.Sprite }
     hazardImages: { [id: number] : Phaser.GameObjects.Image }
     background: Phaser.GameObjects.Image;
+    particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor() {
         super({
@@ -84,6 +85,17 @@ export class MainScene extends Phaser.Scene {
 
         this.createAnimations();
         this.createPlant(0, 0);
+        
+        let particles = this.add.particles('particle');
+        this.particleEmitter = particles.createEmitter({
+            speed: 90,
+            gravityY: 200,
+            scale: 3,
+            tint: 0xD9C8BF,
+            frequency: -1,
+            rotate: { min: 0, max: 360 },
+            lifespan: 3000,
+        });
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
@@ -294,6 +306,7 @@ export class MainScene extends Phaser.Scene {
 
     /** Handle a fruit being harvested for a plant */
     handleFruitHarvest(scene: MainScene, plant: Plant) {
+        scene.particleEmitter.explode(25, scene.plantFruitImages[plant.id].x, scene.plantFruitImages[plant.id].y);
         scene.plantFruitImages[plant.id].destroy();
         delete scene.plantFruitImages[plant.id];
     }

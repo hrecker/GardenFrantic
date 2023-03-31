@@ -8,17 +8,21 @@ const uiXMargin = 15;
 const weatherImageWidth = 50;
 const addScoreStartMargin = 100;
 const addScoreEndMargin = 20;
-const addScoreTweenDurationMs = 1200;
+const maxParticles = 20;
+const scoreTextParticlesMargin = 14;
 
 /** UI scene */
 export class UIScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
     scoreText: Phaser.GameObjects.BitmapText;
-    addScoreText: Phaser.GameObjects.BitmapText;
+    addScoreTextNormal: Phaser.GameObjects.BitmapText;
+    addScoreTextSpecial: Phaser.GameObjects.BitmapText;
 
     weatherImages: Phaser.GameObjects.Image[];
     weatherImageBorders: Phaser.GameObjects.Image[];
     countdownGraphics: Phaser.GameObjects.Graphics;
+
+    particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor() {
         super({
@@ -52,7 +56,8 @@ export class UIScene extends Phaser.Scene {
 
     create() {
         this.scoreText = this.add.bitmapText(0, 0, "uiFont", "0", 64).setOrigin(0, 0.5);
-        this.addScoreText = this.add.bitmapText(0, 0, "uiFont", "", 48).setOrigin(0, 0.5);
+        this.addScoreTextNormal = this.add.bitmapText(0, 0, "uiFont", "", 48).setOrigin(0, 0.5);
+        this.addScoreTextSpecial = this.add.bitmapText(0, 0, "uiFont", "", 80).setOrigin(0, 0.5);
         // Weather queue images
         this.weatherImages = [];
         this.weatherImageBorders = [];
@@ -63,6 +68,19 @@ export class UIScene extends Phaser.Scene {
             this.weatherImageBorders.push(this.add.image(0, 0, "toolbox"));
         }
         this.countdownGraphics = this.add.graphics();
+
+        let particles = this.add.particles('particle');
+        this.particleEmitter = particles.createEmitter({
+            speed: 20,
+            gravityY: 1,
+            scale: 2,
+            tint: 0xD9C8BF,
+            frequency: -1,
+            rotate: { min: 0, max: 360 },
+            lifespan: config()["scoreBumpIntervalMs"],
+        }).setAlpha(function (p, k, t) {
+            return 1 - t;
+        });
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
@@ -135,20 +153,25 @@ export class UIScene extends Phaser.Scene {
         let previousScore = parseInt(scene.scoreText.text);
         let diff = score - previousScore;
         scene.scoreText.setText(score.toString());
+        let addScoreText = scene.addScoreTextNormal;
+        if (diff > 10) {
+            addScoreText = scene.addScoreTextSpecial;
+        }
         if (diff > 0) {
-            scene.addScoreText.setText("+" + diff).setAlpha(1).setPosition(scene.scoreText.x, scene.scoreText.y + addScoreStartMargin);
+            addScoreText.setText("+" + diff).setAlpha(1).setPosition(scene.scoreText.x, scene.scoreText.y + addScoreStartMargin);
             scene.tweens.add({
-                duration: addScoreTweenDurationMs,
+                duration: config()["scoreBumpIntervalMs"],
                 y: {
-                    from: scene.addScoreText.y,
+                    from: addScoreText.y,
                     to: scene.scoreText.y + addScoreEndMargin,
                 },
                 alpha: {
                     from: 1,
                     to: 0
                 },
-                targets: scene.addScoreText
+                targets: addScoreText
             });
+            scene.particleEmitter.explode(Math.min(diff, maxParticles), addScoreText.x + scoreTextParticlesMargin, addScoreText.y - scoreTextParticlesMargin);
         }
     }
 
@@ -160,10 +183,12 @@ export class UIScene extends Phaser.Scene {
         scene.updateCooldownGraphics();
         if (currentWeather == Weather.Cloudy || currentWeather == Weather.Rain) {
             scene.scoreText.setFont("uiFontWhite");
-            scene.addScoreText.setFont("uiFontWhite");
+            scene.addScoreTextNormal.setFont("uiFontWhite");
+            scene.addScoreTextSpecial.setFont("uiFontWhite");
         } else {
             scene.scoreText.setFont("uiFont");
-            scene.addScoreText.setFont("uiFont");
+            scene.addScoreTextNormal.setFont("uiFont");
+            scene.addScoreTextSpecial.setFont("uiFont");
         }
     }
 
