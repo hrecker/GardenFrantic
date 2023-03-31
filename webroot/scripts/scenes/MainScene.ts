@@ -11,6 +11,7 @@ const statusBarYMargin = 27;
 const statusIconXMargin = 25;
 const hazardToolClickRadius = 100;
 const plantYMargin = 100;
+const backgroundFadeDurationMs = 1000;
 
 let listenersInitialized = false;
 
@@ -21,6 +22,7 @@ export class MainScene extends Phaser.Scene {
     plantFruitImages: { [id: number] : Phaser.GameObjects.Sprite }
     hazardImages: { [id: number] : Phaser.GameObjects.Image }
     background: Phaser.GameObjects.Image;
+    backgroundWipe: Phaser.GameObjects.Image;
     particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor() {
@@ -60,6 +62,7 @@ export class MainScene extends Phaser.Scene {
             yScale = this.game.renderer.height / height;
         }
         this.background.setScale(xScale, yScale);
+        this.backgroundWipe.setScale(xScale, yScale);
 
         let plantXAnchor = (this.game.renderer.width - config()["toolbarWidth"]) / 2;
         let plantY = this.game.renderer.height - plantYMargin;
@@ -82,6 +85,7 @@ export class MainScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
 
         this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0);
+        this.backgroundWipe = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setAlpha(0);
 
         this.createAnimations();
         this.createPlant(0, 0);
@@ -281,7 +285,27 @@ export class MainScene extends Phaser.Scene {
 
     /** Handle weather being changed (may be called even if the new weather is the same) */
     handleWeatherUpdate(scene: MainScene, weather: Weather, _weatherQueue: Weather[]) {
-        scene.background.setTexture(weather);
+        // Rotate the backgrounds
+        let weatherChanged = weather != scene.background.texture.key;
+        if (weatherChanged) {
+            scene.backgroundWipe.setAlpha(1);
+            scene.background.setTexture(weather);
+            scene.tweens.add({
+                duration: backgroundFadeDurationMs,
+                alpha: {
+                    from: 1,
+                    to: -0.2
+                },
+                targets: scene.backgroundWipe,
+                onComplete() {
+                    scene.backgroundWipe.setAlpha(0);
+                    scene.backgroundWipe.setTexture(weather);
+                    scene.backgroundWipe.y = 0;
+                }
+            });
+        } else {
+            scene.background.setTexture(weather);
+        }
     }
 
     /** Handle a fruit being grown for a plant */
