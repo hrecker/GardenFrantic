@@ -42,6 +42,8 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("redparticle", "assets/sprites/redparticle.png");
 
         // Images
+        this.loadTexture("uparrow");
+        this.loadTexture("downarrow");
         this.loadTexture("plant1");
         this.loadTexture("plant2");
         this.loadTexture("fruitsmall1");

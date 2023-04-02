@@ -202,15 +202,15 @@ function getRandomPlant(game: GardenGame): Plant {
     return game.plants[ids[0]];
 }
 
-function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
+export function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
     return weather.getDecayRate(game.weather, Status.Light);
 }
 
-function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
+export function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
     return weather.getDecayRate(game.weather, Status.Water);
 }
 
-function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): number {
+export function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): number {
     let decayRate = config()["healthGrowthRate"] * -1;
     // If any status is at warning level, then health will decrease
     let numWarning = numWarningStatus(plant);

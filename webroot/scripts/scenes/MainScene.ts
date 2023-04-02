@@ -8,7 +8,8 @@ import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, ge
 import { createSwayAnimation, flashSprite } from "../util/Util";
 
 const statusBarYMargin = 27;
-const statusIconXMargin = 25;
+const statusIconXMargin = 15;
+const statusArrowXMargin = 40;
 const hazardToolClickRadius = 100;
 const plantYMargin = 100;
 const backgroundFadeDurationMs = 1000;
@@ -177,13 +178,15 @@ export class MainScene extends Phaser.Scene {
         let bar = this.add.image(0, 0, "statusBarHealth").setOrigin(0.5);
         bar.setTint(parseInt(config()["healthyLevelColor"], 16));
         let icon = this.add.image(0, 0, iconTexture);
+        let arrow = this.add.image(0, 0, "uparrow");
         let mask = this.add.graphics().setAlpha(0);
         bar.setMask(new Phaser.Display.Masks.GeometryMask(this, mask));
         return {
             statusBarBackground: barBackground,
             statusBar: bar,
             statusBarMask: mask,
-            icon: icon
+            icon: icon,
+            arrow: arrow
         };
     }
 
@@ -205,6 +208,8 @@ export class MainScene extends Phaser.Scene {
             statusBar.statusBarBackground.width, statusBar.statusBarBackground.height);
         statusBar.icon.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusIconXMargin,
             statusBar.statusBarBackground.y);
+        statusBar.arrow.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusArrowXMargin,
+            statusBar.statusBarBackground.y);
     }
 
     createStatusBars(plant: Plant) {
@@ -225,6 +230,7 @@ export class MainScene extends Phaser.Scene {
         statusBar.statusBar.destroy();
         statusBar.statusBarBackground.destroy();
         statusBar.icon.destroy();
+        statusBar.arrow.destroy();
     }
     
     /** Handle hazard being created */
