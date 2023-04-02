@@ -39,6 +39,7 @@ export class LoadingScene extends Phaser.Scene {
         
         // FX
         this.load.image("particle", "assets/sprites/particle.png");
+        this.load.image("redparticle", "assets/sprites/redparticle.png");
 
         // Images
         this.loadTexture("plant1");

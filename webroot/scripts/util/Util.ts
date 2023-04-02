@@ -27,3 +27,11 @@ export function createSwayAnimation(scene: Phaser.Scene, key: string, frames: Ph
         repeat: -1
     });
 }
+
+/** Set a sprite to full white for a time */
+export function flashSprite(sprite: Phaser.GameObjects.Image, durationMs: number, scene: Phaser.Scene, tintFill: number) {
+    sprite.setTintFill(tintFill);
+    scene.time.delayedCall(durationMs, () => {
+        sprite.clearTint();
+    });
+}

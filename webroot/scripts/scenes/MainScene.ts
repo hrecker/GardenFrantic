@@ -5,13 +5,16 @@ import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatus
 import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
-import { createSwayAnimation } from "../util/Util";
+import { createSwayAnimation, flashSprite } from "../util/Util";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 25;
 const hazardToolClickRadius = 100;
 const plantYMargin = 100;
 const backgroundFadeDurationMs = 1000;
+const hazardFadeDurationMs = 800;
+const hazardFlashDuration = 100;
+const hazardFlashColor = 0xf2c3b8;
 
 let listenersInitialized = false;
 
@@ -24,6 +27,7 @@ export class MainScene extends Phaser.Scene {
     background: Phaser.GameObjects.Image;
     backgroundWipe: Phaser.GameObjects.Image;
     particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
+    hazardParticleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor() {
         super({
@@ -91,6 +95,7 @@ export class MainScene extends Phaser.Scene {
         this.createPlant(0, 0);
         
         let particles = this.add.particles('particle');
+        let redParticles = this.add.particles('redparticle');
         this.particleEmitter = particles.createEmitter({
             speed: 90,
             gravityY: 200,
@@ -99,6 +104,16 @@ export class MainScene extends Phaser.Scene {
             frequency: -1,
             rotate: { min: 0, max: 360 },
             lifespan: 3000,
+        });
+        this.hazardParticleEmitter = redParticles.createEmitter({
+            speed: 100,
+            gravityY: 50,
+            scale: 2,
+            frequency: -1,
+            rotate: { min: 0, max: 360 },
+            lifespan: 750,
+        }).setAlpha(function (p, k, t) {
+            return 1 - t;
         });
 
         this.resize(true);
@@ -259,8 +274,31 @@ export class MainScene extends Phaser.Scene {
     }
 
     handleHazardDestroy(scene: MainScene, hazardId: number) {
-        scene.hazardImages[hazardId].destroy();
-        delete scene.hazardImages[hazardId];
+        flashSprite(scene.hazardImages[hazardId], hazardFlashDuration, scene, hazardFlashColor);
+        scene.hazardParticleEmitter.explode(10, scene.hazardImages[hazardId].x, scene.hazardImages[hazardId].y);
+        // Get a random angle, either between -pi/3 and -2pi/3, or between pi/3 and 2pi/3, so that the image always
+        // rotates a good amount
+        let multiplier = 1;
+        if (Math.random() <= 0.5) {
+            multiplier = -1;
+        }
+        let targetRotation = ((Math.random() * Math.PI / 3) + (Math.PI / 3)) * multiplier;
+        scene.tweens.add({
+            duration: hazardFadeDurationMs,
+            alpha: {
+                from: 1,
+                to: 0
+            },
+            rotation: {
+                from: scene.hazardImages[hazardId].rotation,
+                to: targetRotation
+            },
+            targets: scene.hazardImages[hazardId],
+            onComplete: function() {
+                scene.hazardImages[hazardId].destroy();
+                delete scene.hazardImages[hazardId];
+            }
+        });
     }
 
     /** Handle plant being destroyed */
