@@ -1,4 +1,5 @@
 import { Hazard } from "../game/Hazard";
+import { Tool } from "../game/Tool";
 import { config } from "../model/Config";
 
 let sounds: { [effect: string]: Phaser.Sound.BaseSound } = {};
@@ -11,6 +12,12 @@ export function loadSounds(scene: Phaser.Scene) {
     sounds[Hazard.Meteor] = scene.sound.add(Hazard.Meteor);
     sounds[Hazard.Mole] = scene.sound.add(Hazard.Mole);
     sounds[Hazard.Weeds] = scene.sound.add(Hazard.Weeds);
+    sounds[Tool.Scarecrow] = scene.sound.add(Tool.Scarecrow);
+    sounds[Tool.Pesticide] = scene.sound.add(Tool.Pesticide);
+    sounds[Tool.Missile] = scene.sound.add(Tool.Missile);
+    sounds[Tool.Hammer] = scene.sound.add(Tool.Hammer);
+    sounds[Tool.Dog] = scene.sound.add(Tool.Dog);
+    sounds[Tool.Weedkiller] = scene.sound.add(Tool.Weedkiller);
 }
 
 /** Get a given sound */

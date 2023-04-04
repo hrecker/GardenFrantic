@@ -310,7 +310,10 @@ export class MainScene extends Phaser.Scene {
                 delete scene.hazardImages[hazardId];
             }
         });
+
         stopSound(activeHazard.hazard);
+        // Play sounds of tool that destroyed the hazard
+        playSound(scene, config()["hazards"][activeHazard.hazard.toString()]["destroyTool"]);
     }
 
     /** Handle plant being destroyed */

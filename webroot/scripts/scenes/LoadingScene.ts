@@ -98,6 +98,13 @@ export class LoadingScene extends Phaser.Scene {
         this.load.audio(Hazard.Meteor, "assets/sfx/meteor.mp3");
         this.load.audio(Hazard.Mole, "assets/sfx/mole.m4a");
         this.load.audio(Hazard.Weeds, "assets/sfx/weeds.wav");
+        
+        this.load.audio(Tool.Scarecrow, "assets/sfx/scarecrow.wav");
+        this.load.audio(Tool.Pesticide, "assets/sfx/spray.wav");
+        this.load.audio(Tool.Missile, "assets/sfx/missile.wav");
+        this.load.audio(Tool.Hammer, "assets/sfx/hammer.wav");
+        this.load.audio(Tool.Dog, "assets/sfx/dog.wav");
+        this.load.audio(Tool.Weedkiller, "assets/sfx/spray.wav");
 
         // Load json
         this.load.json("config", "assets/json/config.json");

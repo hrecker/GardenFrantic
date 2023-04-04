@@ -135,42 +135,48 @@
             "healthDamageRate": 5,
             "timeToActive": 3000,
             "type": "constant",
-            "hasApproachAnimation": false
+            "hasApproachAnimation": false,
+            "destroyTool": "pesticide"
         },
         "bird": {
             "motion": "swoop",
             "healthDamageRate": 3,
             "timeToActive": 2500,
             "type": "constant",
-            "hasApproachAnimation": true
+            "hasApproachAnimation": true,
+            "destroyTool": "scarecrow"
         },
         "weeds": {
             "motion": "grow",
             "healthDamageRate": 4,
             "timeToActive": 4000,
             "type": "constant",
-            "hasApproachAnimation": false
+            "hasApproachAnimation": false,
+            "destroyTool": "weedkiller"
         },
         "bunny": {
             "motion": "walk",
             "healthDamageRate": 4,
             "timeToActive": 2500,
             "type": "constant",
-            "hasApproachAnimation": true
+            "hasApproachAnimation": true,
+            "destroyTool": "dog"
         },
         "meteor": {
             "motion": "swoop",
             "healthDamageRate": 50,
             "timeToActive": 6000,
             "type": "impact",
-            "hasApproachAnimation": false
+            "hasApproachAnimation": false,
+            "destroyTool": "missile"
         },
         "mole": {
             "motion": "grow",
             "healthDamageRate": 5,
             "timeToActive": 3000,
             "type": "constant",
-            "hasApproachAnimation": true
+            "hasApproachAnimation": true,
+            "destroyTool": "hammer"
         }
     },
 
@@ -192,6 +198,24 @@
         },
         "weeds": {
             "volume": 0.6
+        },
+        "scarecrow": {
+            "volume": 0.5
+        },
+        "pesticide": {
+            "volume": 0.5
+        },
+        "weedkiller": {
+            "volume": 0.5
+        },
+        "dog": {
+            "volume": 0.5
+        },
+        "missile": {
+            "volume": 0.5
+        },
+        "hammer": {
+            "volume": 0.5
         }
     }
 }
