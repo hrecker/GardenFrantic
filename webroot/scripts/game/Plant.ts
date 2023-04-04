@@ -121,9 +121,9 @@ export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard)
     // Remove any destroyed hazards from the plant
     for (let i = toRemoveIndices.length - 1; i >= 0; i--) {
         let id = plant.activeHazardIds[toRemoveIndices[i]];
+        hazardDestroyedEvent(id);
         plant.activeHazardIds.splice(toRemoveIndices[i], 1);
         delete game.activeHazards[id];
-        hazardDestroyedEvent(id);
     }
 }
 
@@ -141,9 +141,9 @@ export function removeHazardById(game: GardenGame, plant: Plant, hazardId: numbe
         return false;
     }
     
+    hazardDestroyedEvent(hazardId);
     plant.activeHazardIds.splice(idIndex, 1);
     delete game.activeHazards[hazardId];
-    hazardDestroyedEvent(hazardId);
     return true;
 }
 

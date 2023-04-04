@@ -87,8 +87,17 @@ export class LoadingScene extends Phaser.Scene {
         this.loadHazardTexture(Hazard.Meteor, false);
         this.loadHazardTexture(Hazard.Mole, true);
 
+        // Fonts
         this.load.bitmapFont('uiFont', 'assets/fonts/singkong_0.png', 'assets/fonts/singkong.fnt');
         this.load.bitmapFont('uiFontWhite', 'assets/fonts/singkong-white_0.png', 'assets/fonts/singkong-white.fnt');
+
+        // SFX
+        this.load.audio(Hazard.Bird, "assets/sfx/bird.wav");
+        this.load.audio(Hazard.Bugs, "assets/sfx/bugs.wav");
+        this.load.audio(Hazard.Bunny, "assets/sfx/bunny.wav");
+        this.load.audio(Hazard.Meteor, "assets/sfx/meteor.mp3");
+        this.load.audio(Hazard.Mole, "assets/sfx/mole.m4a");
+        this.load.audio(Hazard.Weeds, "assets/sfx/weeds.wav");
 
         // Load json
         this.load.json("config", "assets/json/config.json");

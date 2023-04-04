@@ -172,5 +172,26 @@
             "type": "constant",
             "hasApproachAnimation": true
         }
+    },
+
+    "sfx": {
+        "bird": {
+            "volume": 0.2
+        },
+        "bugs": {
+            "volume": 0.35
+        },
+        "bunny": {
+            "volume": 0.15
+        },
+        "meteor": {
+            "volume": 0.4
+        },
+        "mole": {
+            "volume": 0.5
+        },
+        "weeds": {
+            "volume": 0.6
+        }
     }
 }

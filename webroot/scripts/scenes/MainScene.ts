@@ -6,6 +6,7 @@ import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListen
 import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation, flashSprite } from "../util/Util";
+import { loadSounds, playSound, stopAllSounds, stopSound } from "../audio/Sound";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -116,6 +117,8 @@ export class MainScene extends Phaser.Scene {
         }).setAlpha(function (p, k, t) {
             return 1 - t;
         });
+
+        loadSounds(this);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
@@ -277,9 +280,11 @@ export class MainScene extends Phaser.Scene {
                 game.useSelectedTool(scene.gardenGame, plant);
             }
         });
+        playSound(this, activeHazard.hazard, true);
     }
 
     handleHazardDestroy(scene: MainScene, hazardId: number) {
+        let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
         flashSprite(scene.hazardImages[hazardId], hazardFlashDuration, scene, hazardFlashColor);
         scene.hazardParticleEmitter.explode(10, scene.hazardImages[hazardId].x, scene.hazardImages[hazardId].y);
         // Get a random angle, either between -pi/3 and -2pi/3, or between pi/3 and 2pi/3, so that the image always
@@ -305,6 +310,7 @@ export class MainScene extends Phaser.Scene {
                 delete scene.hazardImages[hazardId];
             }
         });
+        stopSound(activeHazard.hazard);
     }
 
     /** Handle plant being destroyed */
@@ -325,6 +331,9 @@ export class MainScene extends Phaser.Scene {
             scene.plantFruitImages[plant.id].destroy();
             delete scene.plantFruitImages[plant.id];
         }
+
+        //TODO if more than one plant is allowed, need to handle game over logic elsewhere
+        stopAllSounds();
     }
 
     /** Handle weather being changed (may be called even if the new weather is the same) */
