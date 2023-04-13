@@ -191,7 +191,7 @@
             "volume": 0.15
         },
         "meteor": {
-            "volume": 0.4
+            "volume": 0.3
         },
         "mole": {
             "volume": 0.5
@@ -212,9 +212,27 @@
             "volume": 0.5
         },
         "missile": {
-            "volume": 0.5
+            "volume": 0.35
         },
         "hammer": {
+            "volume": 0.4
+        },
+        "basket": {
+            "volume": 1.0
+        },
+        "fertilizer": {
+            "volume": 0.5
+        },
+        "lamp": {
+            "volume": 0.5
+        },
+        "shade": {
+            "volume": 0.5
+        },
+        "wateringcan": {
+            "volume": 0.5
+        },
+        "umbrella": {
             "volume": 0.5
         }
     }

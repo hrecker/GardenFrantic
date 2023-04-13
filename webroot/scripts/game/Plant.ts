@@ -109,7 +109,7 @@ function hasActiveHazards(game: GardenGame, plant: Plant) {
     return false;
 }
 
-export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard) {
+export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard): boolean {
     let toRemoveIndices = [];
     for (let i = 0; i < plant.activeHazardIds.length; i++) {
         let id = plant.activeHazardIds[i];
@@ -125,6 +125,7 @@ export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard)
         plant.activeHazardIds.splice(toRemoveIndices[i], 1);
         delete game.activeHazards[id];
     }
+    return toRemoveIndices.length > 0;
 }
 
 /** Return true if a hazard was removed for this plant, false otherwise. */

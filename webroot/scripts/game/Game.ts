@@ -232,9 +232,9 @@ export function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): numb
 }
 
 /** Use the currently selected tool on the given plant. */
-export function useSelectedTool(game: GardenGame, plant: Plant) {
+export function useSelectedTool(game: GardenGame, plant: Plant): Tool {
     if (! game.selectedTool) {
-        return;
+        return null;
     }
 
     switch (tool.getCategory(game.selectedTool)) {
@@ -242,6 +242,7 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
             if (plant.fruitGrowthStage == FruitGrowthStage.FullyGrown) {
                 harvestFruit(plant);
                 addScore(game, config()["fruitHarvestPoints"]);
+                return game.selectedTool;
             }
             break;
         case tool.ToolCategory.HazardRemoval:
@@ -250,16 +251,19 @@ export function useSelectedTool(game: GardenGame, plant: Plant) {
         // Otherwise, update the plant's status
         case tool.ToolCategory.Water:
             updateStatusLevel(plant, Status.Water, tool.getDelta(game.selectedTool));
-            break;
+            return game.selectedTool;
         case tool.ToolCategory.Light:
             updateStatusLevel(plant, Status.Light, tool.getDelta(game.selectedTool));
-            break;
+            return game.selectedTool;
         case tool.ToolCategory.Growth:
             if (! isFruitGrowthPaused(game, plant)) {
                 setFruitProgress(plant, plant.fruitProgress + tool.getDelta(game.selectedTool));
+                return game.selectedTool;
             }
             break;
     }
+    
+    return null;
 }
 
 export function removeHazardIfRightToolSelected(game: GardenGame, hazard: ActiveHazard): boolean {

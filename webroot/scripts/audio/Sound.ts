@@ -18,6 +18,12 @@ export function loadSounds(scene: Phaser.Scene) {
     sounds[Tool.Hammer] = scene.sound.add(Tool.Hammer);
     sounds[Tool.Dog] = scene.sound.add(Tool.Dog);
     sounds[Tool.Weedkiller] = scene.sound.add(Tool.Weedkiller);
+    sounds[Tool.Basket] = scene.sound.add(Tool.Basket);
+    sounds[Tool.Fertilizer] = scene.sound.add(Tool.Fertilizer);
+    sounds[Tool.Lamp] = scene.sound.add(Tool.Lamp);
+    sounds[Tool.Shade] = scene.sound.add(Tool.Shade);
+    sounds[Tool.WateringCan] = scene.sound.add(Tool.WateringCan);
+    sounds[Tool.Umbrella] = scene.sound.add(Tool.Umbrella);
 }
 
 /** Get a given sound */

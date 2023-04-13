@@ -164,6 +164,13 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    useSelectedToolWithSound(plant: Plant) {
+        let used = game.useSelectedTool(this.gardenGame, plant);
+        if (used != null) {
+            playSound(this, used, false);
+        }
+    }
+
     createPlant(x: number, y: number): Plant {
         let sprite = this.add.sprite(x, y, 'plant1').setScale(0.25).play('plantsway');
         let plant = game.addPlant(this.gardenGame, sprite);
@@ -171,7 +178,7 @@ export class MainScene extends Phaser.Scene {
 
         plant.gameObject.setInteractive();
         plant.gameObject.on("pointerdown", () => {
-            game.useSelectedTool(this.gardenGame, plant);
+            this.useSelectedToolWithSound(plant);
         });
         return plant;
     }
@@ -277,7 +284,7 @@ export class MainScene extends Phaser.Scene {
             // This allows using non-hazard related tools when clicking on a hazard
             if (! game.removeHazardIfRightToolSelected(scene.gardenGame, activeHazard) &&
                     Phaser.Math.Distance.Between(plantImage.x, plantImage.y, hazardImage.x, hazardImage.y) < hazardToolClickRadius) {
-                game.useSelectedTool(scene.gardenGame, plant);
+                scene.useSelectedToolWithSound(plant);
             }
         });
         playSound(this, activeHazard.hazard, true);
