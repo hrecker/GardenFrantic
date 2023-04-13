@@ -91,6 +91,9 @@ export class LoadingScene extends Phaser.Scene {
         this.load.bitmapFont('uiFont', 'assets/fonts/singkong_0.png', 'assets/fonts/singkong.fnt');
         this.load.bitmapFont('uiFontWhite', 'assets/fonts/singkong-white_0.png', 'assets/fonts/singkong-white.fnt');
 
+        // Load audio
+        this.load.audio('backgroundMusic', 'assets/music/Peaceful-Puzzles.mp3');
+
         // SFX
         this.load.audio(Hazard.Bird, "assets/sfx/bird.wav");
         this.load.audio(Hazard.Bugs, "assets/sfx/bugs.wav");
@@ -143,7 +146,8 @@ export class LoadingScene extends Phaser.Scene {
     create() {
         loadConfig(this.cache.json.get("config"));
         let game = newGame();
-        this.scene.start("MainScene", { gardenGame: game })
+        this.scene.start("BackgroundScene")
+                  .start("MainScene", { gardenGame: game })
                   .start("ToolbarScene", { gardenGame: game })
                   .start("UIScene", { gardenGame: game })
                   .stop();
