@@ -1,8 +1,11 @@
 import { Hazard } from "../game/Hazard";
 import { Tool } from "../game/Tool";
 import { config } from "../model/Config";
+import { getSettings } from "../state/Settings";
 
 let sounds: { [effect: string]: Phaser.Sound.BaseSound } = {};
+
+export const ButtonClick = "buttonClick";
 
 /** Load all sound files */
 export function loadSounds(scene: Phaser.Scene) {
@@ -24,6 +27,7 @@ export function loadSounds(scene: Phaser.Scene) {
     sounds[Tool.Shade] = scene.sound.add(Tool.Shade);
     sounds[Tool.WateringCan] = scene.sound.add(Tool.WateringCan);
     sounds[Tool.Umbrella] = scene.sound.add(Tool.Umbrella);
+    sounds[ButtonClick] = scene.sound.add(ButtonClick);
 }
 
 /** Get a given sound */
@@ -33,13 +37,11 @@ export function getSound(sound: string): Phaser.Sound.BaseSound {
 
 /** Play a given sound */
 export function playSound(scene: Phaser.Scene, sound: string, loop?: boolean) {
-    //TODO
-    /*if (! getSettings().sfxEnabled) {
+    if (! getSettings().sfxEnabled) {
         return;
-    }*/
+    }
 
     if (loop) {
-        //TODO configuring sound volume
         // Play the cached sound when looping so that it can be stopped later
         sounds[sound].play({
             volume: config()["sfx"][sound]["volume"],

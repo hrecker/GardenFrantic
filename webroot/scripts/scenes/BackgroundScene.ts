@@ -1,4 +1,7 @@
+import { stopAllSounds } from "../audio/Sound";
+import { addSettingsListener } from "../events/EventMessenger";
 import { config } from "../model/Config";
+import { getSettings, Settings } from "../state/Settings";
 
 /** Shader background shown for menu and for the main game */
 export class BackgroundScene extends Phaser.Scene {
@@ -11,13 +14,11 @@ export class BackgroundScene extends Phaser.Scene {
     }
 
     getMusicVolume() {
-        //TODO
-        /*if (getSettings().musicEnabled) {
+        if (getSettings().musicEnabled) {
             return config()["defaultMusicVolume"];
         } else {
             return 0;
-        }*/
-        return 1;
+        }
     }
 
     create() {
@@ -26,14 +27,14 @@ export class BackgroundScene extends Phaser.Scene {
             loop: true,
             volume: this.getMusicVolume()
         });
-        //addSettingsListener(this.settingsListener, this);
+        addSettingsListener(this.settingsListener, this);
     }
 
-    //TODO
-    /*settingsListener(newSettings: Settings, scene: Phaser.Scene) {
-        bgMusic.setVolume(scene.getMusicVolume());
+    settingsListener(newSettings: Settings, scene: BackgroundScene) {
         if (! newSettings.sfxEnabled) {
             stopAllSounds();
         }
-    }*/
+        // This method should be here, assuming the device supports some type of audio playback
+        scene.bgMusic.setVolume(scene.getMusicVolume());
+    }
 }

@@ -1,5 +1,6 @@
 import { Plant } from "../game/Plant";
 import { Weather } from "../game/Weather";
+import { Settings } from "../state/Settings";
 
 // This file is used for defining callbacks for events
 
@@ -20,6 +21,10 @@ type WeatherCallback = {
     callback: (scene: Phaser.Scene, weather: Weather, weatherQueue: Weather[]) => void;
     scene: Phaser.Scene;
 }
+type SettingsCallback = {
+    callback: (newSettings: Settings, scene: Phaser.Scene) => void;
+    scene: Phaser.Scene;
+}
 
 // Callback lists
 let gameResetCallbacks: VoidCallback[] = [];
@@ -30,6 +35,7 @@ let plantDestroyCallbacks: PlantCallback[] = [];
 let weatherUpdateCallbacks: WeatherCallback[] = [];
 let hazardCreatedCallbacks: NumberCallback[] = [];
 let hazardDestroyedCallbacks: NumberCallback[] = [];
+let settingsCallbacks: SettingsCallback[] = [];
 
 /** Add a callback listening for game reset */
 export function addGameResetListener(callback: (scene: Phaser.Scene) => void, scene: Phaser.Scene) {
@@ -141,5 +147,19 @@ export function addHazardDestroyedListener(callback: (scene: Phaser.Scene, hazar
 export function hazardDestroyedEvent(hazardId: number) {
     hazardDestroyedCallbacks.forEach(callback => 
         callback.callback(callback.scene, hazardId));
+}
+
+/** Add a callback listening for settings changes */
+export function addSettingsListener(callback: (newSettings: Settings, scene: Phaser.Scene) => void, scene: Phaser.Scene) {
+    settingsCallbacks.push({ 
+        callback: callback,
+        scene: scene
+    });
+}
+
+/** Call any callbacks listening for settings changes */
+export function settingsEvent(newSettings: Settings) {
+    settingsCallbacks.forEach(callback => 
+        callback.callback(newSettings, callback.scene));
 }
 
