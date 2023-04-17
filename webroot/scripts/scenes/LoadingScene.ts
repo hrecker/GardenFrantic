@@ -86,6 +86,7 @@ export class LoadingScene extends Phaser.Scene {
         this.loadHazardTexture(Hazard.Bunny, true);
         this.loadHazardTexture(Hazard.Meteor, false);
         this.loadHazardTexture(Hazard.Mole, true);
+        this.loadTexture("meteorFragment", "hazards/");
         
         // UI
         this.load.image("playButton", "assets/sprites/ui/playButton.png");

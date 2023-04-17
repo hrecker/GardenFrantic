@@ -2,7 +2,7 @@ import * as game from "../game/Game";
 import { FruitGrowthStage, Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
-import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addHazardImpactListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation, flashSprite } from "../util/Util";
@@ -17,6 +17,7 @@ const backgroundFadeDurationMs = 1000;
 const hazardFadeDurationMs = 800;
 const hazardFlashDuration = 100;
 const hazardFlashColor = 0xf2c3b8;
+const meteorFragmentRadius = 25;
 
 let listenersInitialized = false;
 
@@ -47,6 +48,7 @@ export class MainScene extends Phaser.Scene {
             addFruitHarvestListener(this.handleFruitHarvest, this);
             addHazardCreatedListener(this.handleHazardCreated, this);
             addHazardDestroyedListener(this.handleHazardDestroy, this);
+            addHazardImpactListener(this.handleHazardImpact, this);
             listenersInitialized = true;
         }
     }
@@ -321,6 +323,50 @@ export class MainScene extends Phaser.Scene {
         stopSound(activeHazard.hazard);
         // Play sounds of tool that destroyed the hazard
         playSound(scene, config()["hazards"][activeHazard.hazard.toString()]["destroyTool"]);
+    }
+
+    handleHazardImpact(scene: MainScene, hazardId: number) {
+        let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
+        if (activeHazard.hazard == Hazard.Meteor) {
+            let posXRight = scene.hazardImages[hazardId].x + meteorFragmentRadius;
+            let posXLeft = scene.hazardImages[hazardId].x - meteorFragmentRadius;
+            let posYBottom = scene.hazardImages[hazardId].y + meteorFragmentRadius;
+            let posYTop = scene.hazardImages[hazardId].y - meteorFragmentRadius;
+            let deathImages: Phaser.GameObjects.Image[] = [];
+            deathImages.push(scene.add.image(posXRight, posYBottom, "meteorFragment").setRotation(Math.PI / 4));
+            deathImages.push(scene.add.image(posXLeft, posYBottom, "meteorFragment").setRotation(3 * Math.PI / 4));
+            deathImages.push(scene.add.image(posXLeft, posYTop, "meteorFragment").setRotation(5 * Math.PI / 4));
+            deathImages.push(scene.add.image(posXRight, posYTop, "meteorFragment").setRotation(7 * Math.PI / 4));
+            let imageTargets: Phaser.Math.Vector2[] = [];
+            imageTargets.push(Phaser.Math.Vector2.RIGHT.clone().rotate(Math.PI / 4).scale(40).add({x: posXRight, y: posYBottom}));
+            imageTargets.push(Phaser.Math.Vector2.RIGHT.clone().rotate(3 * Math.PI / 4).scale(40).add({x: posXLeft, y: posYBottom}));
+            imageTargets.push(Phaser.Math.Vector2.RIGHT.clone().rotate(5 * Math.PI / 4).scale(40).add({x: posXLeft, y: posYTop}));
+            imageTargets.push(Phaser.Math.Vector2.RIGHT.clone().rotate(7 * Math.PI / 4).scale(40).add({x: posXRight, y: posYTop}));
+            // Spawn each death image on top of its starting position and then move in a direction while fading out
+            for (let i = 0; i < deathImages.length; i++) {
+                scene.tweens.add({
+                    targets: deathImages[i],
+                    alpha: {
+                        from: 1,
+                        to: 0
+                    },
+                    x: {
+                        from: deathImages[i].x,
+                        to: imageTargets[i].x
+                    },
+                    y: {
+                        from: deathImages[i].y,
+                        to: imageTargets[i].y
+                    },
+                    duration: 1000,
+                    onComplete: () => {
+                        deathImages[i].destroy();
+                    }
+                });
+                // Flash death images white for a moment
+                //flashSprite(image, 200, scene);
+            }
+        }
     }
 
     /** Handle plant being destroyed */

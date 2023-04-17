@@ -1,3 +1,4 @@
+import { Hazard } from "../game/Hazard";
 import { Plant } from "../game/Plant";
 import { Weather } from "../game/Weather";
 import { Settings } from "../state/Settings";
@@ -35,6 +36,7 @@ let plantDestroyCallbacks: PlantCallback[] = [];
 let weatherUpdateCallbacks: WeatherCallback[] = [];
 let hazardCreatedCallbacks: NumberCallback[] = [];
 let hazardDestroyedCallbacks: NumberCallback[] = [];
+let hazardImpactCallbacks: NumberCallback[] = [];
 let settingsCallbacks: SettingsCallback[] = [];
 
 /** Add a callback listening for game reset */
@@ -161,5 +163,19 @@ export function addSettingsListener(callback: (newSettings: Settings, scene: Pha
 export function settingsEvent(newSettings: Settings) {
     settingsCallbacks.forEach(callback => 
         callback.callback(newSettings, callback.scene));
+}
+
+/** Call any listeners for hazard impacts */
+export function hazardImpactEvent(hazardId: number) {
+    hazardImpactCallbacks.forEach(callback => 
+        callback.callback(callback.scene, hazardId));
+}
+
+/** Add a callback listening for hazard impacts */
+export function addHazardImpactListener(callback: (scene: Phaser.Scene, hazardId: number) => void, scene: Phaser.Scene) {
+    hazardImpactCallbacks.push({ 
+        callback: callback,
+        scene: scene
+    });
 }
 

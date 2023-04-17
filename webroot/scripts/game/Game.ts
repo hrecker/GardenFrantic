@@ -1,4 +1,4 @@
-import { gameResetEvent, hazardCreatedEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
+import { gameResetEvent, hazardCreatedEvent, hazardImpactEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { ActiveHazard, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
 import { getNewId } from "./Id";
@@ -130,8 +130,9 @@ export function update(game: GardenGame, delta: number) {
         } else {
             if (getHazardType(activeHazard.hazard) == HazardType.Impact) {
                 // Impact hazards apply immediately
+                hazardImpactEvent(activeHazard.id);
                 updateStatusLevel(game.plants[activeHazard.targetPlantId], Status.Health, -config()["hazards"][activeHazard.hazard.toString()]["healthDamageRate"]);
-                removeHazardById(game, game.plants[activeHazard.targetPlantId], activeHazard.id)
+                removeHazardById(game, game.plants[activeHazard.targetPlantId], activeHazard.id);
             }
         }
     });
