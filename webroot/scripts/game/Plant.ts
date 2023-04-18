@@ -13,6 +13,7 @@ export type Plant = {
     // The game will handle destroying plants in its update loop.
     shouldDestroy?: boolean;
     fruitGrowthStage: FruitGrowthStage;
+    inactive: boolean;
 }
 
 export enum FruitGrowthStage {
@@ -45,6 +46,7 @@ export function newPlant(gameObject: Phaser.GameObjects.Sprite): Plant {
         activeHazardIds: [],
         gameObject: gameObject,
         fruitGrowthStage: FruitGrowthStage.None,
+        inactive: true,
     }
 }
 

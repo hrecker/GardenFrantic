@@ -46,6 +46,8 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture("downarrow");
         this.loadTexture("plant1");
         this.loadTexture("plant2");
+        this.loadTexture("plantdeath1");
+        this.loadTexture("plantdeath2");
         this.loadTexture("fruitsmall1");
         this.loadTexture("fruitsmall2");
         this.loadTexture("fruitmedium1");

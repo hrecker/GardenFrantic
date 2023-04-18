@@ -131,6 +131,10 @@ export class MainScene extends Phaser.Scene {
                 { key: 'plant1' },
                 { key: 'plant2' },
             ]);
+        createSwayAnimation(this, 'plantdeathsway', [
+                { key: 'plantdeath1' },
+                { key: 'plantdeath2' },
+            ]);
         createSwayAnimation(this, 'fruitsmallsway', [
                 { key: 'fruitsmall1' },
                 { key: 'fruitsmall2' },
@@ -363,25 +367,19 @@ export class MainScene extends Phaser.Scene {
                         deathImages[i].destroy();
                     }
                 });
-                // Flash death images white for a moment
-                //flashSprite(image, 200, scene);
             }
         }
     }
 
     /** Handle plant being destroyed */
     handlePlantDestroy(scene: MainScene, plant: Plant) {
+        plant.gameObject.play("plantdeathsway");
         // Destroy the corresponding status bars
         scene.destroyStatusBar(scene.plantStatusBars[plant.id].lightStatusBar);
         scene.destroyStatusBar(scene.plantStatusBars[plant.id].waterStatusBar);
         scene.destroyStatusBar(scene.plantStatusBars[plant.id].fruitStatusBar);
         scene.destroyStatusBar(scene.plantStatusBars[plant.id].healthStatusBar);
         delete scene.plantStatusBars[plant.id];
-        // Destroy hazards for the plant
-        plant.activeHazardIds.forEach(id => {
-            scene.hazardImages[id].destroy();
-            delete scene.hazardImages[id];
-        });
 
         if (plant.id in scene.plantFruitImages) {
             scene.plantFruitImages[plant.id].destroy();

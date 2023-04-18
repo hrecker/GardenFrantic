@@ -1,4 +1,4 @@
-import { gameResetEvent, hazardCreatedEvent, hazardImpactEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
+import { gameResetEvent, hazardCreatedEvent, hazardDestroyedEvent, hazardImpactEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { ActiveHazard, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
 import { getNewId } from "./Id";
@@ -96,7 +96,6 @@ export function update(game: GardenGame, delta: number) {
     Object.keys(game.plants).forEach(id => {
         let plant: Plant = game.plants[id];
         if (plant.shouldDestroy && ! config()["invinciblePlants"]) {
-            plant.gameObject.destroy();
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));
         } else {
@@ -131,8 +130,13 @@ export function update(game: GardenGame, delta: number) {
             if (getHazardType(activeHazard.hazard) == HazardType.Impact) {
                 // Impact hazards apply immediately
                 hazardImpactEvent(activeHazard.id);
-                updateStatusLevel(game.plants[activeHazard.targetPlantId], Status.Health, -config()["hazards"][activeHazard.hazard.toString()]["healthDamageRate"]);
-                removeHazardById(game, game.plants[activeHazard.targetPlantId], activeHazard.id);
+                if (activeHazard.targetPlantId in game.plants) {
+                    updateStatusLevel(game.plants[activeHazard.targetPlantId], Status.Health, -config()["hazards"][activeHazard.hazard.toString()]["healthDamageRate"]);
+                    removeHazardById(game, game.plants[activeHazard.targetPlantId], activeHazard.id);
+                } else {           
+                    hazardDestroyedEvent(activeHazard.id);
+                    delete game.activeHazards[activeHazard.id];
+                }
             }
         }
     });
