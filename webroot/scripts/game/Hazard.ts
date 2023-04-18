@@ -41,12 +41,12 @@ export function getNextHazardDurationMs(): number {
 /** Get a randomly ordered list of hazards */
 export function getRandomizedHazards(): Hazard[] {
     let allHazards = [
-        /*Hazard.Bird,
+        Hazard.Bird,
         Hazard.Bugs,
         Hazard.Weeds,
-        Hazard.Bunny,*/
+        Hazard.Bunny,
         Hazard.Meteor,
-        //Hazard.Mole,
+        Hazard.Mole,
     ];
     shuffleArray(allHazards);
     return allHazards;
