@@ -92,8 +92,8 @@ export class MainScene extends Phaser.Scene {
         this.hazardImages = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
 
-        this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0);
-        this.backgroundWipe = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setAlpha(0);
+        this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setTint(0xdddddd);
+        this.backgroundWipe = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setTint(0xdddddd).setAlpha(0);
 
         this.createAnimations();
         this.createPlant(0, 0);
