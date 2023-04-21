@@ -34,8 +34,12 @@ export type HazardPath = {
 }
 
 /** Get a duration before the next hazard appears, based on the range */
-export function getNextHazardDurationMs(): number {
-    return randomInRange(config()["hazardGapDurationMs"]["low"], config()["hazardGapDurationMs"]["high"]);
+export function getNextHazardDurationMs(numHazardsDefeated: number): number {
+    let gapFactor = Math.pow(config()["hazardGapMultiplier"], numHazardsDefeated);
+    let min = Math.max(config()["hazardGapDurationMs"]["base"]["low"] * gapFactor, config()["hazardGapDurationMs"]["minimum"]["low"]);
+    let max = Math.max(config()["hazardGapDurationMs"]["base"]["high"] * gapFactor, config()["hazardGapDurationMs"]["minimum"]["high"]);
+    console.log("Hazard range: (" + min + ", " + max + ")");
+    return randomInRange(min, max);
 }
 
 /** Get a randomly ordered list of hazards */

@@ -6,6 +6,7 @@ import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, S
 import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
+import { Tool } from "./Tool";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -22,6 +23,8 @@ export type GardenGame = {
     activeHazards: { [id: number]: ActiveHazard };
     /** How long ago the current hazard started */
     currentHazardDurationMs: number;
+    /** How many hazards have been defeated */
+    numHazardsDefeated: number;
     /** Time until the next hazard should start */
     nextHazardDuration: number;
     /** Time since last score bump */
@@ -39,7 +42,8 @@ function defaultGame(): GardenGame {
         currentWeatherDurationMs: 0,
         activeHazards: [],
         currentHazardDurationMs: 0,
-        nextHazardDuration: getNextHazardDurationMs(),
+        numHazardsDefeated: 0,
+        nextHazardDuration: getNextHazardDurationMs(0),
         score: 0,
         timeSinceLastScoreBump: 0
     };
@@ -60,7 +64,8 @@ export function resetGame(game: GardenGame) {
     game.currentWeatherDurationMs = base.currentWeatherDurationMs;
     game.activeHazards = base.activeHazards;
     game.currentHazardDurationMs = base.currentHazardDurationMs;
-    game.nextHazardDuration = base.nextHazardDuration;
+    game.numHazardsDefeated = 0;
+    game.nextHazardDuration = getNextHazardDurationMs(0);
     game.score = base.score;
     game.timeSinceLastScoreBump = base.timeSinceLastScoreBump;
     weatherUpdateEvent(game.weather, game.weatherQueue);
@@ -144,7 +149,7 @@ export function update(game: GardenGame, delta: number) {
     game.currentHazardDurationMs += delta;
     if (game.currentHazardDurationMs >= game.nextHazardDuration && Object.keys(game.plants).length > 0) {
         game.currentHazardDurationMs = 0;
-        game.nextHazardDuration = getNextHazardDurationMs();
+        game.nextHazardDuration = getNextHazardDurationMs(game.numHazardsDefeated);
         let targetPlant = getRandomPlant(game).id;
         // Select a hazard that isn't already active for this plant
         // There is a chance that we select a plant that can't add any new hazards when another
@@ -251,7 +256,9 @@ export function useSelectedTool(game: GardenGame, plant: Plant): Tool {
             }
             break;
         case tool.ToolCategory.HazardRemoval:
-            removeHazardByType(game, plant, config()["tools"][game.selectedTool]["target"]);
+            if (removeHazardByType(game, plant, config()["tools"][game.selectedTool]["target"])) {
+                game.numHazardsDefeated++;
+            }
             break;
         // Otherwise, update the plant's status
         case tool.ToolCategory.Water:
@@ -280,6 +287,7 @@ export function removeHazardIfRightToolSelected(game: GardenGame, hazard: Active
         let plantIds = Object.keys(game.plants);
         for (let i = 0; i < plantIds.length; i++) {
             if (removeHazardById(game, game.plants[plantIds[i]], hazard.id)) {
+                game.numHazardsDefeated++;
                 return true;
             }
         }

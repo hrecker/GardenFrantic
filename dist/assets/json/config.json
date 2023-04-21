@@ -136,9 +136,17 @@
     },
 
     "hazardGapDurationMs": {
-        "low": 4000,
-        "high": 6000
+        "base": {
+            "low": 4000,
+            "high": 6000
+        },
+        "minimum": {
+            "low": 1000,
+            "high": 1800
+        }
     },
+
+    "hazardGapMultiplier": 0.98,
 
     "hazardPositionRange": 75,
 
