@@ -18,6 +18,8 @@ const hazardFadeDurationMs = 800;
 const hazardFlashDuration = 100;
 const hazardFlashColor = 0xf2c3b8;
 const meteorFragmentRadius = 25;
+const hazardShakeDuration = 250;
+const hazardShakeIntensity = 0.003;
 
 let listenersInitialized = false;
 
@@ -327,6 +329,7 @@ export class MainScene extends Phaser.Scene {
         stopSound(activeHazard.hazard);
         // Play sounds of tool that destroyed the hazard
         playSound(scene, config()["hazards"][activeHazard.hazard.toString()]["destroyTool"]);
+        scene.cameras.main.shake(hazardShakeDuration, hazardShakeIntensity);
     }
 
     handleHazardImpact(scene: MainScene, hazardId: number) {
