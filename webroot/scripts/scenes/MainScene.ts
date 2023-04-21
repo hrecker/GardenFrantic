@@ -329,7 +329,9 @@ export class MainScene extends Phaser.Scene {
         stopSound(activeHazard.hazard);
         // Play sounds of tool that destroyed the hazard
         playSound(scene, config()["hazards"][activeHazard.hazard.toString()]["destroyTool"]);
-        scene.cameras.main.shake(hazardShakeDuration, hazardShakeIntensity);
+        if (activeHazard.hazard == Hazard.Meteor) {
+            scene.cameras.main.shake(hazardShakeDuration, hazardShakeIntensity);
+        }
     }
 
     handleHazardImpact(scene: MainScene, hazardId: number) {
