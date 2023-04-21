@@ -38,7 +38,7 @@
     "lowWarning": 20,
     "highWarning": 80,
     
-    "weatherDurationMs": 5000,
+    "weatherDurationMs": 6500,
     "defaultWeather": "partlyCloudy",
 
     "scoreBumpIntervalMs": 1000,
@@ -81,7 +81,7 @@
         }
     },
 
-    "weatherQueueLength": 5,
+    "weatherQueueLength": 2,
 
     "weatherPreviewTint": "0xb0b0b0",
     

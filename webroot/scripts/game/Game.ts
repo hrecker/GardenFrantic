@@ -74,8 +74,11 @@ export function resetGame(game: GardenGame) {
 
 function initialWeatherQueue(): weather.Weather[] {
     let queue = [];
+    let lastWeather = weather.getDefaultWeather();
     for (let i = 0; i < config()["weatherQueueLength"]; i++) {
-        queue.push(weather.getRandomWeather());
+        let nextWeather = weather.getRandomWeather(lastWeather);
+        queue.push(nextWeather);
+        lastWeather = nextWeather;
     }
     return queue;
 }
@@ -85,7 +88,7 @@ function advanceWeather(game: GardenGame) {
     for (let i = 0; i < game.weatherQueue.length - 1; i++) {
         game.weatherQueue[i] = game.weatherQueue[i + 1];
     }
-    game.weatherQueue[game.weatherQueue.length - 1] = weather.getRandomWeather();
+    game.weatherQueue[game.weatherQueue.length - 1] = weather.getRandomWeather(game.weatherQueue[game.weatherQueue.length - 2]);
 }
 
 export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.Sprite): Plant {

@@ -1,4 +1,5 @@
 import { config } from "../model/Config";
+import { shuffleArray } from "../util/Util";
 import { Status } from "./Plant";
 
 /** Types of weather in the game */
@@ -10,17 +11,13 @@ export enum Weather {
 }
 
 /** Get a random Weather condition */
-export function getRandomWeather(): Weather {
-    let rand = Math.random();
-    if (rand < 0.25) {
-        return Weather.PartlyCloudy;
-    } else if (rand < 0.5) {
-        return Weather.Cloudy;
-    } else if (rand < 0.75) {
-        return Weather.Heat;
-    } else {
-        return Weather.Rain;
+export function getRandomWeather(invalidWeather?: Weather): Weather {
+    let possibleWeathers = [Weather.PartlyCloudy, Weather.Cloudy, Weather.Heat, Weather.Rain];
+    if (invalidWeather) {
+        possibleWeathers.splice(possibleWeathers.indexOf(invalidWeather), 1);
     }
+    shuffleArray(possibleWeathers);
+    return possibleWeathers[0];
 }
 
 /** Get the default weather for the game */
