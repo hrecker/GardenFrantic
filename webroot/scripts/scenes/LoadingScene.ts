@@ -107,7 +107,7 @@ export class LoadingScene extends Phaser.Scene {
         this.load.bitmapFont('uiFontWhite', 'assets/fonts/singkong-white_0.png', 'assets/fonts/singkong-white.fnt');
 
         // Load audio
-        this.load.audio('backgroundMusic', 'assets/music/Peaceful-Puzzles.mp3');
+        this.load.audio('backgroundMusic', 'assets/music/Fishbowl-Acrobatics.mp3');
 
         // SFX
         this.load.audio(ButtonClick, "assets/sfx/button_click.ogg");
