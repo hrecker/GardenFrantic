@@ -27,6 +27,8 @@
         "restartTime": 3000
     },
 
+    "maxGamesStored": 1000,
+
     "toolbarWidth": 150,
 
     "minLevel": 0,

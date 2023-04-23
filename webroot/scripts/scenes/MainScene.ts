@@ -7,6 +7,8 @@ import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation, flashSprite } from "../util/Util";
 import { loadSounds, playSound, stopAllSounds, stopSound, toolSuccessSounds, WrongTool } from "../audio/Sound";
+import { GameResult } from "../model/GameResult";
+import { saveGameResult } from "../state/GameResultState";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -35,6 +37,7 @@ export class MainScene extends Phaser.Scene {
     hazardParticleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
     wrongToolSoundQueued: boolean;
     queuedSounds: Set<string>;
+    gameResult: GameResult;
 
     constructor() {
         super({
@@ -94,6 +97,12 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
+        this.gameResult = {
+            score: 0,
+            hazardsDefeated: 0,
+            fruitHarvested: 0,
+            deaths: 0,
+        }
         this.plantStatusBars = {};
         this.plantFruitImages = {};
         this.hazardImages = {};
@@ -342,6 +351,8 @@ export class MainScene extends Phaser.Scene {
         if (activeHazard.hazard == Hazard.Meteor || activeHazard.hazard == Hazard.Mole) {
             scene.cameras.main.shake(hazardShakeDuration, hazardShakeIntensity);
         }
+
+        scene.gameResult.hazardsDefeated++;
     }
 
     handleHazardImpact(scene: MainScene, hazardId: number) {
@@ -413,6 +424,11 @@ export class MainScene extends Phaser.Scene {
 
         //TODO if more than one plant is allowed, need to handle game over logic elsewhere
         stopAllSounds();
+        
+        // Save the result
+        scene.gameResult.deaths++;
+        scene.gameResult.score = scene.gardenGame.score;
+        saveGameResult(scene.gameResult);
     }
 
     /** Handle weather being changed (may be called even if the new weather is the same) */
@@ -465,6 +481,7 @@ export class MainScene extends Phaser.Scene {
         scene.particleEmitter.explode(25, scene.plantFruitImages[plant.id].x, scene.plantFruitImages[plant.id].y);
         scene.plantFruitImages[plant.id].destroy();
         delete scene.plantFruitImages[plant.id];
+        scene.gameResult.fruitHarvested++;
     }
     
     /** Main game update loop */
