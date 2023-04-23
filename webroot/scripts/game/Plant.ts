@@ -133,7 +133,6 @@ export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard)
     }
     if (toRemoveIndices.length == 0 && numActiveHazards > 0) {
         // Wrong tool was used
-        console.log("wrongtool remove by type")
         wrongToolEvent();
     }
     return toRemoveIndices.length > 0;

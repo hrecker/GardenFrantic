@@ -300,7 +300,6 @@ export function removeHazardIfRightToolSelected(game: GardenGame, hazard: Active
         }
     }
     // Wrong hazard removal tool was used
-    console.log("wrongtool remove if right tool selected")
     wrongToolEvent();
     return false;
 }

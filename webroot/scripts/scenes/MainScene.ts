@@ -105,9 +105,7 @@ export class MainScene extends Phaser.Scene {
         this.createAnimations();
         this.createPlant(0, 0);
         
-        let particles = this.add.particles('particle');
-        let redParticles = this.add.particles('redparticle');
-        this.particleEmitter = particles.createEmitter({
+        this.particleEmitter = this.add.particles(0, 0, "particle", {
             speed: 90,
             gravityY: 200,
             scale: 3,
@@ -116,15 +114,18 @@ export class MainScene extends Phaser.Scene {
             rotate: { min: 0, max: 360 },
             lifespan: 3000,
         });
-        this.hazardParticleEmitter = redParticles.createEmitter({
+        this.hazardParticleEmitter = this.add.particles(0, 0, "redparticle", {
             speed: 100,
             gravityY: 50,
             scale: 2,
             frequency: -1,
             rotate: { min: 0, max: 360 },
             lifespan: 750,
-        }).setAlpha(function (p, k, t) {
-            return 1 - t;
+            alpha: {
+                onUpdate: (particle, key, t, value) => {
+                    return 1 - t;
+                }
+            }
         });
 
         loadSounds(this);

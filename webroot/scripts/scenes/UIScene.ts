@@ -69,8 +69,7 @@ export class UIScene extends Phaser.Scene {
         }
         this.countdownGraphics = this.add.graphics();
 
-        let particles = this.add.particles('particle');
-        this.particleEmitter = particles.createEmitter({
+        this.particleEmitter = this.add.particles(0, 0, "particle", {
             speed: 20,
             gravityY: 1,
             scale: 2,
@@ -78,8 +77,11 @@ export class UIScene extends Phaser.Scene {
             frequency: -1,
             rotate: { min: 0, max: 360 },
             lifespan: config()["scoreBumpIntervalMs"],
-        }).setAlpha(function (p, k, t) {
-            return 1 - t;
+            alpha: {
+                onUpdate: (particle, key, t, value) => {
+                    return 1 - t;
+                }
+            }
         });
 
         this.resize(true);
