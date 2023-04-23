@@ -16,6 +16,43 @@
         },
         "color": "#FFF7E4"
     },
+    "leaderboardTitleStyle": { 
+        "font": "50px Verdana",
+        "shadow": {
+            "offsetX": 1,
+            "offsetY": 1,
+            "color": "#000",
+            "blur": 3,
+            "stroke": true,
+            "fill": true
+        },
+        "color": "#FFF7E4"
+    },
+    "leaderboardRowStyle": { 
+        "font": "30px Verdana",
+        "shadow": {
+            "offsetX": 1,
+            "offsetY": 1,
+            "color": "#000",
+            "blur": 3,
+            "stroke": true,
+            "fill": true
+        },
+        "color": "#FFF7E4"
+    },
+    "leaderboardSmallRowStyle": { 
+        "font": "25px Verdana",
+        "shadow": {
+            "offsetX": 1,
+            "offsetY": 1,
+            "color": "#000",
+            "blur": 3,
+            "stroke": true,
+            "fill": true
+        },
+        "color": "#FFF7E4"
+    },
+    "leaderboardCount": 3,
 
     "healthyLevelColor": "0xB3A555",
     "warningLevelColor": "0xAE5D40",
@@ -27,7 +64,7 @@
         "restartTime": 3000
     },
 
-    "maxGamesStored": 1000,
+    "maxGamesStored": 100,
 
     "toolbarWidth": 150,
 
@@ -50,7 +87,7 @@
     "fruitHarvestPoints": 100,
 
     "healthGrowthRate": 5,
-    "healthDecayRateBase": 5,
+    "healthDecayRateBase": 50,
 
     "statusProps": {
         "water": {
