@@ -6,6 +6,7 @@ import { getSettings } from "../state/Settings";
 let sounds: { [effect: string]: Phaser.Sound.BaseSound } = {};
 
 export const ButtonClick = "buttonClick";
+export const WrongTool = "wrongTool";
 
 /** Load all sound files */
 export function loadSounds(scene: Phaser.Scene) {
@@ -28,6 +29,20 @@ export function loadSounds(scene: Phaser.Scene) {
     sounds[Tool.WateringCan] = scene.sound.add(Tool.WateringCan);
     sounds[Tool.Umbrella] = scene.sound.add(Tool.Umbrella);
     sounds[ButtonClick] = scene.sound.add(ButtonClick);
+    sounds[WrongTool] = scene.sound.add(WrongTool);
+}
+
+export function toolSuccessSounds(): string[] {
+    return [
+        Tool.Scarecrow,
+        Tool.Pesticide,
+        Tool.Missile,
+        Tool.Hammer,
+        Tool.Dog,
+        Tool.Weedkiller,
+        Tool.Basket,
+        Tool.Fertilizer
+    ];
 }
 
 /** Get a given sound */

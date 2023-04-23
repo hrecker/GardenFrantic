@@ -1,4 +1,4 @@
-import { fruitGrowthEvent, fruitHarvestEvent, hazardDestroyedEvent } from "../events/EventMessenger";
+import { fruitGrowthEvent, fruitHarvestEvent, hazardDestroyedEvent, wrongToolEvent } from "../events/EventMessenger";
 import { config } from "../model/Config"
 import { GardenGame } from "./Game";
 import { Hazard } from "./Hazard";
@@ -113,11 +113,15 @@ function hasActiveHazards(game: GardenGame, plant: Plant) {
 
 export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard): boolean {
     let toRemoveIndices = [];
+    let numActiveHazards = 0;
     for (let i = 0; i < plant.activeHazardIds.length; i++) {
         let id = plant.activeHazardIds[i];
         let hazard = game.activeHazards[id];
-        if (hazard.timeUntilActiveMs <= 0 && hazard.hazard == type) {
-            toRemoveIndices.push(i);
+        if (hazard.timeUntilActiveMs <= 0) {
+            numActiveHazards++;
+            if (hazard.hazard == type) {
+                toRemoveIndices.push(i);
+            }
         }
     }
     // Remove any destroyed hazards from the plant
@@ -126,6 +130,11 @@ export function removeHazardByType(game: GardenGame, plant: Plant, type: Hazard)
         hazardDestroyedEvent(id);
         plant.activeHazardIds.splice(toRemoveIndices[i], 1);
         delete game.activeHazards[id];
+    }
+    if (toRemoveIndices.length == 0 && numActiveHazards > 0) {
+        // Wrong tool was used
+        console.log("wrongtool remove by type")
+        wrongToolEvent();
     }
     return toRemoveIndices.length > 0;
 }

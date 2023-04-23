@@ -1,4 +1,4 @@
-import { gameResetEvent, hazardCreatedEvent, hazardDestroyedEvent, hazardImpactEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent } from "../events/EventMessenger";
+import { gameResetEvent, hazardCreatedEvent, hazardDestroyedEvent, hazardImpactEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent, wrongToolEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { ActiveHazard, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
 import { getNewId } from "./Id";
@@ -256,6 +256,8 @@ export function useSelectedTool(game: GardenGame, plant: Plant): Tool {
                 harvestFruit(plant);
                 addScore(game, config()["fruitHarvestPoints"]);
                 return game.selectedTool;
+            } else {
+                wrongToolEvent();
             }
             break;
         case tool.ToolCategory.HazardRemoval:
@@ -274,6 +276,8 @@ export function useSelectedTool(game: GardenGame, plant: Plant): Tool {
             if (! isFruitGrowthPaused(game, plant)) {
                 setFruitProgress(plant, plant.fruitProgress + tool.getDelta(game.selectedTool));
                 return game.selectedTool;
+            } else {
+                wrongToolEvent();
             }
             break;
     }
@@ -295,6 +299,9 @@ export function removeHazardIfRightToolSelected(game: GardenGame, hazard: Active
             }
         }
     }
+    // Wrong hazard removal tool was used
+    console.log("wrongtool remove if right tool selected")
+    wrongToolEvent();
     return false;
 }
 

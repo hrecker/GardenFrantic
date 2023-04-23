@@ -38,6 +38,7 @@ let hazardCreatedCallbacks: NumberCallback[] = [];
 let hazardDestroyedCallbacks: NumberCallback[] = [];
 let hazardImpactCallbacks: NumberCallback[] = [];
 let settingsCallbacks: SettingsCallback[] = [];
+let wrongToolCallbacks: VoidCallback[] = [];
 
 /** Add a callback listening for game reset */
 export function addGameResetListener(callback: (scene: Phaser.Scene) => void, scene: Phaser.Scene) {
@@ -177,5 +178,19 @@ export function addHazardImpactListener(callback: (scene: Phaser.Scene, hazardId
         callback: callback,
         scene: scene
     });
+}
+
+/** Add a callback listening for the wrong tool being used */
+export function addWrongToolListener(callback: (scene: Phaser.Scene) => void, scene: Phaser.Scene) {
+    wrongToolCallbacks.push({ 
+        callback: callback,
+        scene: scene
+    });
+}
+
+/** Call any listeners for the wrong tool being used */
+export function wrongToolEvent() {
+    wrongToolCallbacks.forEach(callback => 
+        callback.callback(callback.scene));
 }
 

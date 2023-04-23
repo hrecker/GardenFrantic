@@ -1,4 +1,4 @@
-import { ButtonClick } from "../audio/Sound";
+import { ButtonClick, WrongTool } from "../audio/Sound";
 import { Hazard } from "../game/Hazard";
 import { Tool } from "../game/Tool";
 import { Weather } from "../game/Weather";
@@ -131,6 +131,7 @@ export class LoadingScene extends Phaser.Scene {
         this.load.audio(Tool.Shade, "assets/sfx/umbrella.wav");
         this.load.audio(Tool.WateringCan, "assets/sfx/wateringcan.wav");
         this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.wav");
+        this.load.audio(WrongTool, "assets/sfx/wrong.wav");
 
         // Load json
         this.load.json("config", "assets/json/config.json");

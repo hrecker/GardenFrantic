@@ -2,11 +2,11 @@ import * as game from "../game/Game";
 import { FruitGrowthStage, Plant } from "../game/Plant";
 import { config } from "../model/Config";
 import { PlantStatusBar, StatusBar, updateStatusBars } from "../game/PlantStatusBar";
-import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addHazardImpactListener, addPlantDestroyListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListener, addHazardDestroyedListener, addHazardImpactListener, addPlantDestroyListener, addWeatherUpdateListener, addWrongToolListener } from "../events/EventMessenger";
 import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation, flashSprite } from "../util/Util";
-import { loadSounds, playSound, stopAllSounds, stopSound } from "../audio/Sound";
+import { loadSounds, playSound, stopAllSounds, stopSound, toolSuccessSounds, WrongTool } from "../audio/Sound";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -33,6 +33,8 @@ export class MainScene extends Phaser.Scene {
     backgroundWipe: Phaser.GameObjects.Image;
     particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
     hazardParticleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
+    wrongToolSoundQueued: boolean;
+    queuedSounds: Set<string>;
 
     constructor() {
         super({
@@ -51,8 +53,11 @@ export class MainScene extends Phaser.Scene {
             addHazardCreatedListener(this.handleHazardCreated, this);
             addHazardDestroyedListener(this.handleHazardDestroy, this);
             addHazardImpactListener(this.handleHazardImpact, this);
+            addWrongToolListener(this.handleWrongToolUsed, this);
             listenersInitialized = true;
         }
+        this.wrongToolSoundQueued = false;
+        this.queuedSounds = new Set();
     }
 
     /** Adjust any UI elements that need to change position based on the canvas size */
@@ -172,10 +177,14 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    queueSound(sound: string) {
+        this.queuedSounds.add(sound);
+    }
+
     useSelectedToolWithSound(plant: Plant) {
         let used = game.useSelectedTool(this.gardenGame, plant);
         if (used != null) {
-            playSound(this, used, false);
+            this.queueSound(used);
         }
     }
 
@@ -328,7 +337,7 @@ export class MainScene extends Phaser.Scene {
 
         stopSound(activeHazard.hazard);
         // Play sounds of tool that destroyed the hazard
-        playSound(scene, config()["hazards"][activeHazard.hazard.toString()]["destroyTool"]);
+        scene.queueSound(config()["hazards"][activeHazard.hazard.toString()]["destroyTool"]);
         if (activeHazard.hazard == Hazard.Meteor) {
             scene.cameras.main.shake(hazardShakeDuration, hazardShakeIntensity);
         }
@@ -374,6 +383,16 @@ export class MainScene extends Phaser.Scene {
                 });
             }
         }
+    }
+
+    handleWrongToolUsed(scene: MainScene) {
+        // Only queue wrong tool sound if another tool didn't succeed this frame
+        for (const successSound of toolSuccessSounds()) {
+            if (scene.queuedSounds.has(successSound)) {
+                return;
+            }
+        }
+        scene.queueSound(WrongTool);
     }
 
     /** Handle plant being destroyed */
@@ -449,6 +468,10 @@ export class MainScene extends Phaser.Scene {
     
     /** Main game update loop */
     update(time, delta) {
+        for (const sound of this.queuedSounds) {
+            playSound(this, sound);
+        }
+        this.queuedSounds.clear();
         if (Object.keys(this.gardenGame.plants).length > 0) {
             game.update(this.gardenGame, delta);
             Object.keys(this.gardenGame.plants).forEach(id => {

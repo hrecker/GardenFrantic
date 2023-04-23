@@ -201,7 +201,7 @@
         }
     },
 
-    "defaultMusicVolume": 1,
+    "defaultMusicVolume": 0.5,
     "sfx": {
         "bird": {
             "volume": 0.2
@@ -259,6 +259,9 @@
         },
         "buttonClick": {
             "volume": 1
+        },
+        "wrongTool": {
+            "volume": 0.1
         }
     }
 }
