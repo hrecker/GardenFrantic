@@ -60,10 +60,6 @@
     "highlightColor": "0x8CABA1",
 
     "invinciblePlants": false,
-    "automaticRestart": {
-        "enabled": true,
-        "restartTime": 3000
-    },
 
     "maxGamesStored": 100,
 
@@ -88,7 +84,7 @@
     "fruitHarvestPoints": 100,
 
     "healthGrowthRate": 5,
-    "healthDecayRateBase": 50,
+    "healthDecayRateBase": 5,
 
     "statusProps": {
         "water": {

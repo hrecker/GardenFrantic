@@ -9,6 +9,7 @@ import { createSwayAnimation, flashSprite } from "../util/Util";
 import { loadSounds, playSound, stopAllSounds, stopSound, toolSuccessSounds, WrongTool } from "../audio/Sound";
 import { GameResult } from "../model/GameResult";
 import { saveGameResult } from "../state/GameResultState";
+import { setSfxEnabled } from "../state/Settings";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -23,8 +24,6 @@ const meteorFragmentRadius = 25;
 const hazardShakeDuration = 250;
 const hazardShakeIntensity = 0.003;
 
-let listenersInitialized = false;
-
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
@@ -38,6 +37,7 @@ export class MainScene extends Phaser.Scene {
     wrongToolSoundQueued: boolean;
     queuedSounds: Set<string>;
     gameResult: GameResult;
+    listenersInitialized: boolean;
 
     constructor() {
         super({
@@ -47,20 +47,6 @@ export class MainScene extends Phaser.Scene {
 
     init(data) {
         this.gardenGame = data.gardenGame;
-        // Event listeners
-        if (! listenersInitialized) {
-            addPlantDestroyListener(this.handlePlantDestroy, this);
-            addWeatherUpdateListener(this.handleWeatherUpdate, this);
-            addFruitGrowthListener(this.handleFruitGrowth, this);
-            addFruitHarvestListener(this.handleFruitHarvest, this);
-            addHazardCreatedListener(this.handleHazardCreated, this);
-            addHazardDestroyedListener(this.handleHazardDestroy, this);
-            addHazardImpactListener(this.handleHazardImpact, this);
-            addWrongToolListener(this.handleWrongToolUsed, this);
-            listenersInitialized = true;
-        }
-        this.wrongToolSoundQueued = false;
-        this.queuedSounds = new Set();
     }
 
     /** Adjust any UI elements that need to change position based on the canvas size */
@@ -88,15 +74,31 @@ export class MainScene extends Phaser.Scene {
         let ids = Object.keys(this.gardenGame.plants).map(Number);
         for (let i = 0; i < ids.length; i++) {
             let id: number = ids[i];
-            //TODO positioning the plants after the first one based on i value
             let plantX = plantXAnchor;
             this.gardenGame.plants[id].gameObject.setPosition(plantX, plantY);
             this.setStatusBarsPosition(this.plantStatusBars[id], this.gardenGame.plants[id]);
-            //TODO resizing hazards?
         }
     }
 
+    clearListeners() {
+        this.listenersInitialized = false;
+    }
+
     create() {
+        // Event listeners
+        if (! this.listenersInitialized) {
+            addPlantDestroyListener(this.handlePlantDestroy, this);
+            addWeatherUpdateListener(this.handleWeatherUpdate, this);
+            addFruitGrowthListener(this.handleFruitGrowth, this);
+            addFruitHarvestListener(this.handleFruitHarvest, this);
+            addHazardCreatedListener(this.handleHazardCreated, this);
+            addHazardDestroyedListener(this.handleHazardDestroy, this);
+            addHazardImpactListener(this.handleHazardImpact, this);
+            addWrongToolListener(this.handleWrongToolUsed, this);
+            this.listenersInitialized = true;
+        }
+        this.wrongToolSoundQueued = false;
+        this.queuedSounds = new Set();
         this.gameResult = {
             score: 0,
             hazardsDefeated: 0,
@@ -228,7 +230,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     setStatusBarsPosition(statusBar: PlantStatusBar, plant: Plant) {
-        //TODO undefined error on next line (statusBar null probably)
         this.setStatusBarPosition(statusBar.waterStatusBar,
             plant.gameObject.getTopCenter().y - (statusBarYMargin * 4), plant);
         this.setStatusBarPosition(statusBar.lightStatusBar,
@@ -312,7 +313,10 @@ export class MainScene extends Phaser.Scene {
             // This allows using non-hazard related tools when clicking on a hazard
             if (! game.removeHazardIfRightToolSelected(scene.gardenGame, activeHazard) &&
                     Phaser.Math.Distance.Between(plantImage.x, plantImage.y, hazardImage.x, hazardImage.y) < hazardToolClickRadius) {
-                scene.useSelectedToolWithSound(plant);
+                // Skip if plant is already dead
+                if (scene.gameResult.deaths == 0) {
+                    scene.useSelectedToolWithSound(plant);
+                }
             }
         });
         playSound(this, activeHazard.hazard, true);
@@ -399,6 +403,11 @@ export class MainScene extends Phaser.Scene {
     }
 
     handleWrongToolUsed(scene: MainScene) {
+        // Skip if plant is already dead
+        if (scene.gameResult.deaths > 0) {
+            return;
+        }
+
         // Only queue wrong tool sound if another tool didn't succeed this frame
         for (const successSound of toolSuccessSounds()) {
             if (scene.queuedSounds.has(successSound)) {
@@ -423,7 +432,6 @@ export class MainScene extends Phaser.Scene {
             delete scene.plantFruitImages[plant.id];
         }
 
-        //TODO if more than one plant is allowed, need to handle game over logic elsewhere
         stopAllSounds();
         
         // Save the result
@@ -487,6 +495,7 @@ export class MainScene extends Phaser.Scene {
     
     /** Main game update loop */
     update(time, delta) {
+        // Play sounds. Use queue to avoid overlapping
         for (const sound of this.queuedSounds) {
             playSound(this, sound);
         }
@@ -496,13 +505,6 @@ export class MainScene extends Phaser.Scene {
             Object.keys(this.gardenGame.plants).forEach(id => {
                 updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id]);
             });
-
-        } else if (config()["automaticRestart"]["enabled"]) {
-            this.time.delayedCall(config()["automaticRestart"]["restartTime"],
-                () => {
-                    game.resetGame(this.gardenGame);
-                    this.scene.restart()
-                });
         }
     }
 }

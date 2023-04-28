@@ -1,5 +1,5 @@
-import { ButtonClick, playSound } from "../audio/Sound";
-import { addGameResetListener, addPlantDestroyListener, addScoreUpdateListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { ButtonClick, playSound, stopAllSounds } from "../audio/Sound";
+import { addGameResetListener, addPlantDestroyListener, addScoreUpdateListener, addWeatherUpdateListener, clearListeners } from "../events/EventMessenger";
 import * as game from "../game/Game";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
@@ -42,6 +42,7 @@ export class UIScene extends Phaser.Scene {
     rightX: number;
     
     // Leaderboard
+    leaderboardBackground: Phaser.GameObjects.Rectangle;
     leaderboardTitle: Phaser.GameObjects.Text;
     leaderboardNumbers: Phaser.GameObjects.Text[];
     leaderboardRows: LeaderboardRow[];
@@ -76,6 +77,8 @@ export class UIScene extends Phaser.Scene {
         }
 
         this.leaderboardTitle.setPosition(this.rightX / 2, leaderboardY);
+        this.leaderboardBackground.setPosition(-100, -100);
+        this.leaderboardBackground.setSize(this.game.renderer.width + 200, this.game.renderer.height + 200);
         this.menuButton.setX(this.rightX / 2 - buttonMargin);
         this.retryButton.setX(this.rightX / 2 + buttonMargin);
 
@@ -139,10 +142,6 @@ export class UIScene extends Phaser.Scene {
 
     /** Reposition the rows in the leaderboard (either due to change in canvas size or change in the contents of the rows) */
     repositionLeaderboard() {
-        console.log("rank " + this.maxRankWidth);
-        console.log("score " + this.maxScoreWidth);
-        console.log("hazards " + this.maxHazardsWidth);
-        console.log("fruit " + this.maxFruitWidth);
         let leaderboardFullWidth = (leaderboardColumnMargin * 3) +
             this.maxScoreWidth + this.maxHazardsWidth +
             this.maxFruitWidth + this.leaderboardNumbers[0].width;
@@ -158,13 +157,11 @@ export class UIScene extends Phaser.Scene {
     }
 
     setLeaderboardVisible(isVisible: boolean) {
-        //TODO remove
-        isVisible = true;
-
         if (! this.leaderboardTitle || ! this.leaderboardRows || ! this.leaderboardNumbers) {
             return;
         }
         this.leaderboardTitle.setVisible(isVisible);
+        this.leaderboardBackground.setVisible(isVisible);
         this.setRowVisible(this.leaderboardRows[0], isVisible);
         for (let i = 1; i < this.leaderboardRows.length; i++) {
             // Don't show 0 second scores
@@ -224,6 +221,7 @@ export class UIScene extends Phaser.Scene {
             }
         });
         // Leaderboard
+        this.leaderboardBackground = this.add.rectangle(-100, -100, this.game.renderer.width + 200, this.game.renderer.height + 200, 0x000000, 0.2).setOrigin(0, 0);
         this.leaderboardTitle = this.add.text(0, 0, "High Scores", config()["leaderboardTitleStyle"]).setOrigin(0.5);
         
         let leaderboardBaseY = leaderboardY + 80;
@@ -285,11 +283,18 @@ export class UIScene extends Phaser.Scene {
         switch (buttonName) {
             case "menu":
                 // Back to the main menu
-                //TODO
+                clearListeners();
+                stopAllSounds();
+                this.scene.stop();
+                this.scene.stop("ToolbarScene");
+                this.scene.get("MainScene").clearListeners();
+                this.scene.stop("MainScene");
+                this.scene.start("MenuScene");
                 break;
             case "retry":
                 // Restart game scene
-                //TODO
+                game.resetGame(this.gardenGame);
+                this.scene.get("MainScene").scene.restart();
                 break;
         }
     }
