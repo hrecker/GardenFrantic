@@ -1,7 +1,9 @@
-import { addGameResetListener, addScoreUpdateListener, addWeatherUpdateListener } from "../events/EventMessenger";
+import { ButtonClick, playSound, stopAllSounds } from "../audio/Sound";
+import { addGameResetListener, addPlantDestroyListener, addScoreUpdateListener, addWeatherUpdateListener, clearListeners } from "../events/EventMessenger";
 import * as game from "../game/Game";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
+import { getGameResults, getLatestGameResult, getLatestGameResultIndex } from "../state/GameResultState";
 
 const uiY = 35;
 const uiXMargin = 15;
@@ -10,6 +12,19 @@ const addScoreStartMargin = 100;
 const addScoreEndMargin = 20;
 const maxParticles = 20;
 const scoreTextParticlesMargin = 14;
+
+// Leaderboard UI
+type LeaderboardRow = {
+    score: Phaser.GameObjects.Text;
+    hazardsDefeated: Phaser.GameObjects.Text;
+    fruitHarvested: Phaser.GameObjects.Text;
+};
+const leaderboardColumnMargin = 40;
+const defaultLeaderboardRowColor = "#FFF7E4";
+const highlightLeaderboardRowColor = "#B0EB93";
+const buttonMargin = 120;
+const leaderboardY = 50;
+
 
 /** UI scene */
 export class UIScene extends Phaser.Scene {
@@ -24,6 +39,22 @@ export class UIScene extends Phaser.Scene {
 
     particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
 
+    rightX: number;
+    
+    // Leaderboard
+    leaderboardBackground: Phaser.GameObjects.Rectangle;
+    leaderboardTitle: Phaser.GameObjects.Text;
+    leaderboardNumbers: Phaser.GameObjects.Text[];
+    leaderboardRows: LeaderboardRow[];
+    maxRankWidth: number;
+    maxScoreWidth: number;
+    maxHazardsWidth: number;
+    maxFruitWidth: number;
+    // Currently selected button
+    selectedButton: string;
+    menuButton: Phaser.GameObjects.Image;
+    retryButton: Phaser.GameObjects.Image;
+
     constructor() {
         super({
             key: "UIScene"
@@ -37,13 +68,119 @@ export class UIScene extends Phaser.Scene {
         }
         this.scoreText.setPosition(uiXMargin, uiY - 8);
         
-        let rightX = this.game.renderer.width - config()["toolbarWidth"] - uiXMargin - (weatherImageWidth / 2);
+        this.rightX = this.game.renderer.width - config()["toolbarWidth"];
+        let weatherRightX = this.rightX - uiXMargin - (weatherImageWidth / 2);
         for (let i = 0; i < this.weatherImages.length; i++) {
             let pos = this.weatherImages.length - i - 1;
-            this.weatherImages[i].setPosition(rightX - (pos * weatherImageWidth), uiY);
+            this.weatherImages[i].setPosition(weatherRightX - (pos * weatherImageWidth), uiY);
             this.weatherImageBorders[i].setPosition(this.weatherImages[i].x, this.weatherImages[i].y);
         }
 
+        this.leaderboardTitle.setPosition(this.rightX / 2, leaderboardY);
+        this.leaderboardBackground.setPosition(-100, -100);
+        this.leaderboardBackground.setSize(this.game.renderer.width + 200, this.game.renderer.height + 200);
+        this.menuButton.setX(this.rightX / 2 - buttonMargin);
+        this.retryButton.setX(this.rightX / 2 + buttonMargin);
+
+        this.repositionLeaderboard();
+    }
+
+    /** Update leaderboard with player highscores */
+    updateLeaderboard() {
+        let gameResults = getGameResults();
+        let highlightIndex = getLatestGameResultIndex();
+        // Update the rows in the leaderboard with the current high scores
+        this.maxRankWidth = this.leaderboardNumbers[0].width;
+        this.maxScoreWidth = this.leaderboardRows[0].score.width;
+        this.maxHazardsWidth = this.leaderboardRows[0].hazardsDefeated.width;
+        this.maxFruitWidth = this.leaderboardRows[0].fruitHarvested.width;
+        for (let i = 0; (i + 1) < this.leaderboardRows.length && i < gameResults.length; i++) {
+            let gameResult = gameResults[i];
+            // Last row is reserved for result from most recent game
+            if (i == this.leaderboardRows.length - 2) {
+                // If the score from the most recent game is outside of the top few, show it as an additional row at the bottom
+                if (highlightIndex == -1 || highlightIndex >= this.leaderboardRows.length - 2) {
+                    gameResult = getLatestGameResult();
+                    if (highlightIndex == -1) {
+                        this.leaderboardNumbers[i].setText(config()["maxGamesStored"] + "+");
+                    } else {
+                        this.leaderboardNumbers[i].setText((highlightIndex + 1).toString());
+                    }
+                    highlightIndex = i;
+                } else {
+                    // Otherwise just set it as a 0 second result
+                    gameResult = {
+                        score: 0,
+                        hazardsDefeated: 0,
+                        fruitHarvested: 0,
+                        deaths: 0
+                    };
+                }
+            }
+            this.leaderboardRows[i + 1].score.setText(gameResult.score.toString());
+            this.leaderboardRows[i + 1].hazardsDefeated.setText(gameResult.hazardsDefeated.toString());
+            this.leaderboardRows[i + 1].fruitHarvested.setText(gameResult.fruitHarvested.toString());
+            this.maxRankWidth = Math.max(this.maxRankWidth, this.leaderboardNumbers[i].width);
+            this.maxScoreWidth = Math.max(this.maxScoreWidth, this.leaderboardRows[i + 1].score.width);
+            this.maxHazardsWidth = Math.max(this.maxHazardsWidth, this.leaderboardRows[i + 1].hazardsDefeated.width);
+            this.maxFruitWidth = Math.max(this.maxFruitWidth, this.leaderboardRows[i + 1].fruitHarvested.width);
+            if (i == highlightIndex) {
+                this.leaderboardNumbers[i].setColor(highlightLeaderboardRowColor);
+                this.leaderboardRows[i + 1].score.setColor(highlightLeaderboardRowColor);
+                this.leaderboardRows[i + 1].hazardsDefeated.setColor(highlightLeaderboardRowColor);
+                this.leaderboardRows[i + 1].fruitHarvested.setColor(highlightLeaderboardRowColor);
+            } else {
+                this.leaderboardNumbers[i].setColor(defaultLeaderboardRowColor);
+                this.leaderboardRows[i + 1].score.setColor(defaultLeaderboardRowColor);
+                this.leaderboardRows[i + 1].hazardsDefeated.setColor(defaultLeaderboardRowColor);
+                this.leaderboardRows[i + 1].fruitHarvested.setColor(defaultLeaderboardRowColor);
+            }
+        }
+
+        this.repositionLeaderboard();
+    }
+
+    /** Reposition the rows in the leaderboard (either due to change in canvas size or change in the contents of the rows) */
+    repositionLeaderboard() {
+        let leaderboardFullWidth = (leaderboardColumnMargin * 3) +
+            this.maxScoreWidth + this.maxHazardsWidth +
+            this.maxFruitWidth + this.leaderboardNumbers[0].width;
+        let maxX = (this.rightX / 2) + (leaderboardFullWidth / 2);
+        for (let i = 0; i < this.leaderboardRows.length; i++) {
+            if (i < this.leaderboardNumbers.length) {
+                this.leaderboardNumbers[i].setX((this.rightX / 2) - (leaderboardFullWidth / 2));
+            }
+            this.leaderboardRows[i].score.setX(maxX - this.maxScoreWidth - this.maxHazardsWidth - (2 * leaderboardColumnMargin));
+            this.leaderboardRows[i].hazardsDefeated.setX(maxX - this.maxScoreWidth - leaderboardColumnMargin);
+            this.leaderboardRows[i].fruitHarvested.setX(maxX);
+        }
+    }
+
+    setLeaderboardVisible(isVisible: boolean) {
+        if (! this.leaderboardTitle || ! this.leaderboardRows || ! this.leaderboardNumbers) {
+            return;
+        }
+        this.leaderboardTitle.setVisible(isVisible);
+        this.leaderboardBackground.setVisible(isVisible);
+        this.setRowVisible(this.leaderboardRows[0], isVisible);
+        for (let i = 1; i < this.leaderboardRows.length; i++) {
+            // Don't show 0 second scores
+            if (this.leaderboardRows[i].score.text == "0") {
+                this.setRowVisible(this.leaderboardRows[i], false);
+                this.leaderboardNumbers[i - 1].setVisible(false);
+            } else {
+                this.setRowVisible(this.leaderboardRows[i], isVisible);
+                this.leaderboardNumbers[i - 1].setVisible(isVisible);
+            }
+        }
+        this.menuButton.setVisible(isVisible);
+        this.retryButton.setVisible(isVisible);
+    }
+
+    setRowVisible(row: LeaderboardRow, isVisible: boolean) {
+        row.score.setVisible(isVisible);
+        row.hazardsDefeated.setVisible(isVisible);
+        row.fruitHarvested.setVisible(isVisible);
     }
 
     init(data) {
@@ -83,9 +220,92 @@ export class UIScene extends Phaser.Scene {
                 }
             }
         });
+        // Leaderboard
+        this.leaderboardBackground = this.add.rectangle(-100, -100, this.game.renderer.width + 200, this.game.renderer.height + 200, 0x000000, 0.2).setOrigin(0, 0);
+        this.leaderboardTitle = this.add.text(0, 0, "High Scores", config()["leaderboardTitleStyle"]).setOrigin(0.5);
+        
+        let leaderboardBaseY = leaderboardY + 80;
+
+        this.leaderboardNumbers = [];
+        this.leaderboardRows = [];
+        let labelRow = {
+            score: this.add.text(0, leaderboardBaseY, "Score", config()["leaderboardRowStyle"]).setOrigin(1, 1),
+            hazardsDefeated: this.add.text(0, leaderboardBaseY, "Hazards\nDefeated", config()["leaderboardSmallRowStyle"]).setOrigin(1, 1),
+            fruitHarvested: this.add.text(0, leaderboardBaseY, "Fruit\nHarvested", config()["leaderboardSmallRowStyle"]).setOrigin(1, 1),
+        };
+        this.leaderboardRows.push(labelRow);
+        let y;
+        // Add one row under leaderboard count to show result of most recent game
+        for (let i = 0; i < config()["leaderboardCount"] + 1; i++) {
+            y = leaderboardBaseY + 45 + (i * 35);
+            this.leaderboardNumbers.push(this.add.text(0, y, (i + 1).toString(), config()["leaderboardRowStyle"]).setOrigin(0, 1));
+            this.leaderboardRows.push({
+                score: this.add.text(0, y, "0", config()["leaderboardRowStyle"]).setOrigin(1, 1),
+                hazardsDefeated: this.add.text(0, y, "0", config()["leaderboardSmallRowStyle"]).setOrigin(1, 1),
+                fruitHarvested: this.add.text(0, y, "0", config()["leaderboardSmallRowStyle"]).setOrigin(1, 1),
+            });
+        }
+        let buttonY = y + 40;
+        this.menuButton = this.add.image(0, buttonY, "menuButton");
+        this.retryButton = this.add.image(0, buttonY, "retryButton");
+        this.configureButton(this.menuButton, "menu", "menuButton", "menuButtonDown");
+        this.configureButton(this.retryButton, "retry", "retryButton", "retryButtonDown");
+        this.setLeaderboardVisible(false);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
+
+        addGameResetListener(this.handleGameStart, this);
+        addPlantDestroyListener(this.handlePlantDestroy, this);
+    }
+
+    configureButton(button: Phaser.GameObjects.Image, buttonName: string, defaultTexture: string, downTexture: string) {
+        button.setInteractive();
+        button.on('pointerout', () => {
+            button.setTexture(defaultTexture); 
+            this.selectedButton = null;
+        });
+        button.on('pointerdown', () => {
+            button.setTexture(downTexture);
+            this.selectedButton = buttonName;
+            playSound(this, ButtonClick);
+        });
+        button.on('pointerup', () => {
+            if (this.selectedButton === buttonName) {
+                this.handleButtonClick(buttonName);
+            }
+            button.setTexture(defaultTexture);
+            this.selectedButton = null;
+        });
+    }
+
+    handleButtonClick(buttonName) {
+        switch (buttonName) {
+            case "menu":
+                // Back to the main menu
+                clearListeners();
+                stopAllSounds();
+                this.scene.stop();
+                this.scene.stop("ToolbarScene");
+                this.scene.get("MainScene").clearListeners();
+                this.scene.stop("MainScene");
+                this.scene.start("MenuScene");
+                break;
+            case "retry":
+                // Restart game scene
+                game.resetGame(this.gardenGame);
+                this.scene.get("MainScene").scene.restart();
+                break;
+        }
+    }
+
+    handleGameStart(scene: UIScene) {
+        scene.setLeaderboardVisible(false);
+    }
+
+    handlePlantDestroy(scene: UIScene) {
+        scene.updateLeaderboard();
+        scene.setLeaderboardVisible(true);
     }
 
     updateCooldownGraphics() {

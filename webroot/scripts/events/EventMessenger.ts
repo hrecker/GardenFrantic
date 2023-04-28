@@ -40,6 +40,21 @@ let hazardImpactCallbacks: NumberCallback[] = [];
 let settingsCallbacks: SettingsCallback[] = [];
 let wrongToolCallbacks: VoidCallback[] = [];
 
+/** Clear out any active listeners */
+export function clearListeners() {
+    gameResetCallbacks = [];
+    scoreUpdateCallbacks = [];
+    fruitGrowthCallbacks = [];
+    fruitHarvestedCallbacks = [];
+    plantDestroyCallbacks = [];
+    weatherUpdateCallbacks = [];
+    hazardCreatedCallbacks = [];
+    hazardDestroyedCallbacks = [];
+    hazardImpactCallbacks = [];
+    wrongToolCallbacks = [];
+    // Don't clear settings callbacks since only the background scene listens to the settings
+}
+
 /** Add a callback listening for game reset */
 export function addGameResetListener(callback: (scene: Phaser.Scene) => void, scene: Phaser.Scene) {
     gameResetCallbacks.push({ 

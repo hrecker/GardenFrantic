@@ -91,8 +91,12 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture("meteorFragment", "hazards/");
         
         // UI
+        this.load.image("menuButton", "assets/sprites/ui/menuButton.png");
+        this.load.image("menuButtonDown", "assets/sprites/ui/menuButtonDown.png");
         this.load.image("playButton", "assets/sprites/ui/playButton.png");
         this.load.image("playButtonDown", "assets/sprites/ui/playButtonDown.png");
+        this.load.image("retryButton", "assets/sprites/ui/retryButton.png");
+        this.load.image("retryButtonDown", "assets/sprites/ui/retryButtonDown.png");
         this.load.image('musicOffButton', 'assets/sprites/ui/music_off_button.png');
         this.load.image('musicOffButtonDown', 'assets/sprites/ui/music_off_button_down.png');
         this.load.image('musicOnButton', 'assets/sprites/ui/music_on_button.png');
