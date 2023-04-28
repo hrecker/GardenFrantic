@@ -41,7 +41,7 @@
         "color": "#FFF7E4"
     },
     "leaderboardSmallRowStyle": { 
-        "font": "25px Verdana",
+        "font": "22px Verdana",
         "shadow": {
             "offsetX": 1,
             "offsetY": 1,
@@ -50,7 +50,8 @@
             "stroke": true,
             "fill": true
         },
-        "color": "#FFF7E4"
+        "color": "#FFF7E4",
+        "align": "center"
     },
     "leaderboardCount": 3,
 

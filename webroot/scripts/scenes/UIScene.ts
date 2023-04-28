@@ -3,7 +3,6 @@ import { addGameResetListener, addPlantDestroyListener, addScoreUpdateListener, 
 import * as game from "../game/Game";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
-import { getCurrentDifficulty } from "../state/DifficultyState";
 import { getGameResults, getLatestGameResult, getLatestGameResultIndex } from "../state/GameResultState";
 
 const uiY = 35;
@@ -23,7 +22,7 @@ type LeaderboardRow = {
 const leaderboardColumnMargin = 40;
 const defaultLeaderboardRowColor = "#FFF7E4";
 const highlightLeaderboardRowColor = "#B0EB93";
-const buttonMargin = 80;
+const buttonMargin = 120;
 const leaderboardY = 50;
 
 
@@ -44,14 +43,12 @@ export class UIScene extends Phaser.Scene {
     
     // Leaderboard
     leaderboardTitle: Phaser.GameObjects.Text;
-    difficultyLabel: Phaser.GameObjects.Text;
     leaderboardNumbers: Phaser.GameObjects.Text[];
     leaderboardRows: LeaderboardRow[];
     maxRankWidth: number;
     maxScoreWidth: number;
     maxHazardsWidth: number;
     maxFruitWidth: number;
-    buttonY: number;
     // Currently selected button
     selectedButton: string;
     menuButton: Phaser.GameObjects.Image;
@@ -70,19 +67,17 @@ export class UIScene extends Phaser.Scene {
         }
         this.scoreText.setPosition(uiXMargin, uiY - 8);
         
-        this.rightX = this.game.renderer.width - config()["toolbarWidth"] - uiXMargin - (weatherImageWidth / 2);
+        this.rightX = this.game.renderer.width - config()["toolbarWidth"];
+        let weatherRightX = this.rightX - uiXMargin - (weatherImageWidth / 2);
         for (let i = 0; i < this.weatherImages.length; i++) {
             let pos = this.weatherImages.length - i - 1;
-            this.weatherImages[i].setPosition(this.rightX - (pos * weatherImageWidth), uiY);
+            this.weatherImages[i].setPosition(weatherRightX - (pos * weatherImageWidth), uiY);
             this.weatherImageBorders[i].setPosition(this.weatherImages[i].x, this.weatherImages[i].y);
         }
 
         this.leaderboardTitle.setPosition(this.rightX / 2, leaderboardY);
-        if (this.difficultyLabel) {
-            this.difficultyLabel.setX(this.rightX / 2);
-        }
-        this.menuButton.setPosition(this.rightX / 2 - buttonMargin, this.buttonY);
-        this.retryButton.setPosition(this.rightX / 2 + buttonMargin, this.buttonY);
+        this.menuButton.setX(this.rightX / 2 - buttonMargin);
+        this.retryButton.setX(this.rightX / 2 + buttonMargin);
 
         this.repositionLeaderboard();
     }
@@ -149,7 +144,7 @@ export class UIScene extends Phaser.Scene {
         console.log("hazards " + this.maxHazardsWidth);
         console.log("fruit " + this.maxFruitWidth);
         let leaderboardFullWidth = (leaderboardColumnMargin * 3) +
-            this.maxRankWidth + this.maxScoreWidth + this.maxHazardsWidth +
+            this.maxScoreWidth + this.maxHazardsWidth +
             this.maxFruitWidth + this.leaderboardNumbers[0].width;
         let maxX = (this.rightX / 2) + (leaderboardFullWidth / 2);
         for (let i = 0; i < this.leaderboardRows.length; i++) {
@@ -170,9 +165,6 @@ export class UIScene extends Phaser.Scene {
             return;
         }
         this.leaderboardTitle.setVisible(isVisible);
-        if (this.difficultyLabel) {
-            this.difficultyLabel.setVisible(isVisible);
-        }
         this.setRowVisible(this.leaderboardRows[0], isVisible);
         for (let i = 1; i < this.leaderboardRows.length; i++) {
             // Don't show 0 second scores
@@ -234,10 +226,7 @@ export class UIScene extends Phaser.Scene {
         // Leaderboard
         this.leaderboardTitle = this.add.text(0, 0, "High Scores", config()["leaderboardTitleStyle"]).setOrigin(0.5);
         
-        let leaderboardBaseY = leaderboardY + 70;
-        //TODO text style
-        this.difficultyLabel = this.add.text(0, 160, "Difficulty: " + getCurrentDifficulty()).setOrigin(0.5);
-        leaderboardBaseY += 40;
+        let leaderboardBaseY = leaderboardY + 80;
 
         this.leaderboardNumbers = [];
         this.leaderboardRows = [];

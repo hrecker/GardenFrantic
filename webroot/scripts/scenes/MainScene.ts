@@ -228,6 +228,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     setStatusBarsPosition(statusBar: PlantStatusBar, plant: Plant) {
+        //TODO undefined error on next line (statusBar null probably)
         this.setStatusBarPosition(statusBar.waterStatusBar,
             plant.gameObject.getTopCenter().y - (statusBarYMargin * 4), plant);
         this.setStatusBarPosition(statusBar.lightStatusBar,
