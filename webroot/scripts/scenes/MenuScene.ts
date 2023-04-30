@@ -2,6 +2,7 @@ import { newGame } from "../game/Game";
 import { config } from "../model/Config";
 import { ButtonClick, playSound } from "../audio/Sound";
 import { getSettings, setMusicEnabled, setSfxEnabled } from "../state/Settings";
+import { Weather } from "../game/Weather";
 
 // Currently selected button
 let selectedButton: string;
@@ -16,8 +17,21 @@ let sfxControlButton: Phaser.GameObjects.Image;
 
 let creditsText: Phaser.GameObjects.Text;
 
+const weatherQueue = [
+    Weather.PartlyCloudy,
+    Weather.Rain,
+    Weather.Heat,
+    Weather.Cloudy
+];
+const backgroundDurationMs = 4000;
+
 /** Main Menu scene */
 export class MenuScene extends Phaser.Scene {
+    backgroundOne: Phaser.GameObjects.Sprite;
+    backgroundTwo: Phaser.GameObjects.Sprite;
+    timeSinceBackgroundChangeMs: number;
+    currentWeatherIndex: number;
+
     constructor() {
         super({
             key: "MenuScene"
@@ -67,26 +81,57 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create() {
+        this.currentWeatherIndex = 0;
+        this.backgroundOne = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0);
+        this.backgroundTwo = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0).setAlpha(0);
+        this.timeSinceBackgroundChangeMs = 0;
+
         this.input.setDefaultCursor("default");
         
-        titleText = this.add.text(0, 0, "Garden Frantic", config()["titleStyle"]).setOrigin(0.5);
+        titleText = this.add.text(0, 0, "Garden Frantic", config()["titleStyle"]).setOrigin(0.5).setAlpha(0);
 
         // Buttons
-        playButton = this.add.image(0, 0, "playButton").setScale(1.5).setName("playButton");
+        playButton = this.add.image(0, 0, "playButton").setScale(1.5).setName("playButton").setAlpha(0);
         this.configureButton(playButton, "playButton");
         
         // Audio control buttons
-        musicControlButton = this.add.image(0, 0, this.getMusicButtonTexture()).setOrigin(0, 1).setName(musicControlButtonName);
+        musicControlButton = this.add.image(0, 0, this.getMusicButtonTexture()).setOrigin(0, 1).setName(musicControlButtonName).setAlpha(0);
         this.configureButton(musicControlButton, musicControlButtonName);
-        sfxControlButton = this.add.image(0, 0, this.getSfxButtonTexture()).setOrigin(0, 1).setName(sfxControlButtonName);
+        sfxControlButton = this.add.image(0, 0, this.getSfxButtonTexture()).setOrigin(0, 1).setName(sfxControlButtonName).setAlpha(0);
         this.configureButton(sfxControlButton, sfxControlButtonName);
 
         // Credits
         creditsText = this.add.text(0, 0, "Music by Eric Matyas\nwww.soundimage.org",
-                { ...config()["controlsStyle"], font: "20px Verdana" }).setOrigin(0.5);
+                { ...config()["titleStyle"], font: "20px Verdana" }).setOrigin(0.5).setAlpha(0);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
+
+        // Fade in menu items
+        [titleText,
+            playButton].forEach(target => {
+            this.tweens.add({
+                targets: target,
+                ease: "Quad",
+                alpha: 1,
+                y: {
+                    from: target.y + 50,
+                    to: target.y
+                },
+                duration: 750
+            });
+        })
+        this.tweens.add({
+            targets: [
+                titleText,
+                playButton,
+                musicControlButton,
+                sfxControlButton,
+                creditsText
+            ],
+            alpha: 1,
+            duration: 750
+        });
 
         //For quicker testing - just skips the main menu scene and opens the game scene
         //this.handleButtonClick("playButton");
@@ -132,6 +177,34 @@ export class MenuScene extends Phaser.Scene {
                 // Toggle sfx
                 setSfxEnabled(!getSettings().sfxEnabled);
                 break;
+        }
+    }
+
+    update(time, delta) {
+        this.timeSinceBackgroundChangeMs += delta;
+        if (this.timeSinceBackgroundChangeMs >= backgroundDurationMs) {
+            let oldBackground = this.backgroundOne;
+            let newBackground = this.backgroundTwo;
+            if (this.backgroundOne.alpha == 0) {
+                oldBackground = this.backgroundTwo;
+                newBackground = this.backgroundOne;
+            }
+
+            this.currentWeatherIndex = (this.currentWeatherIndex + 1) % weatherQueue.length;
+            newBackground.setTexture(weatherQueue[this.currentWeatherIndex]);
+
+            this.tweens.add({
+                targets: oldBackground,
+                alpha: 0,
+                duration: 750
+            });
+            this.tweens.add({
+                targets: newBackground,
+                alpha: 1,
+                duration: 750
+            });
+
+            this.timeSinceBackgroundChangeMs = 0;
         }
     }
 }
