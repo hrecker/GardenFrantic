@@ -27,10 +27,10 @@ export enum ToolCategory {
 export let startingTools = [
     Tool.Basket,
     Tool.Fertilizer,
-    Tool.Lamp,
     Tool.Shade,
-    Tool.WateringCan,
+    Tool.Lamp,
     Tool.Umbrella,
+    Tool.WateringCan,
     Tool.Scarecrow,
     Tool.Weedkiller,
     Tool.Pesticide,

@@ -5,7 +5,7 @@ import { config } from "../model/Config";
 import { createSwayAnimation } from "../util/Util";
 
 const toolYAnchor = 75;
-const toolMargin = 60;
+const toolMargin = 51;
 const toolTextY = toolYAnchor - 50;
 const scrollMaskY = toolTextY + 25;
 const toolYScrollMargin = 29;
@@ -13,6 +13,7 @@ const scrollIndicatorWidth = 5;
 const scrollIndicatorMargin = 3;
 const scrollSpeedDecay = 1;
 const scrollWheelSpeed = 0.4;
+const toolScale = 0.9;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -166,10 +167,10 @@ export class ToolbarScene extends Phaser.Scene {
                 ]);
             let texture = tool.startingTools[i] + '1';
             let texturePath = "drawn/" + texture;
-            let toolIcon = this.add.sprite(0, 0, texture);
+            let toolIcon = this.add.sprite(0, 0, texture).setScale(toolScale);
             this.toolIcons.push(toolIcon);
             // Add box background
-            let toolbox = this.add.image(0, 0, "toolbox");
+            let toolbox = this.add.image(0, 0, "toolbox").setScale(toolScale);
             this.toolBoxes.push(toolbox);
             toolIcon.setInteractive();
             toolIcon.on("pointerdown", () => {
