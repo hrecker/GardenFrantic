@@ -9,18 +9,18 @@ export type BackgroundImageSpawner = {
     currentSpritePoolIndex: number;
 }
 
-const spritePoolSize = 6;
+const spritePoolSize = 14;
 
-export function newBackgroundImageSpawner(scene: Phaser.Scene, spawnIntervalMinMs: number, spawnIntervalMaxMs: number): BackgroundImageSpawner {
+export function newBackgroundImageSpawner(scene: Phaser.Scene, spawnIntervalMinMs: number, spawnIntervalMaxMs: number, alpha: number): BackgroundImageSpawner {
     let spritePool = [];
     for (let i = 0; i < spritePoolSize; i++) {
-        spritePool.push(scene.add.sprite(-100, -100, "leaf1"));
+        spritePool.push(scene.add.sprite(-100, -100, "leaf1").setAlpha(alpha));
     }
 
     return {
         spawnIntervalMinMs: spawnIntervalMinMs,
         spawnIntervalMaxMs: spawnIntervalMaxMs,
-        nextSpawnIntervalMs: nextSpawnInterval(spawnIntervalMinMs, spawnIntervalMaxMs),
+        nextSpawnIntervalMs: 0,
         timeSinceSpawnMs: 0,
         spritePool: spritePool,
         currentSpritePoolIndex: 0,
@@ -51,18 +51,26 @@ export function update(scene: Phaser.Scene, delta: number, spawner: BackgroundIm
     if (spawner.timeSinceSpawnMs >= spawner.nextSpawnIntervalMs) {
         let startX = -100;
         let endX = scene.game.renderer.width + 100;
-        let startY = 200;
+        let startY = randomInRange(0, scene.game.renderer.height);
+        let endY = randomInRange(0, scene.game.renderer.height);
+        let endRotation = randomInRange(0, Math.PI);
 
         let sprite = spawner.spritePool[spawner.currentSpritePoolIndex];
+        sprite.rotation = 0;
         sprite.setTexture(getSpawnImage());
+        if (sprite.texture.key.includes("butterfly")) {
+            endRotation = 0;
+        }
         sprite.play(sprite.texture.key.substring(0, sprite.texture.key.length - 1) + "sway");
         sprite.x = startX;
         sprite.y = startY;
 
         scene.add.tween({
             targets: sprite,
+            rotation: endRotation,
             x: endX,
-            duration: 3500
+            y: endY,
+            duration: 4500
         });
 
         spawner.timeSinceSpawnMs = 0;

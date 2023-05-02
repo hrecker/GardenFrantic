@@ -88,7 +88,7 @@ export class MenuScene extends Phaser.Scene {
         this.backgroundTwo = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0).setAlpha(0);
         this.timeSinceBackgroundChangeMs = 0;
 
-        this.backgroundImageSpawner = newBackgroundImageSpawner(this, 1000, 2000);
+        this.backgroundImageSpawner = newBackgroundImageSpawner(this, 0, 3500, 1);
         createBackgroundImageAnimations(this);
         
         this.input.setDefaultCursor("default");

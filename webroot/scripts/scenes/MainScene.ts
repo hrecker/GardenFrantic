@@ -10,6 +10,7 @@ import { loadSounds, playSound, stopAllSounds, stopSound, toolSuccessSounds, Wro
 import { GameResult } from "../model/GameResult";
 import { saveGameResult } from "../state/GameResultState";
 import { setSfxEnabled } from "../state/Settings";
+import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -38,6 +39,7 @@ export class MainScene extends Phaser.Scene {
     queuedSounds: Set<string>;
     gameResult: GameResult;
     listenersInitialized: boolean;
+    backgroundImageSpawner: BackgroundImageSpawner;
 
     constructor() {
         super({
@@ -112,6 +114,8 @@ export class MainScene extends Phaser.Scene {
 
         this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setTint(0xdddddd);
         this.backgroundWipe = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setTint(0xdddddd).setAlpha(0);
+        this.backgroundImageSpawner = newBackgroundImageSpawner(this, 0, 4000, 0.7);
+        createBackgroundImageAnimations(this);
 
         this.createAnimations();
         this.createPlant(0, 0);
@@ -506,5 +510,6 @@ export class MainScene extends Phaser.Scene {
                 updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id]);
             });
         }
+        update(this, delta, this.backgroundImageSpawner);
     }
 }
