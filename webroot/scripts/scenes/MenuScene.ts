@@ -3,6 +3,7 @@ import { config } from "../model/Config";
 import { ButtonClick, playSound } from "../audio/Sound";
 import { getSettings, setMusicEnabled, setSfxEnabled } from "../state/Settings";
 import { Weather } from "../game/Weather";
+import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
 
 // Currently selected button
 let selectedButton: string;
@@ -31,6 +32,7 @@ export class MenuScene extends Phaser.Scene {
     backgroundTwo: Phaser.GameObjects.Sprite;
     timeSinceBackgroundChangeMs: number;
     currentWeatherIndex: number;
+    backgroundImageSpawner: BackgroundImageSpawner;
 
     constructor() {
         super({
@@ -86,6 +88,9 @@ export class MenuScene extends Phaser.Scene {
         this.backgroundTwo = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0).setAlpha(0);
         this.timeSinceBackgroundChangeMs = 0;
 
+        this.backgroundImageSpawner = newBackgroundImageSpawner(this, 1000, 2000);
+        createBackgroundImageAnimations(this);
+        
         this.input.setDefaultCursor("default");
         
         titleText = this.add.text(0, 0, "Garden Frantic", config()["titleStyle"]).setOrigin(0.5).setAlpha(0);
@@ -206,5 +211,7 @@ export class MenuScene extends Phaser.Scene {
 
             this.timeSinceBackgroundChangeMs = 0;
         }
+
+        update(this, delta, this.backgroundImageSpawner);
     }
 }

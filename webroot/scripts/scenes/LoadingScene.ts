@@ -89,6 +89,12 @@ export class LoadingScene extends Phaser.Scene {
         this.loadHazardTexture(Hazard.Meteor, false);
         this.loadHazardTexture(Hazard.Mole, true);
         this.loadTexture("meteorFragment", "hazards/");
+        this.loadTexture("butterfly1", "background/");
+        this.loadTexture("butterfly2", "background/");
+        this.loadTexture("leaf1", "background/");
+        this.loadTexture("leaf2", "background/");
+        this.loadTexture("spikeleaf1", "background/");
+        this.loadTexture("spikeleaf2", "background/");
         
         // UI
         this.load.image("menuButton", "assets/sprites/ui/menuButton.png");
