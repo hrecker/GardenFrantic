@@ -37,8 +37,6 @@ export class UIScene extends Phaser.Scene {
     weatherImageBorders: Phaser.GameObjects.Image[];
     countdownGraphics: Phaser.GameObjects.Graphics;
 
-    particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
-
     rightX: number;
     
     // Leaderboard
@@ -206,20 +204,6 @@ export class UIScene extends Phaser.Scene {
         }
         this.countdownGraphics = this.add.graphics();
 
-        this.particleEmitter = this.add.particles(0, 0, "particle", {
-            speed: 20,
-            gravityY: 1,
-            scale: 2,
-            tint: 0xD9C8BF,
-            frequency: -1,
-            rotate: { min: 0, max: 360 },
-            lifespan: config()["scoreBumpIntervalMs"],
-            alpha: {
-                onUpdate: (particle, key, t, value) => {
-                    return 1 - t;
-                }
-            }
-        });
         // Leaderboard
         this.leaderboardBackground = this.add.rectangle(-100, -100, this.game.renderer.width + 200, this.game.renderer.height + 200, 0x000000, 0.2).setOrigin(0, 0);
         this.leaderboardTitle = this.add.text(0, 0, "High Scores", config()["leaderboardTitleStyle"]).setOrigin(0.5);
@@ -393,7 +377,6 @@ export class UIScene extends Phaser.Scene {
                 },
                 targets: addScoreText
             });
-            scene.particleEmitter.explode(Math.min(diff, maxParticles), addScoreText.x + scoreTextParticlesMargin, addScoreText.y - scoreTextParticlesMargin);
         }
     }
 

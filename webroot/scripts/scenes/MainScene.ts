@@ -9,8 +9,8 @@ import { createSwayAnimation, flashSprite } from "../util/Util";
 import { loadSounds, playSound, stopAllSounds, stopSound, toolSuccessSounds, WrongTool } from "../audio/Sound";
 import { GameResult } from "../model/GameResult";
 import { saveGameResult } from "../state/GameResultState";
-import { setSfxEnabled } from "../state/Settings";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
+import { getCategory, Tool, ToolCategory } from "../game/Tool";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -201,6 +201,10 @@ export class MainScene extends Phaser.Scene {
         let used = game.useSelectedTool(this.gardenGame, plant);
         if (used != null) {
             this.queueSound(used);
+            let toolCategory = getCategory(used);
+            if (toolCategory == ToolCategory.Growth || toolCategory == ToolCategory.Light || toolCategory == ToolCategory.Water) {
+                this.particleEmitter.explode(3, this.input.activePointer.x, this.input.activePointer.y);
+            }
         }
     }
 
