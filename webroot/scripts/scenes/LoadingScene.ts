@@ -101,6 +101,8 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("menuButtonDown", "assets/sprites/ui/menuButtonDown.png");
         this.load.image("playButton", "assets/sprites/ui/playButton.png");
         this.load.image("playButtonDown", "assets/sprites/ui/playButtonDown.png");
+        this.load.image("statsButton", "assets/sprites/ui/statsButton.png");
+        this.load.image("statsButtonDown", "assets/sprites/ui/statsButtonDown.png");
         this.load.image("retryButton", "assets/sprites/ui/retryButton.png");
         this.load.image("retryButtonDown", "assets/sprites/ui/retryButtonDown.png");
         this.load.image('musicOffButton', 'assets/sprites/ui/music_off_button.png');
