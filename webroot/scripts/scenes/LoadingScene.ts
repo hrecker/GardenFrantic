@@ -115,6 +115,8 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image('soundOffButtonDown', 'assets/sprites/ui/sound_off_button_down.png');
         this.load.image('soundOnButton', 'assets/sprites/ui/sound_on_button.png');
         this.load.image('soundOnButtonDown', 'assets/sprites/ui/sound_on_button_down.png');
+        this.load.image('radioButtonUnselected', 'assets/sprites/ui/radioButtonUnselected.png');
+        this.load.image('radioButtonSelected', 'assets/sprites/ui/radioButtonSelected.png');
 
         // Fonts
         this.load.bitmapFont('uiFont', 'assets/fonts/singkong_0.png', 'assets/fonts/singkong.fnt');

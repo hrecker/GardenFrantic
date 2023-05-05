@@ -5,6 +5,7 @@ import { getSettings, setMusicEnabled, setSfxEnabled } from "../state/Settings";
 import { Weather } from "../game/Weather";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
 import { getLifetimeStats } from "../state/GameResultState";
+import { Difficulty } from "../state/DifficultyState";
 
 const musicControlButtonName = "musicControlButton";
 const sfxControlButtonName = "sfxControlButton";
@@ -36,9 +37,17 @@ export class MenuScene extends Phaser.Scene {
 
     creditsText: Phaser.GameObjects.Text;
 
+    easyRadioButton: Phaser.GameObjects.Image;
+    normalRadioButton: Phaser.GameObjects.Image;
+    hardRadioButton: Phaser.GameObjects.Image;
+    easyLabel: Phaser.GameObjects.Text;
+    normalLabel: Phaser.GameObjects.Text;
+    hardLabel: Phaser.GameObjects.Text;
+    selectedDifficulty: string;
+    selectedDifficultyButton: Phaser.GameObjects.Image;
+
     // Groups to allow easily showing and hiding multiple UI elements
     mainMenuGroup: Phaser.GameObjects.Group;
-    howToPlayGroup: Phaser.GameObjects.Group;
     lifetimeStatsGroup: Phaser.GameObjects.Group;
 
     // Stats
@@ -85,10 +94,18 @@ export class MenuScene extends Phaser.Scene {
 
         // Buttons
         let buttonMargin = 65;
+        let radioButtonMargin = 100;
+        let radioButtonLabelMargin = 20;
         let buttonYAnchor = titleY + buttonMargin + 10;
         this.playButton.setPosition(centerX, buttonYAnchor);
         this.statsButton.setPosition(centerX, buttonYAnchor + buttonMargin);
         this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
+        this.easyRadioButton.setPosition(centerX - radioButtonMargin, buttonYAnchor + 2 * buttonMargin);
+        this.easyLabel.setPosition(this.easyRadioButton.getBottomCenter().x, this.easyRadioButton.getBottomCenter().y + radioButtonLabelMargin);
+        this.normalRadioButton.setPosition(centerX, buttonYAnchor + 2 * buttonMargin);
+        this.normalLabel.setPosition(this.normalRadioButton.getBottomCenter().x, this.normalRadioButton.getBottomCenter().y + radioButtonLabelMargin);
+        this.hardRadioButton.setPosition(centerX + radioButtonMargin, buttonYAnchor + 2 * buttonMargin);
+        this.hardLabel.setPosition(this.hardRadioButton.getBottomCenter().x, this.hardRadioButton.getBottomCenter().y + radioButtonLabelMargin);
         
         // Audio control buttons
         this.musicControlButton.setPosition(5, this.game.renderer.height - 60);
@@ -113,7 +130,6 @@ export class MenuScene extends Phaser.Scene {
     create() {
         this.mainMenuGroup = this.add.group();
         this.lifetimeStatsGroup = this.add.group();
-        this.howToPlayGroup = this.add.group();
 
         this.currentWeatherIndex = 0;
         this.backgroundOne = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0);
@@ -135,6 +151,25 @@ export class MenuScene extends Phaser.Scene {
         this.configureButton(this.statsButton, "statsButton");
         this.mainMenuGroup.add(this.playButton);
         this.mainMenuGroup.add(this.statsButton);
+
+        // Difficulty selection
+        this.easyRadioButton = this.add.image(0, 0, "radioButtonUnselected").setName(Difficulty.Easy);
+        this.normalRadioButton = this.add.image(0, 0, "radioButtonSelected").setName(Difficulty.Normal);
+        this.hardRadioButton = this.add.image(0, 0, "radioButtonUnselected").setName(Difficulty.Hard);
+        this.selectedDifficulty = Difficulty.Normal;
+        this.selectedDifficultyButton = this.normalRadioButton;
+        this.configureDifficultyRadioButton(this.easyRadioButton);
+        this.configureDifficultyRadioButton(this.normalRadioButton);
+        this.configureDifficultyRadioButton(this.hardRadioButton);
+        this.easyLabel = this.add.text(0, 0, "Easy",
+                { ...config()["titleStyle"], font: "20px Verdana" }).setOrigin(0.5);
+        this.normalLabel = this.add.text(0, 0, "Normal",
+                { ...config()["titleStyle"], font: "20px Verdana" }).setOrigin(0.5);
+        this.hardLabel = this.add.text(0, 0, "Hard",
+                { ...config()["titleStyle"], font: "20px Verdana" }).setOrigin(0.5);
+        this.mainMenuGroup.add(this.easyRadioButton);
+        this.mainMenuGroup.add(this.normalRadioButton);
+        this.mainMenuGroup.add(this.hardRadioButton);
         
         // Audio control buttons
         this.musicControlButton = this.add.image(0, 0, this.getMusicButtonTexture()).setOrigin(0, 1).setName(musicControlButtonName).setAlpha(0);
@@ -237,10 +272,6 @@ export class MenuScene extends Phaser.Scene {
         });
     }
 
-    fadeInHowToPlay() {
-
-    }
-
     configureButton(button: Phaser.GameObjects.Image, textureName: string) {
         button.setInteractive();
         button.on('pointerout', () => {
@@ -260,6 +291,21 @@ export class MenuScene extends Phaser.Scene {
             }
             button.setTexture(this.getDefaultTexture(textureName)); 
             this.selectedButton = null;
+        });
+    }
+
+    configureDifficultyRadioButton(button: Phaser.GameObjects.Image) {
+        button.setInteractive();
+        button.on('pointerdown', () => {
+            if (button.name != this.selectedDifficulty) {
+                this.selectedDifficulty = button.name;
+                button.setTexture("radioButtonSelected");
+                if (this.selectedDifficultyButton) {
+                    this.selectedDifficultyButton.setTexture("radioButtonUnselected");
+                }
+                this.selectedDifficultyButton = button;
+                playSound(this, ButtonClick);
+            }
         });
     }
 

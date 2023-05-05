@@ -2,7 +2,7 @@
 export enum Difficulty {
     Easy = "Easy",
     Normal = "Normal",
-    Chaos = "Chaos",
+    Hard = "Hard",
 }
 
 let currentDifficulty: Difficulty = Difficulty.Normal;
