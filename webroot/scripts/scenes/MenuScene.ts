@@ -4,6 +4,7 @@ import { ButtonClick, playSound } from "../audio/Sound";
 import { getSettings, setMusicEnabled, setSfxEnabled } from "../state/Settings";
 import { Weather } from "../game/Weather";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
+import { getLifetimeStats } from "../state/GameResultState";
 
 const musicControlButtonName = "musicControlButton";
 const sfxControlButtonName = "sfxControlButton";
@@ -29,6 +30,7 @@ export class MenuScene extends Phaser.Scene {
     selectedButton: string;
     playButton: Phaser.GameObjects.Image;
     statsButton: Phaser.GameObjects.Image;
+    backButton: Phaser.GameObjects.Image;
     musicControlButton: Phaser.GameObjects.Image;
     sfxControlButton: Phaser.GameObjects.Image;
 
@@ -38,6 +40,13 @@ export class MenuScene extends Phaser.Scene {
     mainMenuGroup: Phaser.GameObjects.Group;
     howToPlayGroup: Phaser.GameObjects.Group;
     lifetimeStatsGroup: Phaser.GameObjects.Group;
+
+    // Stats
+    statsTexts: Phaser.GameObjects.Text[];
+    gamePlayedText: Phaser.GameObjects.Text;
+    totalScoreText: Phaser.GameObjects.Text;
+    hazardsDefeatedText: Phaser.GameObjects.Text;
+    fruitHarvestedText: Phaser.GameObjects.Text;
 
     constructor() {
         super({
@@ -79,6 +88,7 @@ export class MenuScene extends Phaser.Scene {
         let buttonYAnchor = titleY + buttonMargin + 10;
         this.playButton.setPosition(centerX, buttonYAnchor);
         this.statsButton.setPosition(centerX, buttonYAnchor + buttonMargin);
+        this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
         
         // Audio control buttons
         this.musicControlButton.setPosition(5, this.game.renderer.height - 60);
@@ -86,6 +96,18 @@ export class MenuScene extends Phaser.Scene {
 
         // Credits
         this.creditsText.setPosition(this.game.renderer.width - 100, this.game.renderer.height - 35);
+
+        // Lifetime stats
+        let statsMargin = 60;
+        let statsXMargin = 225;
+        let statsAnchor = titleY - 20;
+        for (let i = 0; i < this.statsTexts.length; i++) {
+            this.statsTexts[i].setPosition(centerX - statsXMargin, statsAnchor + (i * statsMargin));
+        }
+        this.gamePlayedText.setPosition(centerX + statsXMargin, statsAnchor);
+        this.totalScoreText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin);
+        this.hazardsDefeatedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 2);
+        this.fruitHarvestedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 3);
     }
 
     create() {
@@ -130,37 +152,33 @@ export class MenuScene extends Phaser.Scene {
         // Lifetime stats
         let lifetimeStats = getLifetimeStats();
 
-        //TODO
-        statsTitle = this.add.text(0, 0, "Statistics", config()["titleStyle"]).setOrigin(0.5);
-        statsTexts = [];
-        statsTexts.push(this.add.text(0, 0, "Time survived", { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(0, 0.5));
-        statsTexts.push(this.add.text(0, 0, "Average time survived", { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(0, 0.5));
-        statsTexts.push(this.add.text(0, 0, "Gems collected", { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(0, 0.5));
-        statsTexts.push(this.add.text(0, 0, "Enemies killed", { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(0, 0.5));
-        statsTexts.push(this.add.text(0, 0, "Shots fired", { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(0, 0.5));
-        statsTexts.push(this.add.text(0, 0, "Deaths", { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(0, 0.5));
-        timeSurvivedText = this.add.text(0, 0, lifetimeStats.score.toFixed(1), { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(1, 0.5);
-        averageTimeSurvivedText = this.add.text(0, 0, this.getAverageTimeSurvived(lifetimeStats).toFixed(1), { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(1, 0.5);
-        gemsCollectedText = this.add.text(0, 0, lifetimeStats.gemsCollected.toString(), { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(1, 0.5);
-        enemiesKilledText = this.add.text(0, 0, lifetimeStats.enemiesKilled.toString(), { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(1, 0.5);
-        shotsFiredText = this.add.text(0, 0, lifetimeStats.shotsFired.toString(), { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(1, 0.5);
-        deathsText = this.add.text(0, 0, lifetimeStats.deaths.toString(), { ...config()["controlsStyle"], font: "bold 40px Verdana" }).setOrigin(1, 0.5);
-        lifetimeStatsGroup.add(statsTitle);
-        statsTexts.forEach(text => {
-            lifetimeStatsGroup.add(text);
+        this.statsTexts = [];
+        this.statsTexts.push(this.add.text(0, 0, "Games played", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.statsTexts.push(this.add.text(0, 0, "Total score", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.statsTexts.push(this.add.text(0, 0, "Hazards defeated", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.statsTexts.push(this.add.text(0, 0, "Fruit harvested", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.gamePlayedText = this.add.text(0, 0, lifetimeStats.deaths.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.totalScoreText = this.add.text(0, 0, lifetimeStats.score.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.hazardsDefeatedText = this.add.text(0, 0, lifetimeStats.hazardsDefeated.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.fruitHarvestedText = this.add.text(0, 0, lifetimeStats.fruitHarvested.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.statsTexts.forEach(text => {
+            this.lifetimeStatsGroup.add(text);
         });
-        lifetimeStatsGroup.add(timeSurvivedText);
-        lifetimeStatsGroup.add(averageTimeSurvivedText);
-        lifetimeStatsGroup.add(gemsCollectedText);
-        lifetimeStatsGroup.add(enemiesKilledText);
-        lifetimeStatsGroup.add(shotsFiredText);
-        lifetimeStatsGroup.add(deathsText);
+        this.lifetimeStatsGroup.add(this.gamePlayedText);
+        this.lifetimeStatsGroup.add(this.totalScoreText);
+        this.lifetimeStatsGroup.add(this.hazardsDefeatedText);
+        this.lifetimeStatsGroup.add(this.fruitHarvestedText);
+        
+        this.backButton = this.add.image(0, 0, "backButton").setScale(1.5).setName("backButton");
+        this.configureButton(this.backButton, "backButton");
+        this.lifetimeStatsGroup.add(this.backButton);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
 
         // Fade in menu items
         this.fadeInMainMenu();
+        this.lifetimeStatsGroup.setVisible(false);
 
         //For quicker testing - just skips the main menu scene and opens the game scene
         //this.handleButtonClick("playButton");
@@ -185,13 +203,38 @@ export class MenuScene extends Phaser.Scene {
         
         this.tweens.add({
             targets: this.mainMenuGroup.getChildren(),
-            alpha: 1,
+            alpha: {
+                from: 0,
+                to: 1,
+            },
             duration: 750
         });
     }
 
     fadeInLifetimeStats() {
+        this.lifetimeStatsGroup.setVisible(true);
 
+        this.lifetimeStatsGroup.getChildren().forEach(target => {
+            this.tweens.add({
+                targets: target,
+                ease: "Quad",
+                alpha: 1,
+                y: {
+                    from: target.y + 50,
+                    to: target.y
+                },
+                duration: 750
+            });
+        });
+        
+        this.tweens.add({
+            targets: this.lifetimeStatsGroup.getChildren(),
+            alpha: {
+                from: 0,
+                to: 1,
+            },
+            duration: 750
+        });
     }
 
     fadeInHowToPlay() {
