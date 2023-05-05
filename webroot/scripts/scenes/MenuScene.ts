@@ -93,18 +93,19 @@ export class MenuScene extends Phaser.Scene {
         this.titleText.setPosition(centerX, titleY);
 
         // Buttons
-        let buttonMargin = 65;
-        let radioButtonMargin = 100;
+        let buttonMargin = 70;
+        let radioButtonYMargin = 65;
+        let radioButtonXMargin = 100;
         let radioButtonLabelMargin = 20;
         let buttonYAnchor = titleY + buttonMargin + 10;
         this.playButton.setPosition(centerX, buttonYAnchor);
         this.statsButton.setPosition(centerX, buttonYAnchor + buttonMargin);
         this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
-        this.easyRadioButton.setPosition(centerX - radioButtonMargin, buttonYAnchor + 2 * buttonMargin);
+        this.easyRadioButton.setPosition(centerX - radioButtonXMargin, buttonYAnchor + 2 * radioButtonYMargin);
         this.easyLabel.setPosition(this.easyRadioButton.getBottomCenter().x, this.easyRadioButton.getBottomCenter().y + radioButtonLabelMargin);
-        this.normalRadioButton.setPosition(centerX, buttonYAnchor + 2 * buttonMargin);
+        this.normalRadioButton.setPosition(centerX, buttonYAnchor + 2 * radioButtonYMargin);
         this.normalLabel.setPosition(this.normalRadioButton.getBottomCenter().x, this.normalRadioButton.getBottomCenter().y + radioButtonLabelMargin);
-        this.hardRadioButton.setPosition(centerX + radioButtonMargin, buttonYAnchor + 2 * buttonMargin);
+        this.hardRadioButton.setPosition(centerX + radioButtonXMargin, buttonYAnchor + 2 * radioButtonYMargin);
         this.hardLabel.setPosition(this.hardRadioButton.getBottomCenter().x, this.hardRadioButton.getBottomCenter().y + radioButtonLabelMargin);
         
         // Audio control buttons
@@ -170,6 +171,9 @@ export class MenuScene extends Phaser.Scene {
         this.mainMenuGroup.add(this.easyRadioButton);
         this.mainMenuGroup.add(this.normalRadioButton);
         this.mainMenuGroup.add(this.hardRadioButton);
+        this.mainMenuGroup.add(this.easyLabel);
+        this.mainMenuGroup.add(this.normalLabel);
+        this.mainMenuGroup.add(this.hardLabel);
         
         // Audio control buttons
         this.musicControlButton = this.add.image(0, 0, this.getMusicButtonTexture()).setOrigin(0, 1).setName(musicControlButtonName).setAlpha(0);
@@ -223,7 +227,13 @@ export class MenuScene extends Phaser.Scene {
         this.mainMenuGroup.setVisible(true);
         [this.titleText,
             this.playButton,
-            this.statsButton].forEach(target => {
+            this.statsButton,
+        this.easyRadioButton,
+    this.normalRadioButton,
+this.hardRadioButton,
+this.easyLabel,
+this.normalLabel,
+this.hardLabel].forEach(target => {
             this.tweens.add({
                 targets: target,
                 ease: "Quad",
