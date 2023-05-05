@@ -4,19 +4,10 @@ import { ButtonClick, playSound } from "../audio/Sound";
 import { getSettings, setMusicEnabled, setSfxEnabled } from "../state/Settings";
 import { Weather } from "../game/Weather";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
+import { getLifetimeStats } from "../state/GameResultState";
 
-// Currently selected button
-let selectedButton: string;
 const musicControlButtonName = "musicControlButton";
 const sfxControlButtonName = "sfxControlButton";
-
-let titleText: Phaser.GameObjects.Text;
-
-let playButton: Phaser.GameObjects.Image;
-let musicControlButton: Phaser.GameObjects.Image;
-let sfxControlButton: Phaser.GameObjects.Image;
-
-let creditsText: Phaser.GameObjects.Text;
 
 const weatherQueue = [
     Weather.PartlyCloudy,
@@ -33,6 +24,29 @@ export class MenuScene extends Phaser.Scene {
     timeSinceBackgroundChangeMs: number;
     currentWeatherIndex: number;
     backgroundImageSpawner: BackgroundImageSpawner;
+    
+    titleText: Phaser.GameObjects.Text;
+
+    selectedButton: string;
+    playButton: Phaser.GameObjects.Image;
+    statsButton: Phaser.GameObjects.Image;
+    backButton: Phaser.GameObjects.Image;
+    musicControlButton: Phaser.GameObjects.Image;
+    sfxControlButton: Phaser.GameObjects.Image;
+
+    creditsText: Phaser.GameObjects.Text;
+
+    // Groups to allow easily showing and hiding multiple UI elements
+    mainMenuGroup: Phaser.GameObjects.Group;
+    howToPlayGroup: Phaser.GameObjects.Group;
+    lifetimeStatsGroup: Phaser.GameObjects.Group;
+
+    // Stats
+    statsTexts: Phaser.GameObjects.Text[];
+    gamePlayedText: Phaser.GameObjects.Text;
+    totalScoreText: Phaser.GameObjects.Text;
+    hazardsDefeatedText: Phaser.GameObjects.Text;
+    fruitHarvestedText: Phaser.GameObjects.Text;
 
     constructor() {
         super({
@@ -67,22 +81,40 @@ export class MenuScene extends Phaser.Scene {
 
         let centerX = this.game.renderer.width / 2;
         let titleY = this.game.renderer.height / 6;
-        titleText.setPosition(centerX, titleY);
+        this.titleText.setPosition(centerX, titleY);
 
         // Buttons
-        let buttonMargin = 100;
-        let buttonYAnchor = titleY + buttonMargin + 20;
-        playButton.setPosition(centerX, buttonYAnchor);
+        let buttonMargin = 65;
+        let buttonYAnchor = titleY + buttonMargin + 10;
+        this.playButton.setPosition(centerX, buttonYAnchor);
+        this.statsButton.setPosition(centerX, buttonYAnchor + buttonMargin);
+        this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
         
         // Audio control buttons
-        musicControlButton.setPosition(5, this.game.renderer.height - 60);
-        sfxControlButton.setPosition(5, this.game.renderer.height - 5);
+        this.musicControlButton.setPosition(5, this.game.renderer.height - 60);
+        this.sfxControlButton.setPosition(5, this.game.renderer.height - 5);
 
         // Credits
-        creditsText.setPosition(this.game.renderer.width - 115, this.game.renderer.height - 40);
+        this.creditsText.setPosition(this.game.renderer.width - 100, this.game.renderer.height - 35);
+
+        // Lifetime stats
+        let statsMargin = 60;
+        let statsXMargin = 225;
+        let statsAnchor = titleY - 20;
+        for (let i = 0; i < this.statsTexts.length; i++) {
+            this.statsTexts[i].setPosition(centerX - statsXMargin, statsAnchor + (i * statsMargin));
+        }
+        this.gamePlayedText.setPosition(centerX + statsXMargin, statsAnchor);
+        this.totalScoreText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin);
+        this.hazardsDefeatedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 2);
+        this.fruitHarvestedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 3);
     }
 
     create() {
+        this.mainMenuGroup = this.add.group();
+        this.lifetimeStatsGroup = this.add.group();
+        this.howToPlayGroup = this.add.group();
+
         this.currentWeatherIndex = 0;
         this.backgroundOne = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0);
         this.backgroundTwo = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0).setAlpha(0);
@@ -93,28 +125,70 @@ export class MenuScene extends Phaser.Scene {
         
         this.input.setDefaultCursor("default");
         
-        titleText = this.add.text(0, 0, "Garden Frantic", config()["titleStyle"]).setOrigin(0.5).setAlpha(0);
+        this.titleText = this.add.text(0, 0, "Garden Frantic", config()["titleStyle"]).setOrigin(0.5).setAlpha(0);
+        this.mainMenuGroup.add(this.titleText);
 
         // Buttons
-        playButton = this.add.image(0, 0, "playButton").setScale(1.5).setName("playButton").setAlpha(0);
-        this.configureButton(playButton, "playButton");
+        this.playButton = this.add.image(0, 0, "playButton").setScale(1.5).setName("playButton").setAlpha(0);
+        this.configureButton(this.playButton, "playButton");
+        this.statsButton = this.add.image(0, 0, "statsButton").setScale(1.5).setName("statsButton").setAlpha(0);
+        this.configureButton(this.statsButton, "statsButton");
+        this.mainMenuGroup.add(this.playButton);
+        this.mainMenuGroup.add(this.statsButton);
         
         // Audio control buttons
-        musicControlButton = this.add.image(0, 0, this.getMusicButtonTexture()).setOrigin(0, 1).setName(musicControlButtonName).setAlpha(0);
-        this.configureButton(musicControlButton, musicControlButtonName);
-        sfxControlButton = this.add.image(0, 0, this.getSfxButtonTexture()).setOrigin(0, 1).setName(sfxControlButtonName).setAlpha(0);
-        this.configureButton(sfxControlButton, sfxControlButtonName);
+        this.musicControlButton = this.add.image(0, 0, this.getMusicButtonTexture()).setOrigin(0, 1).setName(musicControlButtonName).setAlpha(0);
+        this.configureButton(this.musicControlButton, musicControlButtonName);
+        this.sfxControlButton = this.add.image(0, 0, this.getSfxButtonTexture()).setOrigin(0, 1).setName(sfxControlButtonName).setAlpha(0);
+        this.configureButton(this.sfxControlButton, sfxControlButtonName);
+        this.mainMenuGroup.add(this.musicControlButton);
+        this.mainMenuGroup.add(this.sfxControlButton);
 
         // Credits
-        creditsText = this.add.text(0, 0, "Music by Eric Matyas\nwww.soundimage.org",
-                { ...config()["titleStyle"], font: "20px Verdana" }).setOrigin(0.5).setAlpha(0);
+        this.creditsText = this.add.text(0, 0, "Music by Eric Matyas\nwww.soundimage.org",
+                { ...config()["titleStyle"], font: "14px Verdana" }).setOrigin(0.5).setAlpha(0);
+        this.mainMenuGroup.add(this.creditsText);
+
+        // Lifetime stats
+        let lifetimeStats = getLifetimeStats();
+
+        this.statsTexts = [];
+        this.statsTexts.push(this.add.text(0, 0, "Games played", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.statsTexts.push(this.add.text(0, 0, "Total score", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.statsTexts.push(this.add.text(0, 0, "Hazards defeated", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.statsTexts.push(this.add.text(0, 0, "Fruit harvested", { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(0, 0.5));
+        this.gamePlayedText = this.add.text(0, 0, lifetimeStats.deaths.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.totalScoreText = this.add.text(0, 0, lifetimeStats.score.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.hazardsDefeatedText = this.add.text(0, 0, lifetimeStats.hazardsDefeated.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.fruitHarvestedText = this.add.text(0, 0, lifetimeStats.fruitHarvested.toString(), { ...config()["titleStyle"], font: "bold 30px Verdana" }).setOrigin(1, 0.5);
+        this.statsTexts.forEach(text => {
+            this.lifetimeStatsGroup.add(text);
+        });
+        this.lifetimeStatsGroup.add(this.gamePlayedText);
+        this.lifetimeStatsGroup.add(this.totalScoreText);
+        this.lifetimeStatsGroup.add(this.hazardsDefeatedText);
+        this.lifetimeStatsGroup.add(this.fruitHarvestedText);
+        
+        this.backButton = this.add.image(0, 0, "backButton").setScale(1.5).setName("backButton");
+        this.configureButton(this.backButton, "backButton");
+        this.lifetimeStatsGroup.add(this.backButton);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
 
         // Fade in menu items
-        [titleText,
-            playButton].forEach(target => {
+        this.fadeInMainMenu();
+        this.lifetimeStatsGroup.setVisible(false);
+
+        //For quicker testing - just skips the main menu scene and opens the game scene
+        //this.handleButtonClick("playButton");
+    }
+
+    fadeInMainMenu() {
+        this.mainMenuGroup.setVisible(true);
+        [this.titleText,
+            this.playButton,
+            this.statsButton].forEach(target => {
             this.tweens.add({
                 targets: target,
                 ease: "Quad",
@@ -125,21 +199,46 @@ export class MenuScene extends Phaser.Scene {
                 },
                 duration: 750
             });
-        })
+        });
+        
         this.tweens.add({
-            targets: [
-                titleText,
-                playButton,
-                musicControlButton,
-                sfxControlButton,
-                creditsText
-            ],
-            alpha: 1,
+            targets: this.mainMenuGroup.getChildren(),
+            alpha: {
+                from: 0,
+                to: 1,
+            },
             duration: 750
         });
+    }
 
-        //For quicker testing - just skips the main menu scene and opens the game scene
-        //this.handleButtonClick("playButton");
+    fadeInLifetimeStats() {
+        this.lifetimeStatsGroup.setVisible(true);
+
+        this.lifetimeStatsGroup.getChildren().forEach(target => {
+            this.tweens.add({
+                targets: target,
+                ease: "Quad",
+                alpha: 1,
+                y: {
+                    from: target.y + 50,
+                    to: target.y
+                },
+                duration: 750
+            });
+        });
+        
+        this.tweens.add({
+            targets: this.lifetimeStatsGroup.getChildren(),
+            alpha: {
+                from: 0,
+                to: 1,
+            },
+            duration: 750
+        });
+    }
+
+    fadeInHowToPlay() {
+
     }
 
     configureButton(button: Phaser.GameObjects.Image, textureName: string) {
@@ -147,20 +246,20 @@ export class MenuScene extends Phaser.Scene {
         button.on('pointerout', () => {
             if (button.visible) {
                 button.setTexture(this.getDefaultTexture(textureName)); 
-                selectedButton = null;
+                this.selectedButton = null;
             }
         });
         button.on('pointerdown', () => {
             button.setTexture(this.getDefaultTexture(textureName) + "Down"); 
-            selectedButton = button.name;
+            this.selectedButton = button.name;
             playSound(this, ButtonClick);
         });
         button.on('pointerup', () => {
-            if (selectedButton === button.name) {
+            if (this.selectedButton === button.name) {
                 this.handleButtonClick(button.name);
             }
             button.setTexture(this.getDefaultTexture(textureName)); 
-            selectedButton = null;
+            this.selectedButton = null;
         });
     }
 
@@ -173,6 +272,16 @@ export class MenuScene extends Phaser.Scene {
                         .start("ToolbarScene", { gardenGame: game })
                         .start("UIScene", { gardenGame: game })
                         .stop();
+                break;
+            case "statsButton":
+                // Show stats
+                this.mainMenuGroup.setVisible(false);
+                this.fadeInLifetimeStats();
+                break;
+            case "backButton":
+                // Show main menu
+                this.fadeInMainMenu();
+                this.lifetimeStatsGroup.setVisible(false);
                 break;
             case musicControlButtonName:
                 // Toggle music
