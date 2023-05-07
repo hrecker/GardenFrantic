@@ -99,21 +99,59 @@
     },
 
     "weatherDecayRates": {
-        "partlyCloudy": {
-            "water": 5,
-            "light": -3
+        "Easy": {
+            "partlyCloudy": {
+                "water": 4,
+                "light": -3
+            },
+            "cloudy": {
+                "water": 3,
+                "light": 4
+            },
+            "heat": {
+                "water": 6,
+                "light": -6
+            },
+            "rain": {
+                "water": -4,
+                "light": 4
+            }
         },
-        "cloudy": {
-            "water": 3,
-            "light": 5
+        "Normal": {
+            "partlyCloudy": {
+                "water": 5,
+                "light": -3
+            },
+            "cloudy": {
+                "water": 3,
+                "light": 5
+            },
+            "heat": {
+                "water": 7,
+                "light": -7
+            },
+            "rain": {
+                "water": -5,
+                "light": 5
+            }
         },
-        "heat": {
-            "water": 7,
-            "light": -7
-        },
-        "rain": {
-            "water": -5,
-            "light": 5
+        "Hard": {
+            "partlyCloudy": {
+                "water": 6,
+                "light": -4
+            },
+            "cloudy": {
+                "water": 4,
+                "light": 6
+            },
+            "heat": {
+                "water": 8,
+                "light": -8
+            },
+            "rain": {
+                "water": -6,
+                "light": 6
+            }
         }
     },
 

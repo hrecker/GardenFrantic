@@ -220,11 +220,11 @@ function getRandomPlant(game: GardenGame): Plant {
 }
 
 export function getLightDecayRateForPlant(game: GardenGame, plant: Plant) {
-    return weather.getDecayRate(game.weather, Status.Light);
+    return weather.getDecayRate(game.weather, Status.Light, game.difficulty);
 }
 
 export function getWaterDecayRateForPlant(game: GardenGame, plant: Plant) {
-    return weather.getDecayRate(game.weather, Status.Water);
+    return weather.getDecayRate(game.weather, Status.Water, game.difficulty);
 }
 
 export function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): number {

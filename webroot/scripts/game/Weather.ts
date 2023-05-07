@@ -1,4 +1,5 @@
 import { config } from "../model/Config";
+import { Difficulty } from "../state/DifficultyState";
 import { shuffleArray } from "../util/Util";
 import { Status } from "./Plant";
 
@@ -26,6 +27,6 @@ export function getDefaultWeather(): Weather {
 }
 
 /** Get the current status decay rate for the weather */
-export function getDecayRate(weather: Weather, status: Status) {
-    return config()["weatherDecayRates"][weather][status]
+export function getDecayRate(weather: Weather, status: Status, difficulty: Difficulty) {
+    return config()["weatherDecayRates"][difficulty][weather][status]
 }
