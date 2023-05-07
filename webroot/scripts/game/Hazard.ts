@@ -1,4 +1,5 @@
 import { config } from "../model/Config";
+import { Difficulty } from "../state/DifficultyState";
 import { randomInRange, shuffleArray } from "../util/Util";
 
 export enum Hazard {
@@ -34,10 +35,11 @@ export type HazardPath = {
 }
 
 /** Get a duration before the next hazard appears, based on the range */
-export function getNextHazardDurationMs(numHazardsDefeated: number): number {
-    let gapFactor = Math.pow(config()["hazardGapMultiplier"], numHazardsDefeated);
-    let min = Math.max(config()["hazardGapDurationMs"]["base"]["low"] * gapFactor, config()["hazardGapDurationMs"]["minimum"]["low"]);
-    let max = Math.max(config()["hazardGapDurationMs"]["base"]["high"] * gapFactor, config()["hazardGapDurationMs"]["minimum"]["high"]);
+export function getNextHazardDurationMs(numHazardsDefeated: number, difficulty: Difficulty): number {
+    let gapFactor = Math.pow(config()["hazardGapMultiplier"][difficulty], numHazardsDefeated);
+    let durationMap = config()["hazardGapDurationMs"][difficulty];
+    let min = Math.max(durationMap["base"]["low"] * gapFactor, durationMap["minimum"]["low"]);
+    let max = Math.max(durationMap["base"]["high"] * gapFactor, durationMap["minimum"]["high"]);
     return randomInRange(min, max);
 }
 

@@ -43,7 +43,7 @@ export class MenuScene extends Phaser.Scene {
     easyLabel: Phaser.GameObjects.Text;
     normalLabel: Phaser.GameObjects.Text;
     hardLabel: Phaser.GameObjects.Text;
-    selectedDifficulty: string;
+    selectedDifficulty: Difficulty;
     selectedDifficultyButton: Phaser.GameObjects.Image;
 
     // Groups to allow easily showing and hiding multiple UI elements
@@ -228,12 +228,12 @@ export class MenuScene extends Phaser.Scene {
         [this.titleText,
             this.playButton,
             this.statsButton,
-        this.easyRadioButton,
-    this.normalRadioButton,
-this.hardRadioButton,
-this.easyLabel,
-this.normalLabel,
-this.hardLabel].forEach(target => {
+            this.easyRadioButton,
+            this.normalRadioButton,
+            this.hardRadioButton,
+            this.easyLabel,
+            this.normalLabel,
+            this.hardLabel].forEach(target => {
             this.tweens.add({
                 targets: target,
                 ease: "Quad",
@@ -308,7 +308,7 @@ this.hardLabel].forEach(target => {
         button.setInteractive();
         button.on('pointerdown', () => {
             if (button.name != this.selectedDifficulty) {
-                this.selectedDifficulty = button.name;
+                this.selectedDifficulty = Difficulty[button.name];
                 button.setTexture("radioButtonSelected");
                 if (this.selectedDifficultyButton) {
                     this.selectedDifficultyButton.setTexture("radioButtonUnselected");
@@ -323,7 +323,7 @@ this.hardLabel].forEach(target => {
         switch (buttonName) {
             case "playButton":
                 // Start game
-                let game = newGame();
+                let game = newGame(this.selectedDifficulty);
                 this.scene.start("MainScene", { gardenGame: game })
                         .start("ToolbarScene", { gardenGame: game })
                         .start("UIScene", { gardenGame: game })

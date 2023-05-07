@@ -172,17 +172,43 @@
     },
 
     "hazardGapDurationMs": {
-        "base": {
-            "low": 4000,
-            "high": 6000
+        "Easy": {
+            "base": {
+                "low": 6000,
+                "high": 10000
+            },
+            "minimum": {
+                "low": 3000,
+                "high": 5000
+            }
         },
-        "minimum": {
-            "low": 500,
-            "high": 1500
+        "Normal": {
+            "base": {
+                "low": 6000,
+                "high": 8000
+            },
+            "minimum": {
+                "low": 750,
+                "high": 1750
+            }
+        },
+        "Hard": {
+            "base": {
+                "low": 3500,
+                "high": 5500
+            },
+            "minimum": {
+                "low": 350,
+                "high": 1250
+            }
         }
     },
 
-    "hazardGapMultiplier": 0.98,
+    "hazardGapMultiplier": {
+        "Easy": 0.99,
+        "Normal": 0.98,
+        "Hard": 0.96
+    },
 
     "hazardPositionRange": 75,
 

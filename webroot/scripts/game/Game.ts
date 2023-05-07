@@ -7,6 +7,7 @@ import * as tool from "./Tool";
 import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
 import { Tool } from "./Tool";
+import { Difficulty } from "../state/DifficultyState";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -31,9 +32,11 @@ export type GardenGame = {
     timeSinceLastScoreBump: number;
     /** Current score */
     score: number;
+    /** Difficulty */
+    difficulty: Difficulty;
 }
 
-function defaultGame(): GardenGame {
+function defaultGame(difficulty: Difficulty): GardenGame {
     return {
         plants: {},
         selectedTool: tool.Tool.NoTool,
@@ -43,20 +46,21 @@ function defaultGame(): GardenGame {
         activeHazards: [],
         currentHazardDurationMs: 0,
         numHazardsDefeated: 0,
-        nextHazardDuration: getNextHazardDurationMs(0),
+        nextHazardDuration: getNextHazardDurationMs(0, difficulty),
         score: 0,
-        timeSinceLastScoreBump: 0
+        timeSinceLastScoreBump: 0,
+        difficulty: difficulty
     };
 }
 
-export function newGame(): GardenGame {
-    let game = defaultGame();
+export function newGame(difficulty: Difficulty): GardenGame {
+    let game = defaultGame(difficulty);
     weatherUpdateEvent(game.weather, game.weatherQueue);
     return game;
 }
 
 export function resetGame(game: GardenGame) {
-    let base = defaultGame();
+    let base = defaultGame(game.difficulty);
     game.plants = base.plants;
     game.selectedTool = base.selectedTool;
     game.weather = base.weather;
@@ -65,7 +69,7 @@ export function resetGame(game: GardenGame) {
     game.activeHazards = base.activeHazards;
     game.currentHazardDurationMs = base.currentHazardDurationMs;
     game.numHazardsDefeated = 0;
-    game.nextHazardDuration = getNextHazardDurationMs(0);
+    game.nextHazardDuration = getNextHazardDurationMs(0, game.difficulty);
     game.score = base.score;
     game.timeSinceLastScoreBump = base.timeSinceLastScoreBump;
     weatherUpdateEvent(game.weather, game.weatherQueue);
@@ -152,7 +156,7 @@ export function update(game: GardenGame, delta: number) {
     game.currentHazardDurationMs += delta;
     if (game.currentHazardDurationMs >= game.nextHazardDuration && Object.keys(game.plants).length > 0) {
         game.currentHazardDurationMs = 0;
-        game.nextHazardDuration = getNextHazardDurationMs(game.numHazardsDefeated);
+        game.nextHazardDuration = getNextHazardDurationMs(game.numHazardsDefeated, game.difficulty);
         let targetPlant = getRandomPlant(game).id;
         // Select a hazard that isn't already active for this plant
         // There is a chance that we select a plant that can't add any new hazards when another
