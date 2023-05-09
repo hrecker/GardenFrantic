@@ -291,7 +291,7 @@ export class MainScene extends Phaser.Scene {
         if (hasAnimation) {
             texture = activeHazard.hazard + "approach1";
         }
-        let hazardImage = scene.add.sprite(path.start.x, path.start.y, texture).setAlpha(0.85);
+        let hazardImage = scene.add.sprite(path.start.x, path.start.y, texture).setAlpha(0.9);
         if (hasAnimation) {
             hazardImage.play(activeHazard.hazard + "approach");
         } else {
