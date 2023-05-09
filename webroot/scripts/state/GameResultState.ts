@@ -1,6 +1,6 @@
 import { config } from "../model/Config";
 import { GameResult } from "../model/GameResult";
-import { getCurrentDifficulty } from "./DifficultyState";
+import { Difficulty } from "./DifficultyState";
 
 const baseResultsKey = "GameResults";
 const lifetimeStatsKey = "lifetimeStats";
@@ -8,8 +8,8 @@ let latestGameResultIndex = -1;
 let latestGameResult: GameResult;
 
 /** Save a player's score on the list of high scores */
-export function saveGameResult(gameResult: GameResult): GameResult[] {
-    let currentResults = getGameResults();
+export function saveGameResult(gameResult: GameResult, difficulty: Difficulty): GameResult[] {
+    let currentResults = getGameResults(difficulty);
     latestGameResult = gameResult;
     latestGameResultIndex = -1;
     for (let i = 0; i <= currentResults.length && i < config()["maxGamesStored"]; i++) {
@@ -34,15 +34,15 @@ export function saveGameResult(gameResult: GameResult): GameResult[] {
     lifetimeStats.fruitHarvested += latestGameResult.fruitHarvested;
     lifetimeStats.hazardsDefeated += latestGameResult.hazardsDefeated;
     lifetimeStats.deaths += latestGameResult.deaths;
-    localStorage.setItem(getResultsKey(), JSON.stringify(currentResults));
+    localStorage.setItem(getResultsKey(difficulty), JSON.stringify(currentResults));
     // Add all stats from all difficulties to the same lifetimestats object
     localStorage.setItem(lifetimeStatsKey, JSON.stringify(lifetimeStats));
     return currentResults;
 }
 
 /** Get the current high score list for the player */
-export function getGameResults(): GameResult[] {
-    let results = localStorage.getItem(getResultsKey())
+export function getGameResults(difficulty: Difficulty): GameResult[] {
+    let results = localStorage.getItem(getResultsKey(difficulty))
     if (! results) {
         return [];
     }
@@ -55,8 +55,8 @@ export function getGameResults(): GameResult[] {
 }
 
 /** Get the key for results for the currently selected challenge (or the main game mode) */
-function getResultsKey() {
-    return getCurrentDifficulty() + baseResultsKey;
+function getResultsKey(difficulty: Difficulty) {
+    return difficulty + baseResultsKey;
 }
 
 /** Parse a game result from an object, setting default values for anything undefined */

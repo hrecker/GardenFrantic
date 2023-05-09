@@ -445,7 +445,7 @@ export class MainScene extends Phaser.Scene {
         // Save the result
         scene.gameResult.deaths++;
         scene.gameResult.score = scene.gardenGame.score;
-        saveGameResult(scene.gameResult);
+        saveGameResult(scene.gameResult, scene.gardenGame.difficulty);
     }
 
     /** Handle weather being changed (may be called even if the new weather is the same) */

@@ -23,7 +23,7 @@ const leaderboardColumnMargin = 40;
 const defaultLeaderboardRowColor = "#FFF7E4";
 const highlightLeaderboardRowColor = "#B0EB93";
 const buttonMargin = 120;
-const leaderboardY = 50;
+const leaderboardY = 35;
 
 
 /** UI scene */
@@ -42,6 +42,7 @@ export class UIScene extends Phaser.Scene {
     // Leaderboard
     leaderboardBackground: Phaser.GameObjects.Rectangle;
     leaderboardTitle: Phaser.GameObjects.Text;
+    leaderboardSubtitle: Phaser.GameObjects.Text;
     leaderboardNumbers: Phaser.GameObjects.Text[];
     leaderboardRows: LeaderboardRow[];
     maxRankWidth: number;
@@ -75,6 +76,7 @@ export class UIScene extends Phaser.Scene {
         }
 
         this.leaderboardTitle.setPosition(this.rightX / 2, leaderboardY);
+        this.leaderboardSubtitle.setPosition(this.rightX / 2, leaderboardY + 40);
         this.leaderboardBackground.setPosition(-100, -100);
         this.leaderboardBackground.setSize(this.game.renderer.width + 200, this.game.renderer.height + 200);
         this.menuButton.setX(this.rightX / 2 - buttonMargin);
@@ -85,8 +87,9 @@ export class UIScene extends Phaser.Scene {
 
     /** Update leaderboard with player highscores */
     updateLeaderboard() {
-        let gameResults = getGameResults();
+        let gameResults = getGameResults(this.gardenGame.difficulty);
         let highlightIndex = getLatestGameResultIndex();
+        this.leaderboardSubtitle.setText(this.gardenGame.difficulty + " Difficulty");
         // Update the rows in the leaderboard with the current high scores
         this.maxRankWidth = this.leaderboardNumbers[0].width;
         this.maxScoreWidth = this.leaderboardRows[0].score.width;
@@ -159,6 +162,7 @@ export class UIScene extends Phaser.Scene {
             return;
         }
         this.leaderboardTitle.setVisible(isVisible);
+        this.leaderboardSubtitle.setVisible(isVisible);
         this.leaderboardBackground.setVisible(isVisible);
         this.setRowVisible(this.leaderboardRows[0], isVisible);
         for (let i = 1; i < this.leaderboardRows.length; i++) {
@@ -207,8 +211,9 @@ export class UIScene extends Phaser.Scene {
         // Leaderboard
         this.leaderboardBackground = this.add.rectangle(-100, -100, this.game.renderer.width + 200, this.game.renderer.height + 200, 0x000000, 0.2).setOrigin(0, 0);
         this.leaderboardTitle = this.add.text(0, 0, "High Scores", config()["leaderboardTitleStyle"]).setOrigin(0.5);
+        this.leaderboardSubtitle = this.add.text(0, 0, "Normal Difficulty", { ...config()["leaderboardSmallRowStyle"], font: "16px Verdana" }).setOrigin(0.5);
         
-        let leaderboardBaseY = leaderboardY + 80;
+        let leaderboardBaseY = leaderboardY + 100;
 
         this.leaderboardNumbers = [];
         this.leaderboardRows = [];
@@ -225,8 +230,8 @@ export class UIScene extends Phaser.Scene {
             this.leaderboardNumbers.push(this.add.text(0, y, (i + 1).toString(), config()["leaderboardRowStyle"]).setOrigin(0, 1));
             this.leaderboardRows.push({
                 score: this.add.text(0, y, "0", config()["leaderboardRowStyle"]).setOrigin(1, 1),
-                hazardsDefeated: this.add.text(0, y, "0", config()["leaderboardSmallRowStyle"]).setOrigin(1, 1),
-                fruitHarvested: this.add.text(0, y, "0", config()["leaderboardSmallRowStyle"]).setOrigin(1, 1),
+                hazardsDefeated: this.add.text(0, y, "0", config()["leaderboardRowStyle"]).setOrigin(1, 1),
+                fruitHarvested: this.add.text(0, y, "0", config()["leaderboardRowStyle"]).setOrigin(1, 1),
             });
         }
         let buttonY = y + 40;

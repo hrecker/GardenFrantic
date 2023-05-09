@@ -29,7 +29,7 @@
         "color": "#FFF7E4"
     },
     "leaderboardRowStyle": { 
-        "font": "30px Verdana",
+        "font": "26px Verdana",
         "shadow": {
             "offsetX": 1,
             "offsetY": 1,
@@ -41,7 +41,7 @@
         "color": "#FFF7E4"
     },
     "leaderboardSmallRowStyle": { 
-        "font": "22px Verdana",
+        "font": "18px Verdana",
         "shadow": {
             "offsetX": 1,
             "offsetY": 1,
