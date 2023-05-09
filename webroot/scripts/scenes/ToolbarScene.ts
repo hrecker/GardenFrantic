@@ -1,5 +1,6 @@
-import { addGameResetListener } from "../events/EventMessenger";
+import { addGameResetListener, addHazardCreatedListener, addHazardDestroyedListener } from "../events/EventMessenger";
 import * as game from "../game/Game";
+import { ActiveHazard } from "../game/Hazard";
 import * as tool from "../game/Tool";
 import { config } from "../model/Config";
 import { createSwayAnimation } from "../util/Util";
@@ -22,6 +23,7 @@ export class ToolbarScene extends Phaser.Scene {
     currentToolText: Phaser.GameObjects.BitmapText;
     toolIcons: Phaser.GameObjects.Sprite[];
     toolBoxes: Phaser.GameObjects.Image[];
+    highlightedToolIndexes: Set<number>;
     toolbar: Phaser.GameObjects.Rectangle;
     toolbarMask: Phaser.GameObjects.Graphics;
     scrollZone: Phaser.GameObjects.Zone;
@@ -132,6 +134,7 @@ export class ToolbarScene extends Phaser.Scene {
 
     create() {
         // Allow events to pass through to make scrolling work
+        this.highlightedToolIndexes = new Set();
         this.input.setTopOnly(false);
         this.toolbar = this.add.rectangle(0, 0,
             config()["toolbarWidth"], 0, parseInt(config()["toolbarColor"], 16));
@@ -167,7 +170,7 @@ export class ToolbarScene extends Phaser.Scene {
                 ]);
             let texture = tool.startingTools[i] + '1';
             let texturePath = "drawn/" + texture;
-            let toolIcon = this.add.sprite(0, 0, texture).setScale(toolScale);
+            let toolIcon = this.add.sprite(0, 0, texture).setScale(toolScale).setName(tool.startingTools[i]);
             this.toolIcons.push(toolIcon);
             // Add box background
             let toolbox = this.add.image(0, 0, "toolbox").setScale(toolScale);
@@ -211,13 +214,19 @@ export class ToolbarScene extends Phaser.Scene {
         this.scrollSpeed = 0;
 
         addGameResetListener(this.resetGame, this);
+        addHazardCreatedListener(this.handleHazardCreated, this);
+        addHazardDestroyedListener(this.handleHazardDestroy, this);
         this.resize(true);
         this.scale.on("resize", this.resize, this);
     }
 
     deselectIcon(iconIndex: number) {
         this.input.setDefaultCursor("auto");
-        this.toolBoxes[iconIndex].setTexture("toolbox");
+        if (this.highlightedToolIndexes.has(iconIndex)) {
+            this.toolBoxes[iconIndex].setTexture("highlightedToolbox");
+        } else {
+            this.toolBoxes[iconIndex].setTexture("toolbox");
+        }
         this.lastSelectedToolIndex = -1;
         this.currentToolText.setText("");
         this.toolIcons[iconIndex].stop();
@@ -226,6 +235,34 @@ export class ToolbarScene extends Phaser.Scene {
     resetGame(scene: ToolbarScene) {
         for (let i = 0; i < scene.toolIcons.length; i++) {
             scene.deselectIcon(i);
+        }
+    }
+
+    handleHazardCreated(scene: ToolbarScene, hazardId: number) {
+        let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
+        let destroyTool = config()["hazards"][activeHazard.hazard.toString()]["destroyTool"];
+        for (let i = 0; i < scene.toolIcons.length; i++) {
+            if (scene.toolIcons[i].name == destroyTool) {
+                scene.highlightedToolIndexes.add(i);
+                if (scene.toolBoxes[i].texture.key != "selectedToolbox") {
+                    scene.toolBoxes[i].setTexture("highlightedToolbox");
+                }
+                return;
+            }
+        }
+    }
+
+    handleHazardDestroy(scene: ToolbarScene, hazardId: number) {
+        let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
+        let destroyTool = config()["hazards"][activeHazard.hazard.toString()]["destroyTool"];
+        for (let i = 0; i < scene.toolIcons.length; i++) {
+            if (scene.toolIcons[i].name == destroyTool) {
+                scene.highlightedToolIndexes.delete(i);
+                if (scene.toolBoxes[i].texture.key != "selectedToolbox") {
+                    scene.toolBoxes[i].setTexture("toolbox");
+                }
+                return;
+            }
         }
     }
 

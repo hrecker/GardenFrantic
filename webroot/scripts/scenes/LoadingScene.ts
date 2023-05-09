@@ -62,6 +62,7 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture("healthIcon", "statusbar/");
         this.loadTexture("toolbox");
         this.loadTexture("selectedToolbox");
+        this.loadTexture("highlightedToolbox");
         this.loadToolTexture(Tool.Basket);
         this.loadToolTexture(Tool.Fertilizer);
         this.loadToolTexture(Tool.Lamp);
