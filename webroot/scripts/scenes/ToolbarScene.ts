@@ -184,7 +184,11 @@ export class ToolbarScene extends Phaser.Scene {
                     this.input.setDefaultCursor(cursor);
                     toolbox.setTexture("selectedToolbox");
                     if (this.lastSelectedToolIndex != -1) {
-                        this.toolBoxes[this.lastSelectedToolIndex].setTexture("toolbox");
+                        if (this.highlightedToolIndexes.has(this.lastSelectedToolIndex)) {
+                            this.toolBoxes[this.lastSelectedToolIndex].setTexture("highlightedToolbox");
+                        } else {
+                            this.toolBoxes[this.lastSelectedToolIndex].setTexture("toolbox");
+                        }
                         this.toolIcons[this.lastSelectedToolIndex].stop();
                     }
                     this.lastSelectedToolIndex = i;
@@ -233,6 +237,7 @@ export class ToolbarScene extends Phaser.Scene {
     }
 
     resetGame(scene: ToolbarScene) {
+        scene.highlightedToolIndexes.clear();
         for (let i = 0; i < scene.toolIcons.length; i++) {
             scene.deselectIcon(i);
         }
