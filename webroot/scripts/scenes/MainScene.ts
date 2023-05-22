@@ -11,6 +11,7 @@ import { GameResult } from "../model/GameResult";
 import { saveGameResult } from "../state/GameResultState";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
 import { getCategory, Tool, ToolCategory } from "../game/Tool";
+import { TutorialState } from "../game/Tutorial";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
@@ -28,6 +29,7 @@ const hazardShakeIntensity = 0.003;
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
+    tutorialState: TutorialState;
     plantStatusBars: { [id: number] : PlantStatusBar }
     plantFruitImages: { [id: number] : Phaser.GameObjects.Sprite }
     hazardImages: { [id: number] : Phaser.GameObjects.Image }
@@ -49,6 +51,7 @@ export class MainScene extends Phaser.Scene {
 
     init(data) {
         this.gardenGame = data.gardenGame;
+        this.tutorialState = data.tutorialState;
     }
 
     /** Adjust any UI elements that need to change position based on the canvas size */

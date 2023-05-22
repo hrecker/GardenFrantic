@@ -6,6 +6,7 @@ import { Weather } from "../game/Weather";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
 import { getLifetimeStats } from "../state/GameResultState";
 import { Difficulty } from "../state/DifficultyState";
+import { getDisabledTutorial, getEnabledTutorial, TutorialState } from "../game/Tutorial";
 
 const musicControlButtonName = "musicControlButton";
 const sfxControlButtonName = "sfxControlButton";
@@ -30,6 +31,7 @@ export class MenuScene extends Phaser.Scene {
 
     selectedButton: string;
     playButton: Phaser.GameObjects.Image;
+    tutorialButton: Phaser.GameObjects.Image;
     statsButton: Phaser.GameObjects.Image;
     backButton: Phaser.GameObjects.Image;
     musicControlButton: Phaser.GameObjects.Image;
@@ -93,13 +95,14 @@ export class MenuScene extends Phaser.Scene {
         this.titleText.setPosition(centerX, titleY);
 
         // Buttons
-        let buttonMargin = 70;
-        let radioButtonYMargin = 65;
+        let buttonMargin = 60;
+        let radioButtonYMargin = 85;
         let radioButtonXMargin = 100;
         let radioButtonLabelMargin = 20;
         let buttonYAnchor = titleY + buttonMargin + 10;
         this.playButton.setPosition(centerX, buttonYAnchor);
-        this.statsButton.setPosition(centerX, buttonYAnchor + buttonMargin);
+        this.tutorialButton.setPosition(centerX, buttonYAnchor + buttonMargin);
+        this.statsButton.setPosition(centerX, buttonYAnchor + 2 * buttonMargin);
         this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
         this.easyRadioButton.setPosition(centerX - radioButtonXMargin, buttonYAnchor + 2 * radioButtonYMargin);
         this.easyLabel.setPosition(this.easyRadioButton.getBottomCenter().x, this.easyRadioButton.getBottomCenter().y + radioButtonLabelMargin);
@@ -146,11 +149,14 @@ export class MenuScene extends Phaser.Scene {
         this.mainMenuGroup.add(this.titleText);
 
         // Buttons
-        this.playButton = this.add.image(0, 0, "playButton").setScale(1.5).setName("playButton").setAlpha(0);
+        this.playButton = this.add.image(0, 0, "playButton").setScale(1.25).setName("playButton").setAlpha(0);
         this.configureButton(this.playButton, "playButton");
-        this.statsButton = this.add.image(0, 0, "statsButton").setScale(1.5).setName("statsButton").setAlpha(0);
+        this.tutorialButton = this.add.image(0, 0, "tutorialButton").setScale(1.25).setName("tutorialButton").setAlpha(0);
+        this.configureButton(this.tutorialButton, "tutorialButton");
+        this.statsButton = this.add.image(0, 0, "statsButton").setScale(1.25).setName("statsButton").setAlpha(0);
         this.configureButton(this.statsButton, "statsButton");
         this.mainMenuGroup.add(this.playButton);
+        this.mainMenuGroup.add(this.tutorialButton);
         this.mainMenuGroup.add(this.statsButton);
 
         // Difficulty selection
@@ -227,6 +233,7 @@ export class MenuScene extends Phaser.Scene {
         this.mainMenuGroup.setVisible(true);
         [this.titleText,
             this.playButton,
+            this.tutorialButton,
             this.statsButton,
             this.easyRadioButton,
             this.normalRadioButton,
@@ -320,13 +327,25 @@ export class MenuScene extends Phaser.Scene {
     }
 
     handleButtonClick(buttonName) {
+        let game;
+        let tutorial: TutorialState;
         switch (buttonName) {
             case "playButton":
                 // Start game
-                let game = newGame(this.selectedDifficulty);
-                this.scene.start("MainScene", { gardenGame: game })
-                        .start("ToolbarScene", { gardenGame: game })
-                        .start("UIScene", { gardenGame: game })
+                game = newGame(this.selectedDifficulty);
+                tutorial = getDisabledTutorial();
+                this.scene.start("MainScene", { gardenGame: game, tutorialState: tutorial })
+                        .start("ToolbarScene", { gardenGame: game, tutorialState: tutorial })
+                        .start("UIScene", { gardenGame: game, tutorialState: tutorial })
+                        .stop();
+                break;
+            case "tutorialButton":
+                // Start game
+                game = newGame(this.selectedDifficulty);
+                tutorial = getEnabledTutorial();
+                this.scene.start("MainScene", { gardenGame: game, tutorialState: tutorial })
+                        .start("ToolbarScene", { gardenGame: game, tutorialState: tutorial })
+                        .start("UIScene", { gardenGame: game, tutorialState: tutorial })
                         .stop();
                 break;
             case "statsButton":

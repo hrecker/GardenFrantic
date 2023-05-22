@@ -43,9 +43,8 @@ export function getNextHazardDurationMs(numHazardsDefeated: number, difficulty: 
     return randomInRange(min, max);
 }
 
-/** Get a randomly ordered list of hazards */
-export function getRandomizedHazards(): Hazard[] {
-    let allHazards = [
+export function getAllHazards(): Hazard[] {
+    return [
         Hazard.Bird,
         Hazard.Bugs,
         Hazard.Weeds,
@@ -53,6 +52,11 @@ export function getRandomizedHazards(): Hazard[] {
         Hazard.Meteor,
         Hazard.Mole,
     ];
+}
+
+/** Get a randomly ordered list of hazards */
+export function getRandomizedHazards(): Hazard[] {
+    let allHazards = getAllHazards();
     shuffleArray(allHazards);
     return allHazards;
 }

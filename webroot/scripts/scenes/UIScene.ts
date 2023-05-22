@@ -1,6 +1,7 @@
 import { ButtonClick, playSound, stopAllSounds } from "../audio/Sound";
 import { addGameResetListener, addPlantDestroyListener, addScoreUpdateListener, addWeatherUpdateListener, clearListeners } from "../events/EventMessenger";
 import * as game from "../game/Game";
+import { TutorialState } from "../game/Tutorial";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
 import { getGameResults, getLatestGameResult, getLatestGameResultIndex } from "../state/GameResultState";
@@ -10,8 +11,6 @@ const uiXMargin = 15;
 const weatherImageWidth = 50;
 const addScoreStartMargin = 100;
 const addScoreEndMargin = 20;
-const maxParticles = 20;
-const scoreTextParticlesMargin = 14;
 
 // Leaderboard UI
 type LeaderboardRow = {
@@ -29,6 +28,7 @@ const leaderboardY = 35;
 /** UI scene */
 export class UIScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
+    tutorialState: TutorialState;
     scoreText: Phaser.GameObjects.BitmapText;
     addScoreTextNormal: Phaser.GameObjects.BitmapText;
     addScoreTextSpecial: Phaser.GameObjects.BitmapText;
@@ -187,6 +187,7 @@ export class UIScene extends Phaser.Scene {
 
     init(data) {
         this.gardenGame = data.gardenGame;
+        this.tutorialState = data.tutorialState;
         // Event listeners
         addScoreUpdateListener(this.handleScoreUpdate, this);
         addWeatherUpdateListener(this.handleWeatherUpdate, this);
