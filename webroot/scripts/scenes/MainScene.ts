@@ -512,9 +512,9 @@ export class MainScene extends Phaser.Scene {
         }
         this.queuedSounds.clear();
         if (Object.keys(this.gardenGame.plants).length > 0) {
-            game.update(this.gardenGame, delta);
+            game.update(this.gardenGame, delta, this.tutorialState);
             Object.keys(this.gardenGame.plants).forEach(id => {
-                updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id]);
+                updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id], this.tutorialState);
             });
         }
         update(this, delta, this.backgroundImageSpawner);
