@@ -20,7 +20,6 @@ export function getEnabledTutorial(): TutorialState {
     };
 }
 
-//TODO how to handle calling this
 //TODO completing tutorial
 export function advanceTutorial(tutorial: TutorialState) {
     tutorial.step += 1;

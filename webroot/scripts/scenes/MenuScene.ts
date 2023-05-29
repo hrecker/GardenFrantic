@@ -253,6 +253,7 @@ export class MenuScene extends Phaser.Scene {
             });
         });
         
+        this.mainMenuGroup.setAlpha(0);
         this.tweens.add({
             targets: this.mainMenuGroup.getChildren(),
             alpha: {

@@ -53,6 +53,14 @@
         "color": "#FFF7E4",
         "align": "center"
     },
+    "tutorialTitleTextStyle": { 
+        "font": "bold 20px Verdana",
+        "color": "#4B3D44"
+    },
+    "tutorialTextStyle": { 
+        "font": "14px Verdana",
+        "color": "#4B3D44"
+    },
     "leaderboardCount": 3,
 
     "healthyLevelColor": "0xB3A555",
