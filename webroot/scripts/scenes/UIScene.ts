@@ -89,7 +89,7 @@ export class UIScene extends Phaser.Scene {
             this.tutorialTextBackground.setPosition(backgroundX, backgroundY);
             this.tutorialTextBackground.setSize(config()["toolbarWidth"], this.game.renderer.height - 100);
             this.tutorialTitle.setPosition(backgroundX, backgroundY - 112);
-            this.tutorialText.setPosition(backgroundX, backgroundY);
+            this.tutorialText.setPosition(backgroundX, backgroundY - 95);
             this.tutorialText.setWordWrapWidth(config()["toolbarWidth"]);
             this.tutorialSkipButton.setPosition(backgroundX - tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
             this.tutorialNextButton.setPosition(backgroundX + tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
@@ -265,7 +265,7 @@ export class UIScene extends Phaser.Scene {
         if (this.tutorialState.enabled) {
             this.tutorialTextBackground = this.add.rectangle(0, 0, config()["toolbarWidth"], 0, tutorialTextBackgroundColor);
             this.tutorialTitle = this.add.text(0, 0, "Tutorial", config()["tutorialTitleTextStyle"]).setOrigin(0.5);
-            this.tutorialText = this.add.text(0, 0, "tutorial text placeholder", config()["tutorialTextStyle"]).setOrigin(0.5);
+            this.tutorialText = this.add.text(0, 0, config()["tutorialText"][0], config()["tutorialTextStyle"]).setOrigin(0.5, 0);
             this.tutorialSkipButton = this.add.image(0, 0, "skipButton").setScale(0.5).setOrigin(1, 1);
             this.tutorialNextButton = this.add.image(0, 0, "nextButton").setScale(0.5).setOrigin(0, 1);
             this.configureButton(this.tutorialSkipButton, "skip", "skipButton", "skipButtonDown");
@@ -303,14 +303,7 @@ export class UIScene extends Phaser.Scene {
         switch (buttonName) {
             case "skip":
             case "menu":
-                // Back to the main menu
-                clearListeners();
-                stopAllSounds();
-                this.scene.stop();
-                this.scene.stop("ToolbarScene");
-                this.scene.get("MainScene").clearListeners();
-                this.scene.stop("MainScene");
-                this.scene.start("MenuScene");
+                this.backToMainMenu();
                 break;
             case "retry":
                 // Restart game scene
@@ -318,9 +311,24 @@ export class UIScene extends Phaser.Scene {
                 this.scene.get("MainScene").scene.restart();
                 break;
             case "next":
-                advanceTutorial(this.tutorialState);
+                if (this.tutorialState.step < config()["tutorialText"].length - 1) {
+                    advanceTutorial(this.tutorialState);
+                    this.tutorialText.setText(config()["tutorialText"][this.tutorialState.step]);
+                } else {
+                    this.backToMainMenu();
+                }
                 break;
         }
+    }
+
+    backToMainMenu() {
+        clearListeners();
+        stopAllSounds();
+        this.scene.stop();
+        this.scene.stop("ToolbarScene");
+        this.scene.get("MainScene").clearListeners();
+        this.scene.stop("MainScene");
+        this.scene.start("MenuScene");
     }
 
     handleGameStart(scene: UIScene) {

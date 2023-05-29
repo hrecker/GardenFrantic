@@ -16,7 +16,7 @@ export function getDisabledTutorial(): TutorialState {
 export function getEnabledTutorial(): TutorialState {
     return {
         enabled: true,
-        step: 1
+        step: 0
     };
 }
 

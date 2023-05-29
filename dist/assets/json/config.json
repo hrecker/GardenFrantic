@@ -371,5 +371,10 @@
         "wrongTool": {
             "volume": 0.1
         }
-    }
+    },
+
+    "tutorialText": [
+        "Your goal is to keep the plant healthy as long as possible, harvesting the fruit that grows to reach a high score.",
+        "Tutorial complete!"
+    ]
 }
