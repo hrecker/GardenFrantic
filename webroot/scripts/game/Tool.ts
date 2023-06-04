@@ -28,10 +28,10 @@ export function getAllTools(): Tool[] {
     return [
         Tool.Basket,
         Tool.Fertilizer,
-        Tool.Shade,
-        Tool.Lamp,
         Tool.Umbrella,
         Tool.WateringCan,
+        Tool.Shade,
+        Tool.Lamp,
         Tool.Scarecrow,
         Tool.Weedkiller,
         Tool.Pesticide,

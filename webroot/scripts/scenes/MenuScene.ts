@@ -342,7 +342,7 @@ export class MenuScene extends Phaser.Scene {
                 break;
             case "tutorialButton":
                 // Start game
-                game = newGame(this.selectedDifficulty);
+                game = newGame(Difficulty.Tutorial);
                 tutorial = getEnabledTutorial();
                 this.scene.start("MainScene", { gardenGame: game, tutorialState: tutorial })
                         .start("ToolbarScene", { gardenGame: game, tutorialState: tutorial })

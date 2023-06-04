@@ -107,6 +107,24 @@
     },
 
     "weatherDecayRates": {
+        "Tutorial": {
+            "partlyCloudy": {
+                "water": 1,
+                "light": -1
+            },
+            "cloudy": {
+                "water": 1,
+                "light": 1
+            },
+            "heat": {
+                "water": 2,
+                "light": -2
+            },
+            "rain": {
+                "water": -2,
+                "light": 2
+            }
+        },
         "Easy": {
             "partlyCloudy": {
                 "water": 4,
@@ -218,6 +236,16 @@
     },
 
     "hazardGapDurationMs": {
+        "Tutorial": {
+            "base": {
+                "low": 8000,
+                "high": 87000
+            },
+            "minimum": {
+                "low": 8000,
+                "high": 8000
+            }
+        },
         "Easy": {
             "base": {
                 "low": 6000,
@@ -375,6 +403,30 @@
 
     "tutorialText": [
         "Your goal is to keep the plant healthy as long as possible, harvesting the fruit that grows to reach a high score.",
-        "Tutorial complete!"
-    ]
+        "The status bars above the plant represent water, light, fruit growth, and overall health.",
+        "The bottom bar is the plant's health. Health will improve over time as long as water, light, and hazards are managed.",
+        "The tools on the right bar allow managing water and light levels. Select a tool by tapping it and use it by tapping on the plant. Most of the tools won't do anything right now.",
+        "The umbrella and watering can tools (the second row) will decrease and increase the water level, respectively.",
+        "Water level will increase or decrease naturally depending on the current weather. Use the tools in the second row to keep the plant at a healthy water level.",
+        "If the water level is very high or very low, the plant will lose health. If health reaches zero, the plant will die.",
+        "Light works similarly to water. The shade and lamp tools (the third row) will decrease and increase the light level, respectively.",
+        "The rate of change of water and light is determined by the current weather.",
+        "Weather will change every few seconds. A preview of upcoming weather can be seen in the top right.",
+        "As long as the plant is not losing health, it will grow fruit periodically. When the fruit becomes red, it can be harvested.",
+        "The basket tool in the first row can be used to harvest fruit when it is grown.",
+        "The fertilizer tool to the right of the basket can be repeatedly used to increase the speed of fruit growth.",
+        "Your score is shown in the top left. It will regularly increase based on the current health of the plant.",
+        "Whenever you harvest a fruit, you receive a bonus 100 points.",
+        "Tutorial complete! Click Next to return to the main menu."
+    ],
+
+    "tutorialStartPoints": {
+        "health": 2,
+        "tools": 3,
+        "water": 5,
+        "light": 7,
+        "weather": 9,
+        "fruit": 10,
+        "score": 13
+    }
 }

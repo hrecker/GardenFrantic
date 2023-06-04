@@ -19,10 +19,23 @@ export type StatusBar = {
 }
 
 export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, plant: Plant, tutorialState: TutorialState) {
+    // Default to hidden in case the individual bars aren't enabled
     let lightArrow = ArrowStatus.Hidden;
     let waterArrow = ArrowStatus.Hidden;
     let healthArrow = ArrowStatus.Hidden;
     let fruitArrow = ArrowStatus.Hidden;
+    if (isLightStatusBarEnabled(tutorialState)) {
+        lightArrow = ArrowStatus.Up;
+    }
+    if (isWaterStatusBarEnabled(tutorialState)) {
+        waterArrow = ArrowStatus.Up;
+    }
+    if (isHealthStatusBarEnabled(tutorialState)) {
+        healthArrow = ArrowStatus.Up;
+    }
+    if (isFruitGrowthEnabled(tutorialState)) {
+        fruitArrow = ArrowStatus.Up;
+    }
     // Masks
     setStatusBarMask(statusBar.waterStatusBar.statusBarMask, statusBar.waterStatusBar.statusBarBackground, plant.levels[Status.Water] / 100.0);
     setStatusBarMask(statusBar.lightStatusBar.statusBarMask, statusBar.lightStatusBar.statusBarBackground, plant.levels[Status.Light] / 100.0);
