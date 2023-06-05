@@ -1,6 +1,7 @@
 import { ButtonClick, playSound, stopAllSounds } from "../audio/Sound";
 import { addGameResetListener, addPlantDestroyListener, addScoreUpdateListener, addWeatherUpdateListener, clearListeners } from "../events/EventMessenger";
 import * as game from "../game/Game";
+import { advanceTutorial, TutorialState } from "../game/Tutorial";
 import { Weather } from "../game/Weather";
 import { config } from "../model/Config";
 import { getGameResults, getLatestGameResult, getLatestGameResultIndex } from "../state/GameResultState";
@@ -10,8 +11,6 @@ const uiXMargin = 15;
 const weatherImageWidth = 50;
 const addScoreStartMargin = 100;
 const addScoreEndMargin = 20;
-const maxParticles = 20;
-const scoreTextParticlesMargin = 14;
 
 // Leaderboard UI
 type LeaderboardRow = {
@@ -24,11 +23,14 @@ const defaultLeaderboardRowColor = "#FFF7E4";
 const highlightLeaderboardRowColor = "#B0EB93";
 const buttonMargin = 120;
 const leaderboardY = 35;
+const tutorialTextBackgroundColor = 0xD2C9A5;
+const tutorialButtonMargin = 5;
 
 
 /** UI scene */
 export class UIScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
+    tutorialState: TutorialState;
     scoreText: Phaser.GameObjects.BitmapText;
     addScoreTextNormal: Phaser.GameObjects.BitmapText;
     addScoreTextSpecial: Phaser.GameObjects.BitmapText;
@@ -54,6 +56,12 @@ export class UIScene extends Phaser.Scene {
     menuButton: Phaser.GameObjects.Image;
     retryButton: Phaser.GameObjects.Image;
 
+    tutorialTextBackground: Phaser.GameObjects.Rectangle;
+    tutorialTitle: Phaser.GameObjects.Text;
+    tutorialText: Phaser.GameObjects.Text;
+    tutorialNextButton: Phaser.GameObjects.Image;
+    tutorialSkipButton: Phaser.GameObjects.Image;
+
     constructor() {
         super({
             key: "UIScene"
@@ -73,6 +81,18 @@ export class UIScene extends Phaser.Scene {
             let pos = this.weatherImages.length - i - 1;
             this.weatherImages[i].setPosition(weatherRightX - (pos * weatherImageWidth), uiY);
             this.weatherImageBorders[i].setPosition(this.weatherImages[i].x, this.weatherImages[i].y);
+        }
+
+        if (this.tutorialState.enabled) {
+            let backgroundX = this.game.renderer.width - (1.5 * config()["toolbarWidth"]);
+            let backgroundY = this.game.renderer.height / 2 + 50;
+            this.tutorialTextBackground.setPosition(backgroundX, backgroundY);
+            this.tutorialTextBackground.setSize(config()["toolbarWidth"], this.game.renderer.height - 100);
+            this.tutorialTitle.setPosition(backgroundX, backgroundY - 112);
+            this.tutorialText.setPosition(backgroundX, backgroundY - 95);
+            this.tutorialText.setWordWrapWidth(config()["toolbarWidth"] - 2);
+            this.tutorialSkipButton.setPosition(backgroundX - tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
+            this.tutorialNextButton.setPosition(backgroundX + tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
         }
 
         this.leaderboardTitle.setPosition(this.rightX / 2, leaderboardY);
@@ -187,6 +207,7 @@ export class UIScene extends Phaser.Scene {
 
     init(data) {
         this.gardenGame = data.gardenGame;
+        this.tutorialState = data.tutorialState;
         // Event listeners
         addScoreUpdateListener(this.handleScoreUpdate, this);
         addWeatherUpdateListener(this.handleWeatherUpdate, this);
@@ -241,6 +262,16 @@ export class UIScene extends Phaser.Scene {
         this.configureButton(this.retryButton, "retry", "retryButton", "retryButtonDown");
         this.setLeaderboardVisible(false);
 
+        if (this.tutorialState.enabled) {
+            this.tutorialTextBackground = this.add.rectangle(0, 0, config()["toolbarWidth"], 0, tutorialTextBackgroundColor).setAlpha(0.85);
+            this.tutorialTitle = this.add.text(0, 0, "Tutorial", config()["tutorialTitleTextStyle"]).setOrigin(0.5);
+            this.tutorialText = this.add.text(0, 0, config()["tutorialText"][0], config()["tutorialTextStyle"]).setOrigin(0.5, 0);
+            this.tutorialSkipButton = this.add.image(0, 0, "skipButton").setScale(0.5).setOrigin(1, 1);
+            this.tutorialNextButton = this.add.image(0, 0, "nextButton").setScale(0.5).setOrigin(0, 1);
+            this.configureButton(this.tutorialSkipButton, "skip", "skipButton", "skipButtonDown");
+            this.configureButton(this.tutorialNextButton, "next", "nextButton", "nextButtonDown");
+        }
+
         this.resize(true);
         this.scale.on("resize", this.resize, this);
 
@@ -270,22 +301,34 @@ export class UIScene extends Phaser.Scene {
 
     handleButtonClick(buttonName) {
         switch (buttonName) {
+            case "skip":
             case "menu":
-                // Back to the main menu
-                clearListeners();
-                stopAllSounds();
-                this.scene.stop();
-                this.scene.stop("ToolbarScene");
-                this.scene.get("MainScene").clearListeners();
-                this.scene.stop("MainScene");
-                this.scene.start("MenuScene");
+                this.backToMainMenu();
                 break;
             case "retry":
                 // Restart game scene
                 game.resetGame(this.gardenGame);
                 this.scene.get("MainScene").scene.restart();
                 break;
+            case "next":
+                if (this.tutorialState.step < config()["tutorialText"].length - 1) {
+                    advanceTutorial(this.tutorialState);
+                    this.tutorialText.setText(config()["tutorialText"][this.tutorialState.step]);
+                } else {
+                    this.backToMainMenu();
+                }
+                break;
         }
+    }
+
+    backToMainMenu() {
+        clearListeners();
+        stopAllSounds();
+        this.scene.stop();
+        this.scene.stop("ToolbarScene");
+        this.scene.get("MainScene").clearListeners();
+        this.scene.stop("MainScene");
+        this.scene.start("MenuScene");
     }
 
     handleGameStart(scene: UIScene) {

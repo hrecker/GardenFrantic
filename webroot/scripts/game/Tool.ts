@@ -24,20 +24,22 @@ export enum ToolCategory {
     HazardRemoval = "hazardremoval"
 }
 
-export let startingTools = [
-    Tool.Basket,
-    Tool.Fertilizer,
-    Tool.Shade,
-    Tool.Lamp,
-    Tool.Umbrella,
-    Tool.WateringCan,
-    Tool.Scarecrow,
-    Tool.Weedkiller,
-    Tool.Pesticide,
-    Tool.Dog,
-    Tool.Missile,
-    Tool.Hammer,
-];
+export function getAllTools(): Tool[] {
+    return [
+        Tool.Basket,
+        Tool.Fertilizer,
+        Tool.Umbrella,
+        Tool.WateringCan,
+        Tool.Shade,
+        Tool.Lamp,
+        Tool.Scarecrow,
+        Tool.Weedkiller,
+        Tool.Pesticide,
+        Tool.Dog,
+        Tool.Hammer,
+        Tool.Missile,
+    ];
+}
 
 export function getCategory(tool: Tool): ToolCategory {
     return config()["tools"][tool]["category"];

@@ -1,6 +1,7 @@
 import { config } from "../model/Config";
 import { GardenGame, getLightDecayRateForPlant, getWaterDecayRateForPlant, getHealthDecayRateForPlant } from "./Game";
 import { FruitGrowthStage, isFruitGrowthPaused, isInWarningZone, Plant, Status } from "./Plant";
+import { isFruitGrowthEnabled, isHealthStatusBarEnabled, isLightStatusBarEnabled, isWaterStatusBarEnabled, TutorialState } from "./Tutorial";
 
 export type PlantStatusBar = {
     waterStatusBar: StatusBar;
@@ -17,11 +18,24 @@ export type StatusBar = {
     arrow: Phaser.GameObjects.Image;
 }
 
-export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, plant: Plant) {
-    let lightArrow = ArrowStatus.Up;
-    let waterArrow = ArrowStatus.Up;
-    let healthArrow = ArrowStatus.Up;
+export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, plant: Plant, tutorialState: TutorialState) {
+    // Default to hidden in case the individual bars aren't enabled
+    let lightArrow = ArrowStatus.Hidden;
+    let waterArrow = ArrowStatus.Hidden;
+    let healthArrow = ArrowStatus.Hidden;
     let fruitArrow = ArrowStatus.Hidden;
+    if (isLightStatusBarEnabled(tutorialState)) {
+        lightArrow = ArrowStatus.Up;
+    }
+    if (isWaterStatusBarEnabled(tutorialState)) {
+        waterArrow = ArrowStatus.Up;
+    }
+    if (isHealthStatusBarEnabled(tutorialState)) {
+        healthArrow = ArrowStatus.Up;
+    }
+    if (isFruitGrowthEnabled(tutorialState)) {
+        fruitArrow = ArrowStatus.Up;
+    }
     // Masks
     setStatusBarMask(statusBar.waterStatusBar.statusBarMask, statusBar.waterStatusBar.statusBarBackground, plant.levels[Status.Water] / 100.0);
     setStatusBarMask(statusBar.lightStatusBar.statusBarMask, statusBar.lightStatusBar.statusBarBackground, plant.levels[Status.Light] / 100.0);
@@ -36,19 +50,21 @@ export function updateStatusBars(statusBar: PlantStatusBar, game: GardenGame, pl
         setWarningColor(statusBar.fruitStatusBar.statusBar);
     } else {
         setHealthyColor(statusBar.fruitStatusBar.statusBar);
-        fruitArrow = ArrowStatus.Up;
+        if (isFruitGrowthEnabled(tutorialState)) {
+            fruitArrow = ArrowStatus.Up;
+        }
     }
     updateStatusColor(statusBar.healthStatusBar.statusBar, plant.levels[Status.Health], Status.Health);
     // Arrows
-    if (getLightDecayRateForPlant(game, plant) > 0) {
+    if (getLightDecayRateForPlant(game, plant) > 0 && isLightStatusBarEnabled(tutorialState)) {
         lightArrow = ArrowStatus.Down;
     }
-    if (getWaterDecayRateForPlant(game, plant) > 0) {
+    if (getWaterDecayRateForPlant(game, plant) > 0 && isWaterStatusBarEnabled(tutorialState)) {
         waterArrow = ArrowStatus.Down;
     }
     if (plant.levels[Status.Health] == config()["maxLevel"]) {
         healthArrow = ArrowStatus.Hidden;
-    } else if (getHealthDecayRateForPlant(game, plant) > 0) {
+    } else if (getHealthDecayRateForPlant(game, plant) > 0 && isHealthStatusBarEnabled(tutorialState)) {
         healthArrow = ArrowStatus.Down;
     }
     setArrowTexture(statusBar.lightStatusBar, lightArrow);

@@ -2,6 +2,7 @@ import { addGameResetListener, addHazardCreatedListener, addHazardDestroyedListe
 import * as game from "../game/Game";
 import { ActiveHazard } from "../game/Hazard";
 import * as tool from "../game/Tool";
+import { getEnabledTools, TutorialState } from "../game/Tutorial";
 import { config } from "../model/Config";
 import { createSwayAnimation } from "../util/Util";
 
@@ -19,6 +20,7 @@ const toolScale = 0.9;
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
     gardenGame: game.GardenGame;
+    tutorialState: TutorialState;
     lastSelectedToolIndex: number;
     currentToolText: Phaser.GameObjects.BitmapText;
     toolIcons: Phaser.GameObjects.Sprite[];
@@ -55,7 +57,7 @@ export class ToolbarScene extends Phaser.Scene {
         this.toolbar.setSize(config()["toolbarWidth"], this.game.renderer.height);
         this.currentToolText.setPosition(toolbarX, toolTextY);
 
-        for (let i = 0; i < tool.startingTools.length; i++) {
+        for (let i = 0; i < tool.getAllTools().length; i++) {
             let x, y;
             if (i % 2 == 0) {
                 x = toolbarX - toolMargin / 2;
@@ -130,6 +132,7 @@ export class ToolbarScene extends Phaser.Scene {
 
     init(data) {
         this.gardenGame = data.gardenGame;
+        this.tutorialState = data.tutorialState;
     }
 
     create() {
@@ -163,39 +166,50 @@ export class ToolbarScene extends Phaser.Scene {
         this.toolIcons = [];
         this.toolBoxes = [];
         this.lastSelectedToolIndex = -1;
-        for (let i = 0; i < tool.startingTools.length; i++) {
-            createSwayAnimation(this, tool.startingTools[i] + "sway", [
-                    { key: tool.startingTools[i] + '1' },
-                    { key: tool.startingTools[i] + '2' },
+        let allTools = tool.getAllTools();
+        for (let i = 0; i < allTools.length; i++) {
+            createSwayAnimation(this, allTools[i] + "sway", [
+                    { key: allTools[i] + '1' },
+                    { key: allTools[i] + '2' },
                 ]);
-            let texture = tool.startingTools[i] + '1';
+            let texture = allTools[i] + '1';
             let texturePath = "drawn/" + texture;
-            let toolIcon = this.add.sprite(0, 0, texture).setScale(toolScale).setName(tool.startingTools[i]);
+            let toolIcon = this.add.sprite(0, 0, texture).setScale(toolScale).setName(allTools[i]);
             this.toolIcons.push(toolIcon);
             // Add box background
             let toolbox = this.add.image(0, 0, "toolbox").setScale(toolScale);
             this.toolBoxes.push(toolbox);
             toolIcon.setInteractive();
             toolIcon.on("pointerdown", () => {
-                let toolValue = tool.startingTools[i];
+                let toolValue = allTools[i];
                 if (this.gardenGame.selectedTool != toolValue) {
-                    this.gardenGame.selectedTool = toolValue;
-                    let cursor = "url(assets/sprites/" + texturePath + ".png), pointer";
-                    this.input.setDefaultCursor(cursor);
-                    toolbox.setTexture("selectedToolbox");
-                    if (this.lastSelectedToolIndex != -1) {
-                        if (this.highlightedToolIndexes.has(this.lastSelectedToolIndex)) {
-                            this.toolBoxes[this.lastSelectedToolIndex].setTexture("highlightedToolbox");
-                        } else {
-                            this.toolBoxes[this.lastSelectedToolIndex].setTexture("toolbox");
+                    let enabledTools = getEnabledTools(this.tutorialState);
+                    let enabled = false;
+                    for (let j = 0; j < enabledTools.length; j++) {
+                        if (enabledTools[j] == toolValue) {
+                            enabled = true;
+                            break;
                         }
-                        this.toolIcons[this.lastSelectedToolIndex].stop();
                     }
-                    this.lastSelectedToolIndex = i;
-                    let toolName = tool.getToolName(toolValue);
-                    this.currentToolText.setText(toolName);
-                    this.currentToolText.setFontSize(Math.min(44 - toolName.length, 40));
-                    toolIcon.play(tool.startingTools[i] + "sway");
+                    if (enabled) {
+                        this.gardenGame.selectedTool = toolValue;
+                        let cursor = "url(assets/sprites/" + texturePath + ".png), pointer";
+                        this.input.setDefaultCursor(cursor);
+                        toolbox.setTexture("selectedToolbox");
+                        if (this.lastSelectedToolIndex != -1) {
+                            if (this.highlightedToolIndexes.has(this.lastSelectedToolIndex)) {
+                                this.toolBoxes[this.lastSelectedToolIndex].setTexture("highlightedToolbox");
+                            } else {
+                                this.toolBoxes[this.lastSelectedToolIndex].setTexture("toolbox");
+                            }
+                            this.toolIcons[this.lastSelectedToolIndex].stop();
+                        }
+                        this.lastSelectedToolIndex = i;
+                        let toolName = tool.getToolName(toolValue);
+                        this.currentToolText.setText(toolName);
+                        this.currentToolText.setFontSize(Math.min(44 - toolName.length, 40));
+                        toolIcon.play(allTools[i] + "sway");
+                    }
                 } else {
                     this.gardenGame.selectedTool = tool.Tool.NoTool;
                     this.deselectIcon(i);

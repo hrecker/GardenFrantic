@@ -102,12 +102,18 @@ export class LoadingScene extends Phaser.Scene {
         this.load.image("menuButtonDown", "assets/sprites/ui/menuButtonDown.png");
         this.load.image("playButton", "assets/sprites/ui/playButton.png");
         this.load.image("playButtonDown", "assets/sprites/ui/playButtonDown.png");
+        this.load.image("tutorialButton", "assets/sprites/ui/tutorialButton.png");
+        this.load.image("tutorialButtonDown", "assets/sprites/ui/tutorialButtonDown.png");
         this.load.image("statsButton", "assets/sprites/ui/statsButton.png");
         this.load.image("statsButtonDown", "assets/sprites/ui/statsButtonDown.png");
         this.load.image("backButton", "assets/sprites/ui/backButton.png");
         this.load.image("backButtonDown", "assets/sprites/ui/backButtonDown.png");
         this.load.image("retryButton", "assets/sprites/ui/retryButton.png");
         this.load.image("retryButtonDown", "assets/sprites/ui/retryButtonDown.png");
+        this.load.image("nextButton", "assets/sprites/ui/nextButton.png");
+        this.load.image("nextButtonDown", "assets/sprites/ui/nextButtonDown.png");
+        this.load.image("skipButton", "assets/sprites/ui/skipButton.png");
+        this.load.image("skipButtonDown", "assets/sprites/ui/skipButtonDown.png");
         this.load.image('musicOffButton', 'assets/sprites/ui/music_off_button.png');
         this.load.image('musicOffButtonDown', 'assets/sprites/ui/music_off_button_down.png');
         this.load.image('musicOnButton', 'assets/sprites/ui/music_on_button.png');

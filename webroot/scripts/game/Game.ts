@@ -1,6 +1,6 @@
 import { gameResetEvent, hazardCreatedEvent, hazardDestroyedEvent, hazardImpactEvent, plantDestroyEvent, scoreUpdateEvent, weatherUpdateEvent, wrongToolEvent } from "../events/EventMessenger";
 import { config } from "../model/Config";
-import { ActiveHazard, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
+import { ActiveHazard, getAllHazards, getHazardTimeToActive, getHazardType, getNextHazardDurationMs, getRandomizedHazards, Hazard, HazardType } from "./Hazard";
 import { getNewId } from "./Id";
 import { isFruitGrowthPaused, newPlant, harvestFruit, Plant, setFruitProgress, Status, updateStatusLevel, numWarningStatus, getFruitProgressRate, removeHazardByType, removeHazardById, FruitGrowthStage } from "./Plant";
 import * as tool from "./Tool";
@@ -8,6 +8,7 @@ import * as weather from "./Weather";
 import { shuffleArray } from "../util/Util";
 import { Tool } from "./Tool";
 import { Difficulty } from "../state/DifficultyState";
+import { getTutorialHazard, isFruitGrowthEnabled, isHealthStatusBarEnabled, isLightStatusBarEnabled, isScoreEnabled, isWaterStatusBarEnabled, isWeatherEnabled, TutorialState } from "./Tutorial";
 
 export type GardenGame = {
     /** Plants in the game */
@@ -101,20 +102,27 @@ export function addPlant(game: GardenGame, plantGameObject: Phaser.GameObjects.S
     return plant;
 }
 
-export function update(game: GardenGame, delta: number) {
+export function update(game: GardenGame, delta: number, tutorialState: TutorialState) {
     // Plant updates
     let toRemove: number[] = [];
     
     Object.keys(game.plants).forEach(id => {
         let plant: Plant = game.plants[id];
-        if (plant.shouldDestroy && ! config()["invinciblePlants"]) {
+        // Prevent death in the tutorial
+        if (plant.shouldDestroy && ! (config()["invinciblePlants"] || tutorialState.enabled)) {
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));
         } else {
-            updateStatusLevel(plant, Status.Light, -delta / 1000.0 * getLightDecayRateForPlant(game, plant));
-            updateStatusLevel(plant, Status.Water, -delta / 1000.0 * getWaterDecayRateForPlant(game, plant));
-            updateStatusLevel(plant, Status.Health, -delta / 1000.0 * getHealthDecayRateForPlant(game, plant));
-            if (! isFruitGrowthPaused(game, plant)) {
+            if (isLightStatusBarEnabled(tutorialState)) {
+                updateStatusLevel(plant, Status.Light, -delta / 1000.0 * getLightDecayRateForPlant(game, plant));
+            }
+            if (isWaterStatusBarEnabled(tutorialState)) {
+                updateStatusLevel(plant, Status.Water, -delta / 1000.0 * getWaterDecayRateForPlant(game, plant));
+            }
+            if (isHealthStatusBarEnabled(tutorialState)) {
+                updateStatusLevel(plant, Status.Health, -delta / 1000.0 * getHealthDecayRateForPlant(game, plant));
+            }
+            if (isFruitGrowthEnabled(tutorialState) && ! isFruitGrowthPaused(game, plant)) {
                 setFruitProgress(plant, plant.fruitProgress + (delta / 1000.0) * getFruitProgressRate(plant))
             }
         }
@@ -126,11 +134,13 @@ export function update(game: GardenGame, delta: number) {
     });
 
     // Weather updates
-    game.currentWeatherDurationMs += delta;
-    if (game.currentWeatherDurationMs >= config()["weatherDurationMs"]) {
-        game.currentWeatherDurationMs = 0;
-        advanceWeather(game);
-        weatherUpdateEvent(game.weather, game.weatherQueue);
+    if (isWeatherEnabled(tutorialState)) {
+        game.currentWeatherDurationMs += delta;
+        if (game.currentWeatherDurationMs >= config()["weatherDurationMs"]) {
+            game.currentWeatherDurationMs = 0;
+            advanceWeather(game);
+            weatherUpdateEvent(game.weather, game.weatherQueue);
+        }
     }
 
     // Hazard updates
@@ -154,7 +164,8 @@ export function update(game: GardenGame, delta: number) {
     });
 
     game.currentHazardDurationMs += delta;
-    if (game.currentHazardDurationMs >= game.nextHazardDuration && Object.keys(game.plants).length > 0) {
+    let tutorialHazard = getTutorialHazard(tutorialState);
+    if ((game.currentHazardDurationMs >= game.nextHazardDuration && Object.keys(game.plants).length > 0) || tutorialHazard != null) {
         game.currentHazardDurationMs = 0;
         game.nextHazardDuration = getNextHazardDurationMs(game.numHazardsDefeated, game.difficulty);
         let targetPlant = getRandomPlant(game).id;
@@ -162,24 +173,30 @@ export function update(game: GardenGame, delta: number) {
         // There is a chance that we select a plant that can't add any new hazards when another
         // plant could get a hazard. I'll just accept this as a feature for now - anyways if a plant
         // has every possible hazard things are likely pretty bad already for the player
-        let possibleHazards = getRandomizedHazards();
-        let chosenHazard: Hazard = null;
-        let foundHazards: Hazard[] = [];
-        // Build list of all hazards currently active for the chosen plant
-        for (let i = 0; i < game.plants[targetPlant].activeHazardIds.length; i++) {
-            foundHazards.push(game.activeHazards[game.plants[targetPlant].activeHazardIds[i]].hazard);
-        }
-        for (let i = 0; i < possibleHazards.length; i++) {
-            let existingHazardFound = false;
-            for (let j = 0; j < foundHazards.length; j++) {
-                if (possibleHazards[i] == foundHazards[j]) {
-                    existingHazardFound = true;
-                    break;
+        let chosenHazard = tutorialHazard;
+        if (chosenHazard == null) {
+            let possibleHazards = getAllHazards();
+            shuffleArray(possibleHazards);
+            let chosenHazard: Hazard = null;
+            let foundHazards: Hazard[] = [];
+            // Build list of all hazards currently active for the chosen plant
+            if (possibleHazards.length > 0) {
+                for (let i = 0; i < game.plants[targetPlant].activeHazardIds.length; i++) {
+                    foundHazards.push(game.activeHazards[game.plants[targetPlant].activeHazardIds[i]].hazard);
                 }
-            }
-            if (! existingHazardFound) {
-                chosenHazard = possibleHazards[i];
-                break;
+                for (let i = 0; i < possibleHazards.length; i++) {
+                    let existingHazardFound = false;
+                    for (let j = 0; j < foundHazards.length; j++) {
+                        if (possibleHazards[i] == foundHazards[j]) {
+                            existingHazardFound = true;
+                            break;
+                        }
+                    }
+                    if (! existingHazardFound) {
+                        chosenHazard = possibleHazards[i];
+                        break;
+                    }
+                }
             }
         }
         if (chosenHazard != null) {
@@ -196,17 +213,19 @@ export function update(game: GardenGame, delta: number) {
     }
 
     // Score updates
-    game.timeSinceLastScoreBump += delta;
-    if (game.timeSinceLastScoreBump >= config()["scoreBumpIntervalMs"]) {
-        // Calculate score to be added
-        let maxScorePerPlant = config()["maxScoreBumpPerPlant"];
-        let plantScore = 0;
-        Object.keys(game.plants).forEach(id => {
-            let plant: Plant = game.plants[id];
-            plantScore += maxScorePerPlant * (plant.levels[Status.Health] / config()["maxLevel"]);
-        });
-        addScore(game, Math.floor(plantScore));
-        game.timeSinceLastScoreBump = 0;
+    if (isScoreEnabled(tutorialState)) {
+        game.timeSinceLastScoreBump += delta;
+        if (game.timeSinceLastScoreBump >= config()["scoreBumpIntervalMs"]) {
+            // Calculate score to be added
+            let maxScorePerPlant = config()["maxScoreBumpPerPlant"];
+            let plantScore = 0;
+            Object.keys(game.plants).forEach(id => {
+                let plant: Plant = game.plants[id];
+                plantScore += maxScorePerPlant * (plant.levels[Status.Health] / config()["maxLevel"]);
+            });
+            addScore(game, Math.floor(plantScore));
+            game.timeSinceLastScoreBump = 0;
+        }
     }
 }
 

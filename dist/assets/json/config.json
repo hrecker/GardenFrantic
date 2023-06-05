@@ -53,6 +53,14 @@
         "color": "#FFF7E4",
         "align": "center"
     },
+    "tutorialTitleTextStyle": { 
+        "font": "bold 20px Verdana",
+        "color": "#4B3D44"
+    },
+    "tutorialTextStyle": { 
+        "font": "15px Verdana",
+        "color": "#4B3D44"
+    },
     "leaderboardCount": 3,
 
     "healthyLevelColor": "0xB3A555",
@@ -99,6 +107,24 @@
     },
 
     "weatherDecayRates": {
+        "Tutorial": {
+            "partlyCloudy": {
+                "water": 1,
+                "light": -1
+            },
+            "cloudy": {
+                "water": 1,
+                "light": 1
+            },
+            "heat": {
+                "water": 2,
+                "light": -2
+            },
+            "rain": {
+                "water": -2,
+                "light": 2
+            }
+        },
         "Easy": {
             "partlyCloudy": {
                 "water": 4,
@@ -210,6 +236,16 @@
     },
 
     "hazardGapDurationMs": {
+        "Tutorial": {
+            "base": {
+                "low": 8000,
+                "high": 87000
+            },
+            "minimum": {
+                "low": 8000,
+                "high": 8000
+            }
+        },
         "Easy": {
             "base": {
                 "low": 6000,
@@ -363,5 +399,49 @@
         "wrongTool": {
             "volume": 0.1
         }
+    },
+
+    "tutorialText": [
+        "Your goal is to keep the plant healthy as long as possible, harvesting the fruit that grows to reach a high score.",
+        "The status bars above the plant represent water, light, fruit growth, and overall health.",
+        "The bottom bar is the plant's health. Health will improve over time as long as water, light, and hazards are managed.",
+        "The tools on the right bar allow managing water and light levels. Select a tool by tapping it and use it by tapping on the plant. Most of the tools won't do anything right now.",
+        "The umbrella and watering can tools (the second row) will decrease and increase the water level, respectively.",
+        "Water level will increase or decrease naturally depending on the current weather. Use the tools in the second row to keep the plant at a healthy water level.",
+        "If the water level is very high or very low, the plant will lose health. If health reaches zero, the plant will die.",
+        "Light works similarly to water. The shade and lamp tools (the third row) will decrease and increase the light level, respectively.",
+        "The rate of change of water and light is determined by the current weather.",
+        "Weather will change every few seconds. A preview of upcoming weather can be seen in the top right.",
+        "As long as the plant is not losing health, it will grow fruit periodically. When the fruit becomes red, it can be harvested.",
+        "The basket tool in the first row can be used to harvest fruit when it is grown.",
+        "The fertilizer tool to the right of the basket can be repeatedly used to increase the speed of fruit growth, as long as fruit is actively growing.",
+        "Your score is shown in the top left. It will regularly increase based on the current health of the plant.",
+        "Whenever you harvest a fruit, you receive a bonus 100 points.",
+        "Periodically, hazards will spawn and approach your plant. If they reach the plant they will damage its health until they are defeated.",
+        "The tools in the fourth row and below can be used to defeat hazards. Each tool corresponds with one type of hazard.",
+        "For example, the scarecrow tool can defeat a bird hazard. Use the scarecrow tool to defeat the bird.",
+        "When a hazard spawns, the outline of the corresponding tool on the right will be highlighted.",
+        "The weedkiller tool can defeat the weed hazard.",
+        "The pesticide tool can defeat the bug hazard.",
+        "The dog tool can defeat the bunny hazard.",
+        "The hammer tool can defeat the mole hazard.",
+        "The missile tool can defeat the meteor hazard. If the meteor reaches the plant, it will explode and cause the plant to lose a lot of health.",
+        "Tutorial complete! Keep your plant healthy, manage hazards, and harvest fruit! Click Next to return to the main menu."
+    ],
+
+    "tutorialStartPoints": {
+        "health": 2,
+        "tools": 3,
+        "water": 5,
+        "light": 7,
+        "weather": 9,
+        "fruit": 10,
+        "score": 13,
+        "birdHazard": 17,
+        "weedHazard": 19,
+        "bugHazard": 20,
+        "bunnyHazard": 21,
+        "moleHazard": 22,
+        "meteorHazard": 23
     }
 }
