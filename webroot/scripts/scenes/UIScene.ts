@@ -90,7 +90,7 @@ export class UIScene extends Phaser.Scene {
             this.tutorialTextBackground.setSize(config()["toolbarWidth"], this.game.renderer.height - 100);
             this.tutorialTitle.setPosition(backgroundX, backgroundY - 112);
             this.tutorialText.setPosition(backgroundX, backgroundY - 95);
-            this.tutorialText.setWordWrapWidth(config()["toolbarWidth"]);
+            this.tutorialText.setWordWrapWidth(config()["toolbarWidth"] - 2);
             this.tutorialSkipButton.setPosition(backgroundX - tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
             this.tutorialNextButton.setPosition(backgroundX + tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
         }
@@ -263,7 +263,7 @@ export class UIScene extends Phaser.Scene {
         this.setLeaderboardVisible(false);
 
         if (this.tutorialState.enabled) {
-            this.tutorialTextBackground = this.add.rectangle(0, 0, config()["toolbarWidth"], 0, tutorialTextBackgroundColor);
+            this.tutorialTextBackground = this.add.rectangle(0, 0, config()["toolbarWidth"], 0, tutorialTextBackgroundColor).setAlpha(0.85);
             this.tutorialTitle = this.add.text(0, 0, "Tutorial", config()["tutorialTitleTextStyle"]).setOrigin(0.5);
             this.tutorialText = this.add.text(0, 0, config()["tutorialText"][0], config()["tutorialTextStyle"]).setOrigin(0.5, 0);
             this.tutorialSkipButton = this.add.image(0, 0, "skipButton").setScale(0.5).setOrigin(1, 1);

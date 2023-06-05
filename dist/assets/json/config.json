@@ -58,7 +58,7 @@
         "color": "#4B3D44"
     },
     "tutorialTextStyle": { 
-        "font": "14px Verdana",
+        "font": "15px Verdana",
         "color": "#4B3D44"
     },
     "leaderboardCount": 3,
@@ -414,10 +414,19 @@
         "Weather will change every few seconds. A preview of upcoming weather can be seen in the top right.",
         "As long as the plant is not losing health, it will grow fruit periodically. When the fruit becomes red, it can be harvested.",
         "The basket tool in the first row can be used to harvest fruit when it is grown.",
-        "The fertilizer tool to the right of the basket can be repeatedly used to increase the speed of fruit growth.",
+        "The fertilizer tool to the right of the basket can be repeatedly used to increase the speed of fruit growth, as long as fruit is actively growing.",
         "Your score is shown in the top left. It will regularly increase based on the current health of the plant.",
         "Whenever you harvest a fruit, you receive a bonus 100 points.",
-        "Tutorial complete! Click Next to return to the main menu."
+        "Periodically, hazards will spawn and approach your plant. If they reach the plant they will damage its health until they are defeated.",
+        "The tools in the fourth row and below can be used to defeat hazards. Each tool corresponds with one type of hazard.",
+        "For example, the scarecrow tool can defeat a bird hazard. Use the scarecrow tool to defeat the bird.",
+        "When a hazard spawns, the outline of the corresponding tool on the right will be highlighted.",
+        "The weedkiller tool can defeat the weed hazard.",
+        "The pesticide tool can defeat the bug hazard.",
+        "The dog tool can defeat the bunny hazard.",
+        "The hammer tool can defeat the mole hazard.",
+        "The missile tool can defeat the meteor hazard. If the meteor reaches the plant, it will explode and cause the plant to lose a lot of health.",
+        "Tutorial complete! Keep your plant healthy, manage hazards, and harvest fruit! Click Next to return to the main menu."
     ],
 
     "tutorialStartPoints": {
@@ -427,6 +436,12 @@
         "light": 7,
         "weather": 9,
         "fruit": 10,
-        "score": 13
+        "score": 13,
+        "birdHazard": 17,
+        "weedHazard": 19,
+        "bugHazard": 20,
+        "bunnyHazard": 21,
+        "moleHazard": 22,
+        "meteorHazard": 23
     }
 }

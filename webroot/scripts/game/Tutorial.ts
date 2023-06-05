@@ -5,24 +5,28 @@ import { getAllTools, Tool } from "./Tool"
 export type TutorialState = {
     enabled: boolean;
     step: number;
+    hazardSpawned: boolean;
 }
 
 export function getDisabledTutorial(): TutorialState {
     return {
         enabled: false,
-        step: -1
+        step: -1,
+        hazardSpawned: false
     };
 }
 
 export function getEnabledTutorial(): TutorialState {
     return {
         enabled: true,
-        step: 0
+        step: 0,
+        hazardSpawned: false
     };
 }
 
 export function advanceTutorial(tutorial: TutorialState) {
     tutorial.step += 1;
+    tutorial.hazardSpawned = false;
 }
 
 export function getEnabledTools(tutorialState: TutorialState): Tool[] {
@@ -60,13 +64,35 @@ export function isHealthStatusBarEnabled(tutorialState: TutorialState): boolean 
     return tutorialState.step >= config()["tutorialStartPoints"]["health"];
 }
 
-//TODO logic for specific hazards one at a time
-export function getValidHazards(tutorialState: TutorialState): Hazard[] {
-    if (! tutorialState.enabled) {
-        return getAllHazards();
+export function getTutorialHazard(tutorialState: TutorialState): Hazard {
+    if (! tutorialState.enabled || tutorialState.hazardSpawned) {
+        return null;
     }
-    //TODO
-    return [];
+    if (tutorialState.step == config()["tutorialStartPoints"]["birdHazard"]) {
+        tutorialState.hazardSpawned = true;
+        return Hazard.Bird;
+    }
+    if (tutorialState.step == config()["tutorialStartPoints"]["weedHazard"]) {
+        tutorialState.hazardSpawned = true;
+        return Hazard.Weeds;
+    }
+    if (tutorialState.step == config()["tutorialStartPoints"]["bugHazard"]) {
+        tutorialState.hazardSpawned = true;
+        return Hazard.Bugs;
+    }
+    if (tutorialState.step == config()["tutorialStartPoints"]["bunnyHazard"]) {
+        tutorialState.hazardSpawned = true;
+        return Hazard.Bunny;
+    }
+    if (tutorialState.step == config()["tutorialStartPoints"]["moleHazard"]) {
+        tutorialState.hazardSpawned = true;
+        return Hazard.Mole;
+    }
+    if (tutorialState.step == config()["tutorialStartPoints"]["meteorHazard"]) {
+        tutorialState.hazardSpawned = true;
+        return Hazard.Meteor;
+    }
+    return null;
 }
 
 export function isWeatherEnabled(tutorialState: TutorialState): boolean {

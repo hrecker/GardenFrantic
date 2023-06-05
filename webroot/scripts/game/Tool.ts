@@ -36,8 +36,8 @@ export function getAllTools(): Tool[] {
         Tool.Weedkiller,
         Tool.Pesticide,
         Tool.Dog,
-        Tool.Missile,
         Tool.Hammer,
+        Tool.Missile,
     ];
 }
 
