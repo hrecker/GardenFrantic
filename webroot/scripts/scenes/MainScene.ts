@@ -325,10 +325,12 @@ export class MainScene extends Phaser.Scene {
             },
             targets: hazardImage,
             onComplete: function() {
-                if (hasAnimation && hazardImage && hazardImage.active) {
-                    hazardImage.play(activeHazard.hazard + "idle");
+                if (hazardImage && hazardImage.active) {
+                    if (hasAnimation) {
+                        hazardImage.play(activeHazard.hazard + "idle");
+                    }
+                    scene.hazardTimeSinceFlashMs[hazardId] = hazardFlashIntervalMs;
                 }
-                scene.hazardTimeSinceFlashMs[hazardId] = hazardFlashIntervalMs;
             }
         });
         scene.hazardImages[hazardId] = hazardImage;
@@ -373,6 +375,7 @@ export class MainScene extends Phaser.Scene {
             onComplete: function() {
                 scene.hazardImages[hazardId].destroy();
                 delete scene.hazardImages[hazardId];
+                delete scene.hazardTimeSinceFlashMs[hazardId];
             }
         });
 

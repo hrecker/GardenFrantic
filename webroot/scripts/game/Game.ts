@@ -174,7 +174,7 @@ export function update(game: GardenGame, delta: number, tutorialState: TutorialS
         // plant could get a hazard. I'll just accept this as a feature for now - anyways if a plant
         // has every possible hazard things are likely pretty bad already for the player
         let chosenHazard = tutorialHazard;
-        if (chosenHazard == null) {
+        if (chosenHazard == null && ! tutorialState.enabled) {
             let possibleHazards = getAllHazards();
             shuffleArray(possibleHazards);
             let foundHazards: Hazard[] = [];
