@@ -56,6 +56,7 @@ export class LoadingScene extends Phaser.Scene {
         this.loadTexture("fruitlarge2");
         this.loadTexture("statusBarBackground", "statusbar/");
         this.loadTexture("statusBarHealth", "statusbar/");
+        this.loadTexture("statusBarWarningIndicators", "statusbar/");
         this.loadTexture("waterIcon", "statusbar/");
         this.loadTexture("lightIcon", "statusbar/");
         this.loadTexture("fruitIcon", "statusbar/");

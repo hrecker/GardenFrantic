@@ -14,6 +14,7 @@ export type StatusBar = {
     statusBar: Phaser.GameObjects.Image;
     statusBarMask: Phaser.GameObjects.Graphics;
     statusBarBackground: Phaser.GameObjects.Image;
+    statusBarWarningIndicators: Phaser.GameObjects.Image;
     icon: Phaser.GameObjects.Image;
     arrow: Phaser.GameObjects.Image;
 }

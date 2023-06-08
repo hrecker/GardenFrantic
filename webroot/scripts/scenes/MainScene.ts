@@ -223,7 +223,7 @@ export class MainScene extends Phaser.Scene {
         return plant;
     }
 
-    createStatusBar(iconTexture: string): StatusBar {
+    createStatusBar(iconTexture: string, includeWarningIndicators: boolean): StatusBar {
         let barBackground = this.add.image(0, 0, "statusBarBackground").setOrigin(0.5);
         let bar = this.add.image(0, 0, "statusBarHealth").setOrigin(0.5);
         bar.setTint(parseInt(config()["healthyLevelColor"], 16));
@@ -231,10 +231,15 @@ export class MainScene extends Phaser.Scene {
         let arrow = this.add.image(0, 0, "uparrow");
         let mask = this.add.graphics().setAlpha(0);
         bar.setMask(new Phaser.Display.Masks.GeometryMask(this, mask));
+        let warning;
+        if (includeWarningIndicators) {
+            warning = this.add.image(0, 0, "statusBarWarningIndicators").setOrigin(0.5);
+        }
         return {
             statusBarBackground: barBackground,
             statusBar: bar,
             statusBarMask: mask,
+            statusBarWarningIndicators: warning,
             icon: icon,
             arrow: arrow
         };
@@ -254,6 +259,9 @@ export class MainScene extends Phaser.Scene {
     setStatusBarPosition(statusBar: StatusBar, backgroundY: number, plant: Plant) {
         statusBar.statusBarBackground.setPosition(plant.gameObject.x, backgroundY);
         statusBar.statusBar.setPosition(plant.gameObject.x, backgroundY);
+        if (statusBar.statusBarWarningIndicators) {
+            statusBar.statusBarWarningIndicators.setPosition(plant.gameObject.x, backgroundY);
+        }
         statusBar.statusBarMask.fillRect(statusBar.statusBarBackground.getTopLeft().x, statusBar.statusBarBackground.getTopLeft().y,
             statusBar.statusBarBackground.width, statusBar.statusBarBackground.height);
         statusBar.icon.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusIconXMargin,
@@ -263,10 +271,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     createStatusBars(plant: Plant) {
-        let waterBar = this.createStatusBar("waterIcon");
-        let lightBar = this.createStatusBar("lightIcon");
-        let fruitBar = this.createStatusBar("fruitIcon");
-        let healthBar = this.createStatusBar("healthIcon");
+        let waterBar = this.createStatusBar("waterIcon", true);
+        let lightBar = this.createStatusBar("lightIcon", true);
+        let fruitBar = this.createStatusBar("fruitIcon", false);
+        let healthBar = this.createStatusBar("healthIcon", false);
         this.plantStatusBars[plant.id] = {
             waterStatusBar: waterBar,
             lightStatusBar: lightBar,
@@ -279,6 +287,9 @@ export class MainScene extends Phaser.Scene {
     destroyStatusBar(statusBar: StatusBar) {
         statusBar.statusBar.destroy();
         statusBar.statusBarBackground.destroy();
+        if (statusBar.statusBarWarningIndicators) {
+            statusBar.statusBarWarningIndicators.destroy();
+        }
         statusBar.icon.destroy();
         statusBar.arrow.destroy();
     }
