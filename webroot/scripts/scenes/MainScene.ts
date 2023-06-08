@@ -15,7 +15,6 @@ import { TutorialState } from "../game/Tutorial";
 
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
-const statusArrowXMargin = 40;
 const hazardToolClickRadius = 100;
 const plantYMargin = 100;
 const backgroundFadeDurationMs = 1000;
@@ -266,7 +265,7 @@ export class MainScene extends Phaser.Scene {
             statusBar.statusBarBackground.width, statusBar.statusBarBackground.height);
         statusBar.icon.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusIconXMargin,
             statusBar.statusBarBackground.y);
-        statusBar.arrow.setPosition(statusBar.statusBarBackground.getTopLeft().x - statusArrowXMargin,
+        statusBar.arrow.setPosition(statusBar.statusBarBackground.getTopRight().x + statusIconXMargin,
             statusBar.statusBarBackground.y);
     }
 
