@@ -177,7 +177,6 @@ export function update(game: GardenGame, delta: number, tutorialState: TutorialS
         if (chosenHazard == null) {
             let possibleHazards = getAllHazards();
             shuffleArray(possibleHazards);
-            let chosenHazard: Hazard = null;
             let foundHazards: Hazard[] = [];
             // Build list of all hazards currently active for the chosen plant
             if (possibleHazards.length > 0) {
