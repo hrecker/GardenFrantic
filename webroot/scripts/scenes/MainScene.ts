@@ -24,6 +24,7 @@ const hazardFlashColor = 0xf2c3b8;
 const meteorFragmentRadius = 25;
 const hazardShakeDuration = 250;
 const hazardShakeIntensity = 0.003;
+const hazardFlashIntervalMs = 700;
 
 /** Main game scene */
 export class MainScene extends Phaser.Scene {
@@ -32,6 +33,7 @@ export class MainScene extends Phaser.Scene {
     plantStatusBars: { [id: number] : PlantStatusBar }
     plantFruitImages: { [id: number] : Phaser.GameObjects.Sprite }
     hazardImages: { [id: number] : Phaser.GameObjects.Image }
+    hazardTimeSinceFlashMs: { [id: number] : number }
     background: Phaser.GameObjects.Image;
     backgroundWipe: Phaser.GameObjects.Image;
     particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -112,6 +114,7 @@ export class MainScene extends Phaser.Scene {
         this.plantStatusBars = {};
         this.plantFruitImages = {};
         this.hazardImages = {};
+        this.hazardTimeSinceFlashMs = {};
         this.cameras.main.setBackgroundColor(config()["backgroundColor"]);
 
         this.background = this.add.image(0, 0, this.gardenGame.weather).setOrigin(0, 0).setTint(0xdddddd);
@@ -325,6 +328,7 @@ export class MainScene extends Phaser.Scene {
                 if (hasAnimation && hazardImage && hazardImage.active) {
                     hazardImage.play(activeHazard.hazard + "idle");
                 }
+                scene.hazardTimeSinceFlashMs[hazardId] = hazardFlashIntervalMs;
             }
         });
         scene.hazardImages[hazardId] = hazardImage;
@@ -344,6 +348,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     handleHazardDestroy(scene: MainScene, hazardId: number) {
+        delete scene.hazardTimeSinceFlashMs[hazardId];
         let activeHazard: ActiveHazard = scene.gardenGame.activeHazards[hazardId];
         flashSprite(scene.hazardImages[hazardId], hazardFlashDuration, scene, hazardFlashColor);
         scene.hazardParticleEmitter.explode(10, scene.hazardImages[hazardId].x, scene.hazardImages[hazardId].y);
@@ -526,6 +531,13 @@ export class MainScene extends Phaser.Scene {
             Object.keys(this.gardenGame.plants).forEach(id => {
                 updateStatusBars(this.plantStatusBars[id], this.gardenGame, this.gardenGame.plants[id], this.tutorialState);
             });
+            for (let hazardId in this.hazardTimeSinceFlashMs) {
+                this.hazardTimeSinceFlashMs[hazardId] += delta;
+                if (this.hazardTimeSinceFlashMs[hazardId] >= hazardFlashIntervalMs) {
+                    this.hazardTimeSinceFlashMs[hazardId] = 0;
+                    flashSprite(this.hazardImages[hazardId], 75, this, hazardFlashColor);
+                }
+            }
         }
         update(this, delta, this.backgroundImageSpawner);
     }
