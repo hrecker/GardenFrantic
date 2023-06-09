@@ -75,6 +75,9 @@ export class MainScene extends Phaser.Scene {
         this.backgroundWipe.setScale(xScale, yScale);
 
         let plantXAnchor = (this.game.renderer.width - config()["toolbarWidth"]) / 2;
+        if (this.tutorialState.enabled) {
+            plantXAnchor -= config()["toolbarWidth"] / 3;
+        }
         let plantY = this.game.renderer.height - plantYMargin;
 
         let ids = Object.keys(this.gardenGame.plants).map(Number);
