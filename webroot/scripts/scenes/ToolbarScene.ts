@@ -16,6 +16,7 @@ const scrollIndicatorMargin = 3;
 const scrollSpeedDecay = 1;
 const scrollWheelSpeed = 0.4;
 const toolScale = 0.9;
+const toolbarShadowSize = 2;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -27,6 +28,7 @@ export class ToolbarScene extends Phaser.Scene {
     toolBoxes: Phaser.GameObjects.Image[];
     highlightedToolIndexes: Set<number>;
     toolbar: Phaser.GameObjects.Rectangle;
+    toolbarShadow: Phaser.GameObjects.Rectangle;
     toolbarMask: Phaser.GameObjects.Graphics;
     scrollZone: Phaser.GameObjects.Zone;
     scrollIndicator: Phaser.GameObjects.Rectangle;
@@ -55,6 +57,8 @@ export class ToolbarScene extends Phaser.Scene {
         let toolbarX = this.game.renderer.width - (config()["toolbarWidth"] / 2);
         this.toolbar.setPosition(toolbarX, this.game.renderer.height / 2);
         this.toolbar.setSize(config()["toolbarWidth"], this.game.renderer.height);
+        this.toolbarShadow.setPosition(toolbarX - toolbarShadowSize, this.game.renderer.height / 2);
+        this.toolbarShadow.setSize(config()["toolbarWidth"], this.game.renderer.height);
         this.currentToolText.setPosition(toolbarX, toolTextY);
 
         for (let i = 0; i < tool.getAllTools().length; i++) {
@@ -139,6 +143,8 @@ export class ToolbarScene extends Phaser.Scene {
         // Allow events to pass through to make scrolling work
         this.highlightedToolIndexes = new Set();
         this.input.setTopOnly(false);
+        this.toolbarShadow = this.add.rectangle(0, 0,
+            config()["toolbarWidth"], 0, 0).setAlpha(0.5);
         this.toolbar = this.add.rectangle(0, 0,
             config()["toolbarWidth"], 0, parseInt(config()["toolbarColor"], 16));
         this.currentToolText = this.add.bitmapText(0, 0, "uiFont", "", 64).setOrigin(0.5);
