@@ -6,7 +6,7 @@ import { addFruitGrowthListener, addFruitHarvestListener, addHazardCreatedListen
 import { Weather } from "../game/Weather";
 import { ActiveHazard, getHazardMotion, getHazardPath, getHazardTimeToActive, getRandomizedHazards, hasApproachAnimation, Hazard } from "../game/Hazard";
 import { createSwayAnimation, flashSprite } from "../util/Util";
-import { loadSounds, playSound, stopAllSounds, stopSound, toolSuccessSounds, WrongTool } from "../audio/Sound";
+import { loadSounds, Lose, playSound, stopAllSounds, stopSound, toolSuccessSounds, WrongTool } from "../audio/Sound";
 import { GameResult } from "../model/GameResult";
 import { saveGameResult } from "../state/GameResultState";
 import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundImageSpawner, update } from "./BackgroundImageSpawner";
@@ -465,6 +465,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         stopAllSounds();
+        playSound(scene, Lose);
         
         // Save the result
         scene.gameResult.deaths++;

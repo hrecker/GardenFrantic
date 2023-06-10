@@ -398,6 +398,9 @@
         },
         "wrongTool": {
             "volume": 0.1
+        },
+        "lose": {
+            "volume": 1
         }
     },
 

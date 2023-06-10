@@ -7,6 +7,7 @@ let sounds: { [effect: string]: Phaser.Sound.BaseSound } = {};
 
 export const ButtonClick = "buttonClick";
 export const WrongTool = "wrongTool";
+export const Lose = "lose";
 
 /** Load all sound files */
 export function loadSounds(scene: Phaser.Scene) {
@@ -30,6 +31,7 @@ export function loadSounds(scene: Phaser.Scene) {
     sounds[Tool.Umbrella] = scene.sound.add(Tool.Umbrella);
     sounds[ButtonClick] = scene.sound.add(ButtonClick);
     sounds[WrongTool] = scene.sound.add(WrongTool);
+    sounds[Lose] = scene.sound.add(Lose);
 }
 
 export function toolSuccessSounds(): string[] {
