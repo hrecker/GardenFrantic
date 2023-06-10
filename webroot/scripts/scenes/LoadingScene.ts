@@ -138,16 +138,16 @@ export class LoadingScene extends Phaser.Scene {
         // SFX
         this.load.audio(ButtonClick, "assets/sfx/button_click.ogg");
 
-        this.load.audio(Hazard.Bird, "assets/sfx/bird.wav");
-        this.load.audio(Hazard.Bugs, "assets/sfx/bugs.wav");
-        this.load.audio(Hazard.Bunny, "assets/sfx/bunny.wav");
+        this.load.audio(Hazard.Bird, "assets/sfx/bird.ogg");
+        this.load.audio(Hazard.Bugs, "assets/sfx/bugs.ogg");
+        this.load.audio(Hazard.Bunny, "assets/sfx/bunny.ogg");
         this.load.audio(Hazard.Meteor, "assets/sfx/meteor.mp3");
         this.load.audio(Hazard.Mole, "assets/sfx/mole.m4a");
-        this.load.audio(Hazard.Weeds, "assets/sfx/weeds.wav");
+        this.load.audio(Hazard.Weeds, "assets/sfx/weeds.ogg");
         
         this.load.audio(Tool.Scarecrow, "assets/sfx/scarecrow.wav");
         this.load.audio(Tool.Pesticide, "assets/sfx/spray.wav");
-        this.load.audio(Tool.Missile, "assets/sfx/missile.wav");
+        this.load.audio(Tool.Missile, "assets/sfx/missile.ogg");
         this.load.audio(Tool.Hammer, "assets/sfx/hammer.wav");
         this.load.audio(Tool.Dog, "assets/sfx/dog.wav");
         this.load.audio(Tool.Weedkiller, "assets/sfx/spray.wav");
@@ -156,7 +156,7 @@ export class LoadingScene extends Phaser.Scene {
         this.load.audio(Tool.Lamp, "assets/sfx/lamp.wav");
         this.load.audio(Tool.Shade, "assets/sfx/umbrella.wav");
         this.load.audio(Tool.WateringCan, "assets/sfx/wateringcan.wav");
-        this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.wav");
+        this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.ogg");
         this.load.audio(WrongTool, "assets/sfx/wrong.wav");
 
         // Load json

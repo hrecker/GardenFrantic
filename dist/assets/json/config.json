@@ -337,7 +337,7 @@
         }
     },
 
-    "defaultMusicVolume": 0.5,
+    "defaultMusicVolume": 0.3,
     "sfx": {
         "bird": {
             "volume": 0.2
