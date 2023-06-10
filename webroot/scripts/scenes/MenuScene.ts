@@ -7,6 +7,7 @@ import { BackgroundImageSpawner, createBackgroundImageAnimations, newBackgroundI
 import { getLifetimeStats } from "../state/GameResultState";
 import { Difficulty } from "../state/DifficultyState";
 import { getDisabledTutorial, getEnabledTutorial, TutorialState } from "../game/Tutorial";
+import { getAllTools, getToolDescription, getToolName, Tool } from "../game/Tool";
 
 const musicControlButtonName = "musicControlButton";
 const sfxControlButtonName = "sfxControlButton";
@@ -32,8 +33,10 @@ export class MenuScene extends Phaser.Scene {
     selectedButton: string;
     playButton: Phaser.GameObjects.Image;
     tutorialButton: Phaser.GameObjects.Image;
+    toolListButton: Phaser.GameObjects.Image;
     statsButton: Phaser.GameObjects.Image;
     backButton: Phaser.GameObjects.Image;
+    toolListBackButton: Phaser.GameObjects.Image;
     musicControlButton: Phaser.GameObjects.Image;
     sfxControlButton: Phaser.GameObjects.Image;
 
@@ -51,6 +54,7 @@ export class MenuScene extends Phaser.Scene {
     // Groups to allow easily showing and hiding multiple UI elements
     mainMenuGroup: Phaser.GameObjects.Group;
     lifetimeStatsGroup: Phaser.GameObjects.Group;
+    toolListGroup: Phaser.GameObjects.Group;
 
     // Stats
     statsTexts: Phaser.GameObjects.Text[];
@@ -58,6 +62,12 @@ export class MenuScene extends Phaser.Scene {
     totalScoreText: Phaser.GameObjects.Text;
     hazardsDefeatedText: Phaser.GameObjects.Text;
     fruitHarvestedText: Phaser.GameObjects.Text;
+
+    // Tool list
+    toolListImages: Phaser.GameObjects.Image[];
+    toolListBorderImages: Phaser.GameObjects.Image[];
+    toolListTitles: Phaser.GameObjects.Text[];
+    toolListDescriptions: Phaser.GameObjects.Text[];
 
     constructor() {
         super({
@@ -101,9 +111,11 @@ export class MenuScene extends Phaser.Scene {
         let radioButtonLabelMargin = 20;
         let buttonYAnchor = titleY + buttonMargin + 10;
         this.playButton.setPosition(centerX, buttonYAnchor);
-        this.tutorialButton.setPosition(centerX, buttonYAnchor + buttonMargin);
+        this.tutorialButton.setPosition(centerX - 100, buttonYAnchor + buttonMargin);
+        this.toolListButton.setPosition(centerX + 100, buttonYAnchor + buttonMargin);
         this.statsButton.setPosition(centerX, buttonYAnchor + 2 * buttonMargin);
         this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
+        this.toolListBackButton.setPosition(centerX, this.game.renderer.height - buttonMargin / 2);
         this.easyRadioButton.setPosition(centerX - radioButtonXMargin, buttonYAnchor + 2 * radioButtonYMargin);
         this.easyLabel.setPosition(this.easyRadioButton.getBottomCenter().x, this.easyRadioButton.getBottomCenter().y + radioButtonLabelMargin);
         this.normalRadioButton.setPosition(centerX, buttonYAnchor + 2 * radioButtonYMargin);
@@ -129,11 +141,27 @@ export class MenuScene extends Phaser.Scene {
         this.totalScoreText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin);
         this.hazardsDefeatedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 2);
         this.fruitHarvestedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 3);
+
+        // Tool list
+        let toolYAnchor = 35;
+        let toolYMargin = 45;
+        let toolXMargin = 35;
+        let numTools = getAllTools().length;
+        let perColumn = numTools / 2;
+        for (let i = 0; i < numTools; i++) {
+            let x = this.game.renderer.width / 2 * Math.floor(i / perColumn) + toolXMargin;
+            let y = toolYAnchor + ((i % perColumn) * toolYMargin);
+            this.toolListImages[i].setPosition(x, y);
+            this.toolListBorderImages[i].setPosition(x, y);
+            this.toolListTitles[i].setPosition(x + 50, y - 10);
+            this.toolListDescriptions[i].setPosition(x + 50, y + 10);
+        }
     }
 
     create() {
         this.mainMenuGroup = this.add.group();
         this.lifetimeStatsGroup = this.add.group();
+        this.toolListGroup = this.add.group();
 
         this.currentWeatherIndex = 0;
         this.backgroundOne = this.add.sprite(0, 0, weatherQueue[this.currentWeatherIndex]).setOrigin(0, 0);
@@ -149,14 +177,17 @@ export class MenuScene extends Phaser.Scene {
         this.mainMenuGroup.add(this.titleText);
 
         // Buttons
-        this.playButton = this.add.image(0, 0, "playButton").setScale(1.25).setName("playButton").setAlpha(0);
+        this.playButton = this.add.image(0, 0, "playButton").setScale(1.15).setName("playButton").setAlpha(0);
         this.configureButton(this.playButton, "playButton");
-        this.tutorialButton = this.add.image(0, 0, "tutorialButton").setScale(1.25).setName("tutorialButton").setAlpha(0);
+        this.tutorialButton = this.add.image(0, 0, "tutorialButton").setScale(1.15).setName("tutorialButton").setAlpha(0);
         this.configureButton(this.tutorialButton, "tutorialButton");
-        this.statsButton = this.add.image(0, 0, "statsButton").setScale(1.25).setName("statsButton").setAlpha(0);
+        this.toolListButton = this.add.image(0, 0, "toolListButton").setScale(1.15).setName("toolListButton").setAlpha(0);
+        this.configureButton(this.toolListButton, "toolListButton");
+        this.statsButton = this.add.image(0, 0, "statsButton").setScale(1.15).setName("statsButton").setAlpha(0);
         this.configureButton(this.statsButton, "statsButton");
         this.mainMenuGroup.add(this.playButton);
         this.mainMenuGroup.add(this.tutorialButton);
+        this.mainMenuGroup.add(this.toolListButton);
         this.mainMenuGroup.add(this.statsButton);
 
         // Difficulty selection
@@ -214,9 +245,44 @@ export class MenuScene extends Phaser.Scene {
         this.lifetimeStatsGroup.add(this.hazardsDefeatedText);
         this.lifetimeStatsGroup.add(this.fruitHarvestedText);
         
-        this.backButton = this.add.image(0, 0, "backButton").setScale(1.5).setName("backButton");
+        this.backButton = this.add.image(0, 0, "backButton").setScale(1.15).setName("backButton");
         this.configureButton(this.backButton, "backButton");
         this.lifetimeStatsGroup.add(this.backButton);
+
+        // Tool list
+        this.toolListImages = [];
+        this.toolListBorderImages = [];
+        this.toolListTitles = [];
+        this.toolListDescriptions = [];
+        this.addToolToToolList(Tool.Basket);
+        this.addToolToToolList(Tool.Fertilizer);
+        this.addToolToToolList(Tool.Umbrella);
+        this.addToolToToolList(Tool.WateringCan);
+        this.addToolToToolList(Tool.Shade);
+        this.addToolToToolList(Tool.Lamp);
+        this.addToolToToolList(Tool.Scarecrow);
+        this.addToolToToolList(Tool.Weedkiller);
+        this.addToolToToolList(Tool.Pesticide);
+        this.addToolToToolList(Tool.Dog);
+        this.addToolToToolList(Tool.Hammer);
+        this.addToolToToolList(Tool.Missile);
+
+        this.toolListImages.forEach(image => {
+            this.toolListGroup.add(image);
+        });
+        this.toolListBorderImages.forEach(image => {
+            this.toolListGroup.add(image);
+        });
+        this.toolListTitles.forEach(image => {
+            this.toolListGroup.add(image);
+        });
+        this.toolListDescriptions.forEach(image => {
+            this.toolListGroup.add(image);
+        });
+
+        this.toolListBackButton = this.add.image(0, 0, "backButton").setScale(1.15).setName("backButton");
+        this.configureButton(this.toolListBackButton, "backButton");
+        this.toolListGroup.add(this.toolListBackButton);
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
@@ -224,9 +290,19 @@ export class MenuScene extends Phaser.Scene {
         // Fade in menu items
         this.fadeInMainMenu();
         this.lifetimeStatsGroup.setVisible(false);
+        this.toolListGroup.setVisible(false);
 
         //For quicker testing - just skips the main menu scene and opens the game scene
         //this.handleButtonClick("playButton");
+    }
+
+    addToolToToolList(tool: Tool) {
+        this.toolListImages.push(this.add.image(0, 0, tool + "1").setScale(0.85));
+        this.toolListBorderImages.push(this.add.image(0, 0, "toolbox").setScale(0.85));
+        this.toolListTitles.push(this.add.text(0, 0, getToolName(tool),
+            { ...config()["titleStyle"], font: "18px Verdana" }).setOrigin(0, 0.5));
+        this.toolListDescriptions.push(this.add.text(0, 0, getToolDescription(tool),
+            { ...config()["titleStyle"], font: "14px Verdana" }).setOrigin(0, 0.5));
     }
 
     fadeInMainMenu() {
@@ -234,6 +310,7 @@ export class MenuScene extends Phaser.Scene {
         [this.titleText,
             this.playButton,
             this.tutorialButton,
+            this.toolListButton,
             this.statsButton,
             this.easyRadioButton,
             this.normalRadioButton,
@@ -264,10 +341,8 @@ export class MenuScene extends Phaser.Scene {
         });
     }
 
-    fadeInLifetimeStats() {
-        this.lifetimeStatsGroup.setVisible(true);
-
-        this.lifetimeStatsGroup.getChildren().forEach(target => {
+    fadeInGroup(group: Phaser.GameObjects.Group) {
+        group.getChildren().forEach(target => {
             this.tweens.add({
                 targets: target,
                 ease: "Quad",
@@ -281,13 +356,23 @@ export class MenuScene extends Phaser.Scene {
         });
         
         this.tweens.add({
-            targets: this.lifetimeStatsGroup.getChildren(),
+            targets: group.getChildren(),
             alpha: {
                 from: 0,
                 to: 1,
             },
             duration: 750
         });
+    }
+
+    fadeInLifetimeStats() {
+        this.lifetimeStatsGroup.setVisible(true);
+        this.fadeInGroup(this.lifetimeStatsGroup);
+    }
+
+    fadeInToolList() {
+        this.toolListGroup.setVisible(true);
+        this.fadeInGroup(this.toolListGroup);
     }
 
     configureButton(button: Phaser.GameObjects.Image, textureName: string) {
@@ -349,6 +434,10 @@ export class MenuScene extends Phaser.Scene {
                         .start("UIScene", { gardenGame: game, tutorialState: tutorial })
                         .stop();
                 break;
+            case "toolListButton":
+                this.mainMenuGroup.setVisible(false);
+                this.fadeInToolList();
+                break;
             case "statsButton":
                 // Show stats
                 this.mainMenuGroup.setVisible(false);
@@ -358,6 +447,7 @@ export class MenuScene extends Phaser.Scene {
                 // Show main menu
                 this.fadeInMainMenu();
                 this.lifetimeStatsGroup.setVisible(false);
+                this.toolListGroup.setVisible(false);
                 break;
             case musicControlButtonName:
                 // Toggle music

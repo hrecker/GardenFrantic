@@ -204,7 +204,7 @@
         },
         "fertilizer": {
             "category": "growth",
-            "delta": 5
+            "delta": 10
         },
         "basket": {
             "category": "harvest"

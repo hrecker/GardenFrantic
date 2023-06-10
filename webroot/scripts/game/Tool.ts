@@ -80,3 +80,34 @@ export function getToolName(tool: Tool): string {
             return "";
     }
 }
+
+export function getToolDescription(tool: Tool): string {
+    switch (tool) {
+        case Tool.Lamp:
+            return "Increase plant's light level";
+        case Tool.Shade:
+            return "Decrease plant's light level";
+        case Tool.Umbrella:
+            return "Decrease plant's water level";
+        case Tool.WateringCan:
+            return "Increase plant's water level";
+        case Tool.Basket:
+            return "Harvest fruit when fully grown";
+        case Tool.Scarecrow:
+            return "Defeat Bird hazards";
+        case Tool.Weedkiller:
+            return "Defeat Weed hazards";
+        case Tool.Pesticide:
+            return "Defeat Bug hazards";
+        case Tool.Fertilizer:
+            return "Accelerate fruit growth";
+        case Tool.Dog:
+            return "Defeat Bunny hazards";
+        case Tool.Missile:
+            return "Defeat Meteor hazards";
+        case Tool.Hammer:
+            return "Defeat Mole hazards";
+        default:
+            return "";
+    }
+}
