@@ -145,16 +145,23 @@ export class MenuScene extends Phaser.Scene {
         // Tool list
         let toolYAnchor = 35;
         let toolYMargin = 45;
-        let toolXMargin = 35;
+        let toolXMargin = 80;
         let numTools = getAllTools().length;
         let perColumn = numTools / 2;
+        let rightColumnX = this.game.renderer.width / 2;
         for (let i = 0; i < numTools; i++) {
-            let x = this.game.renderer.width / 2 * Math.floor(i / perColumn) + toolXMargin;
+            let x = toolXMargin;
+            if (i >= perColumn) {
+                x = rightColumnX;
+            }
             let y = toolYAnchor + ((i % perColumn) * toolYMargin);
             this.toolListImages[i].setPosition(x, y);
             this.toolListBorderImages[i].setPosition(x, y);
             this.toolListTitles[i].setPosition(x + 50, y - 10);
             this.toolListDescriptions[i].setPosition(x + 50, y + 10);
+            if (i < perColumn) {
+                rightColumnX = Math.max(rightColumnX, this.toolListDescriptions[i].getTopRight().x + toolXMargin);
+            }
         }
     }
 

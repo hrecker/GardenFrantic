@@ -154,7 +154,7 @@ export class LoadingScene extends Phaser.Scene {
         this.load.audio(Tool.Basket, "assets/sfx/basket.wav");
         this.load.audio(Tool.Fertilizer, "assets/sfx/fertilizer.wav");
         this.load.audio(Tool.Lamp, "assets/sfx/lamp.wav");
-        this.load.audio(Tool.Shade, "assets/sfx/umbrella.wav");
+        this.load.audio(Tool.Shade, "assets/sfx/umbrella.ogg");
         this.load.audio(Tool.WateringCan, "assets/sfx/wateringcan.wav");
         this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.ogg");
         this.load.audio(WrongTool, "assets/sfx/wrong.wav");
