@@ -49,7 +49,7 @@ export class ToolbarScene extends Phaser.Scene {
 
     /** Adjust any UI elements that need to change position based on the canvas size */
     resize(force?: boolean) {
-        if (! this.scene.isActive() && ! force) {
+        if (! this.scene.isActive() && force !== true) {
             return;
         }
         

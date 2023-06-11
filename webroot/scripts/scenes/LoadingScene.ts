@@ -20,7 +20,7 @@ export class LoadingScene extends Phaser.Scene {
 
     /** Adjust any UI elements that need to change position based on the canvas size */
     resize(force?: boolean) {
-        if (! this.scene.isActive() && ! force) {
+        if (! this.scene.isActive() && force !== true) {
             return;
         }
         this.loadingText.setPosition(this.game.renderer.width / 2, this.game.renderer.height / 2 - 50);
