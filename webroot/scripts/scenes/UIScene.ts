@@ -25,6 +25,7 @@ const buttonMargin = 120;
 const leaderboardY = 35;
 const tutorialTextBackgroundColor = 0xD2C9A5;
 const tutorialButtonMargin = 5;
+const tutorialMaxHeight = 250;
 
 
 /** UI scene */
@@ -84,12 +85,13 @@ export class UIScene extends Phaser.Scene {
         }
 
         if (this.tutorialState.enabled) {
-            let backgroundX = this.game.renderer.width - (1.5 * config()["toolbarWidth"]);
-            let backgroundY = this.game.renderer.height / 2 + 50;
+            let backgroundX = this.game.renderer.width - (1.5 * config()["toolbarWidth"]) - config()["toolbarShadowSize"];
+            let height = Math.min(this.game.renderer.height - this.weatherImages[0].y - 35, tutorialMaxHeight);
+            let backgroundY = this.game.renderer.height - (height / 2);
             this.tutorialTextBackground.setPosition(backgroundX, backgroundY);
-            this.tutorialTextBackground.setSize(config()["toolbarWidth"], this.game.renderer.height - 100);
-            this.tutorialTitle.setPosition(backgroundX, backgroundY - 112);
-            this.tutorialText.setPosition(backgroundX, backgroundY - 95);
+            this.tutorialTextBackground.setSize(config()["toolbarWidth"], height);
+            this.tutorialTitle.setPosition(backgroundX, this.tutorialTextBackground.getTopCenter().y + 12);
+            this.tutorialText.setPosition(backgroundX, this.tutorialTitle.getBottomCenter().y + 4);
             this.tutorialText.setWordWrapWidth(config()["toolbarWidth"] - 2);
             this.tutorialSkipButton.setPosition(backgroundX - tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);
             this.tutorialNextButton.setPosition(backgroundX + tutorialButtonMargin, this.game.renderer.height - tutorialButtonMargin);

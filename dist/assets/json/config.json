@@ -72,6 +72,7 @@
     "maxGamesStored": 100,
 
     "toolbarWidth": 150,
+    "toolbarShadowSize": 2,
 
     "minLevel": 0,
     "maxLevel": 100,

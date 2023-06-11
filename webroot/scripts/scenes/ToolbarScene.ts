@@ -6,9 +6,9 @@ import { getEnabledTools, TutorialState } from "../game/Tutorial";
 import { config } from "../model/Config";
 import { createSwayAnimation } from "../util/Util";
 
-const toolYAnchor = 75;
-const toolMargin = 51;
-const toolTextY = toolYAnchor - 50;
+const toolYAnchor = 71;
+const toolMargin = 50;
+const toolTextY = toolYAnchor - 48;
 const scrollMaskY = toolTextY + 25;
 const toolYScrollMargin = 29;
 const scrollIndicatorWidth = 5;
@@ -16,7 +16,6 @@ const scrollIndicatorMargin = 3;
 const scrollSpeedDecay = 1;
 const scrollWheelSpeed = 0.4;
 const toolScale = 0.9;
-const toolbarShadowSize = 2;
 
 /** Toolbar scene */
 export class ToolbarScene extends Phaser.Scene {
@@ -57,7 +56,7 @@ export class ToolbarScene extends Phaser.Scene {
         let toolbarX = this.game.renderer.width - (config()["toolbarWidth"] / 2);
         this.toolbar.setPosition(toolbarX, this.game.renderer.height / 2);
         this.toolbar.setSize(config()["toolbarWidth"], this.game.renderer.height);
-        this.toolbarShadow.setPosition(toolbarX - toolbarShadowSize, this.game.renderer.height / 2);
+        this.toolbarShadow.setPosition(toolbarX - config()["toolbarShadowSize"], this.game.renderer.height / 2);
         this.toolbarShadow.setSize(config()["toolbarWidth"], this.game.renderer.height);
         this.currentToolText.setPosition(toolbarX, toolTextY);
 

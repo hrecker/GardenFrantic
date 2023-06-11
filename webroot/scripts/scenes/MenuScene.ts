@@ -101,7 +101,7 @@ export class MenuScene extends Phaser.Scene {
         }
 
         let centerX = this.game.renderer.width / 2;
-        let titleY = this.game.renderer.height / 6;
+        let titleY = this.game.renderer.height / 7;
         this.titleText.setPosition(centerX, titleY);
         
         let width = this.backgroundOne.width;
@@ -117,8 +117,8 @@ export class MenuScene extends Phaser.Scene {
         this.backgroundTwo.setScale(xScale, yScale);
 
         // Buttons
-        let buttonMargin = 60;
-        let radioButtonYMargin = 85;
+        let buttonMargin = 55;
+        let radioButtonYMargin = 80;
         let radioButtonXMargin = 100;
         let radioButtonLabelMargin = 20;
         let buttonYAnchor = titleY + buttonMargin + 10;
