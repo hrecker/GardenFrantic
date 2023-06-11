@@ -6,7 +6,7 @@ export type Settings = {
     sfxEnabled: boolean;
 }
 
-const settingsKey = "gameSettings";
+const settingsKey = "GardenFranticGameSettings";
 let currentSettings: Settings;
 
 /** Load settings from localStorage */

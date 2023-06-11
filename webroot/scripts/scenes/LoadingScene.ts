@@ -25,9 +25,9 @@ export class LoadingScene extends Phaser.Scene {
         }
         this.loadingText.setPosition(this.game.renderer.width / 2, this.game.renderer.height / 2 - 50);
         
-        this.loadingFill.setPosition(this.loadingText.x, this.loadingText.y + 100);
+        this.loadingFill.setPosition(this.loadingText.getTopLeft().x, this.loadingText.y + 100);
         this.loadingFill.setSize(this.loadingText.width, this.loadingText.height / 2);
-        this.loadingBox.setPosition(this.loadingText.x, this.loadingText.y + 100);
+        this.loadingBox.setPosition(this.loadingText.getTopLeft().x, this.loadingText.y + 100);
         this.loadingBox.setSize(this.loadingText.width, this.loadingText.height / 2);
     }
 

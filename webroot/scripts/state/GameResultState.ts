@@ -2,8 +2,8 @@ import { config } from "../model/Config";
 import { GameResult } from "../model/GameResult";
 import { Difficulty } from "./DifficultyState";
 
-const baseResultsKey = "GameResults";
-const lifetimeStatsKey = "lifetimeStats";
+const baseResultsKey = "GardenFranticGameResults";
+const lifetimeStatsKey = "GardenFranticLifetimeStats";
 let latestGameResultIndex = -1;
 let latestGameResult: GameResult;
 
