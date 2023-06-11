@@ -128,7 +128,7 @@ export class MenuScene extends Phaser.Scene {
         this.sfxControlButton.setPosition(5, this.game.renderer.height - 5);
 
         // Credits
-        this.creditsText.setPosition(this.game.renderer.width - 100, this.game.renderer.height - 35);
+        this.creditsText.setPosition(this.game.renderer.width - 90, this.game.renderer.height - 25);
 
         // Lifetime stats
         let statsMargin = 60;
@@ -143,11 +143,26 @@ export class MenuScene extends Phaser.Scene {
         this.fruitHarvestedText.setPosition(centerX + statsXMargin, statsAnchor + statsMargin * 3);
 
         // Tool list
-        let toolYAnchor = 35;
-        let toolYMargin = 45;
-        let toolXMargin = 80;
+        // Determine the full width of the display of tools
         let numTools = getAllTools().length;
         let perColumn = numTools / 2;
+        let toolDescXMargin = 50;
+        let toolDescYMargin = 10;
+        let leftWidth = 0, rightWidth = 0;
+        for (let i = 0; i < numTools; i++) {
+            let currentWidth = this.toolListImages[i].width + this.toolListDescriptions[i].width +
+                (toolDescXMargin - this.toolListImages[i].width);
+            if (i < perColumn) {
+                leftWidth = Math.max(leftWidth, currentWidth);
+            } else {
+                rightWidth = Math.max(rightWidth, currentWidth);
+            }
+        }
+        let totalWidth = leftWidth + rightWidth;
+
+        let toolYAnchor = 35;
+        let toolYMargin = 45;
+        let toolXMargin = (this.game.renderer.width - totalWidth) / 3;
         let rightColumnX = this.game.renderer.width / 2;
         for (let i = 0; i < numTools; i++) {
             let x = toolXMargin;
@@ -157,8 +172,8 @@ export class MenuScene extends Phaser.Scene {
             let y = toolYAnchor + ((i % perColumn) * toolYMargin);
             this.toolListImages[i].setPosition(x, y);
             this.toolListBorderImages[i].setPosition(x, y);
-            this.toolListTitles[i].setPosition(x + 50, y - 10);
-            this.toolListDescriptions[i].setPosition(x + 50, y + 10);
+            this.toolListTitles[i].setPosition(x + toolDescXMargin, y - toolDescYMargin);
+            this.toolListDescriptions[i].setPosition(x + toolDescXMargin, y + toolDescYMargin);
             if (i < perColumn) {
                 rightColumnX = Math.max(rightColumnX, this.toolListDescriptions[i].getTopRight().x + toolXMargin);
             }
@@ -304,8 +319,8 @@ export class MenuScene extends Phaser.Scene {
     }
 
     addToolToToolList(tool: Tool) {
-        this.toolListImages.push(this.add.image(0, 0, tool + "1").setScale(0.85));
-        this.toolListBorderImages.push(this.add.image(0, 0, "toolbox").setScale(0.85));
+        this.toolListImages.push(this.add.image(0, 0, tool + "1").setScale(0.85).setOrigin(0, 0.5));
+        this.toolListBorderImages.push(this.add.image(0, 0, "toolbox").setScale(0.85).setOrigin(0, 0.5));
         this.toolListTitles.push(this.add.text(0, 0, getToolName(tool),
             { ...config()["titleStyle"], font: "18px Verdana" }).setOrigin(0, 0.5));
         this.toolListDescriptions.push(this.add.text(0, 0, getToolDescription(tool),
