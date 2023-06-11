@@ -99,8 +99,9 @@ export class UIScene extends Phaser.Scene {
         this.leaderboardSubtitle.setPosition(this.rightX / 2, leaderboardY + 40);
         this.leaderboardBackground.setPosition(-100, -100);
         this.leaderboardBackground.setSize(this.game.renderer.width + 200, this.game.renderer.height + 200);
-        this.menuButton.setX(this.rightX / 2 - buttonMargin);
-        this.retryButton.setX(this.rightX / 2 + buttonMargin);
+        // Ensure buttons don't end up off screen
+        this.menuButton.setPosition(this.rightX / 2 - buttonMargin, Math.min(this.menuButton.y, this.game.renderer.height - this.menuButton.height));
+        this.retryButton.setPosition(this.rightX / 2 + buttonMargin, Math.min(this.menuButton.y, this.game.renderer.height - this.retryButton.height));
 
         this.repositionLeaderboard();
     }

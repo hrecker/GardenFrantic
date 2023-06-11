@@ -103,6 +103,18 @@ export class MenuScene extends Phaser.Scene {
         let centerX = this.game.renderer.width / 2;
         let titleY = this.game.renderer.height / 6;
         this.titleText.setPosition(centerX, titleY);
+        
+        let width = this.backgroundOne.width;
+        let height = this.backgroundOne.height;
+        let xScale, yScale = 1;
+        if (width < this.game.renderer.width) {
+            xScale = this.game.renderer.width / width;
+        }
+        if (height < this.game.renderer.height) {
+            yScale = this.game.renderer.height / height;
+        }
+        this.backgroundOne.setScale(xScale, yScale);
+        this.backgroundTwo.setScale(xScale, yScale);
 
         // Buttons
         let buttonMargin = 60;
@@ -114,8 +126,6 @@ export class MenuScene extends Phaser.Scene {
         this.tutorialButton.setPosition(centerX - 100, buttonYAnchor + buttonMargin);
         this.toolListButton.setPosition(centerX + 100, buttonYAnchor + buttonMargin);
         this.statsButton.setPosition(centerX, buttonYAnchor + 2 * buttonMargin);
-        this.backButton.setPosition(centerX, this.game.renderer.height - buttonMargin);
-        this.toolListBackButton.setPosition(centerX, this.game.renderer.height - buttonMargin / 2);
         this.easyRadioButton.setPosition(centerX - radioButtonXMargin, buttonYAnchor + 2 * radioButtonYMargin);
         this.easyLabel.setPosition(this.easyRadioButton.getBottomCenter().x, this.easyRadioButton.getBottomCenter().y + radioButtonLabelMargin);
         this.normalRadioButton.setPosition(centerX, buttonYAnchor + 2 * radioButtonYMargin);
@@ -178,6 +188,11 @@ export class MenuScene extends Phaser.Scene {
                 rightColumnX = Math.max(rightColumnX, this.toolListDescriptions[i].getTopRight().x + toolXMargin);
             }
         }
+
+        // Back buttons
+        let backButtonMaxY = this.game.renderer.height - buttonMargin / 2;
+        this.backButton.setPosition(centerX, Math.min(backButtonMaxY, this.fruitHarvestedText.y + buttonMargin * 3 / 2));
+        this.toolListBackButton.setPosition(centerX, Math.min(backButtonMaxY, this.toolListImages[numTools - 1].y + buttonMargin * 3 / 2));
     }
 
     create() {
