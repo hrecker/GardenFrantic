@@ -110,6 +110,7 @@ export function update(game: GardenGame, delta: number, tutorialState: TutorialS
         let plant: Plant = game.plants[id];
         // Prevent death in the tutorial
         if (plant.shouldDestroy && ! (config()["invinciblePlants"] || tutorialState.enabled)) {
+            plant.inactive = true;
             plantDestroyEvent(plant);
             toRemove.push(parseInt(id));
         } else {
@@ -268,7 +269,7 @@ export function getHealthDecayRateForPlant(game: GardenGame, plant: Plant): numb
 
 /** Use the currently selected tool on the given plant. */
 export function useSelectedTool(game: GardenGame, plant: Plant): Tool {
-    if (! game.selectedTool) {
+    if (! game.selectedTool || plant.inactive) {
         return null;
     }
 

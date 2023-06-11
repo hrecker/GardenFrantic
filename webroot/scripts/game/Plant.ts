@@ -46,7 +46,7 @@ export function newPlant(gameObject: Phaser.GameObjects.Sprite): Plant {
         activeHazardIds: [],
         gameObject: gameObject,
         fruitGrowthStage: FruitGrowthStage.None,
-        inactive: true,
+        inactive: false,
     }
 }
 
