@@ -16,7 +16,9 @@ import { TutorialState } from "../game/Tutorial";
 const statusBarYMargin = 27;
 const statusIconXMargin = 15;
 const hazardToolClickRadius = 100;
-const plantYMargin = 100;
+const plantYMarginMin = 100;
+const plantYMarginMax = 140;
+const minPlantAboveYSpace = 260;
 const backgroundFadeDurationMs = 1000;
 const hazardFadeDurationMs = 800;
 const hazardFlashDuration = 100;
@@ -77,6 +79,12 @@ export class MainScene extends Phaser.Scene {
         let plantXAnchor = (this.game.renderer.width - config()["toolbarWidth"]) / 2;
         if (this.tutorialState.enabled) {
             plantXAnchor -= config()["toolbarWidth"] / 3;
+        }
+        // Give the plant extra Y margin if possible for larger screens, but not more than a set limit
+        let plantYMargin = plantYMarginMin;
+        let targetMargin = this.game.renderer.height - minPlantAboveYSpace;
+        if (targetMargin > plantYMargin) {
+            plantYMargin = Math.min(targetMargin, plantYMarginMax);
         }
         let plantY = this.game.renderer.height - plantYMargin;
 
