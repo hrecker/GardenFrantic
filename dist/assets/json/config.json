@@ -401,7 +401,7 @@
             "volume": 0.1
         },
         "lose": {
-            "volume": 1
+            "volume": 0.8
         }
     },
 

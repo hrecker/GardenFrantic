@@ -295,7 +295,7 @@ export function useSelectedTool(game: GardenGame, plant: Plant): Tool {
             updateStatusLevel(plant, Status.Light, tool.getDelta(game.selectedTool));
             return game.selectedTool;
         case tool.ToolCategory.Growth:
-            if (! isFruitGrowthPaused(game, plant)) {
+            if (plant.fruitProgress != config()["maxLevel"]) {
                 setFruitProgress(plant, plant.fruitProgress + tool.getDelta(game.selectedTool));
                 return game.selectedTool;
             } else {
