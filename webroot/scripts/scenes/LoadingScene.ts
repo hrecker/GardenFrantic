@@ -136,29 +136,29 @@ export class LoadingScene extends Phaser.Scene {
         this.load.audio('backgroundMusic', 'assets/music/Fishbowl-Acrobatics.mp3');
 
         // SFX
-        this.load.audio(ButtonClick, "assets/sfx/button_click.ogg");
+        this.load.audio(ButtonClick, "assets/sfx/button_click.mp3");
 
-        this.load.audio(Hazard.Bird, "assets/sfx/bird.ogg");
-        this.load.audio(Hazard.Bugs, "assets/sfx/bugs.ogg");
-        this.load.audio(Hazard.Bunny, "assets/sfx/bunny.ogg");
+        this.load.audio(Hazard.Bird, "assets/sfx/bird.mp3");
+        this.load.audio(Hazard.Bugs, "assets/sfx/bugs.mp3");
+        this.load.audio(Hazard.Bunny, "assets/sfx/bunny.mp3");
         this.load.audio(Hazard.Meteor, "assets/sfx/meteor.mp3");
-        this.load.audio(Hazard.Mole, "assets/sfx/mole.m4a");
-        this.load.audio(Hazard.Weeds, "assets/sfx/weeds.ogg");
+        this.load.audio(Hazard.Mole, "assets/sfx/mole.mp3");
+        this.load.audio(Hazard.Weeds, "assets/sfx/weeds.mp3");
         
         this.load.audio(Tool.Scarecrow, "assets/sfx/scarecrow.wav");
         this.load.audio(Tool.Pesticide, "assets/sfx/spray.wav");
-        this.load.audio(Tool.Missile, "assets/sfx/missile.ogg");
+        this.load.audio(Tool.Missile, "assets/sfx/missile.mp3");
         this.load.audio(Tool.Hammer, "assets/sfx/hammer.wav");
         this.load.audio(Tool.Dog, "assets/sfx/dog.wav");
         this.load.audio(Tool.Weedkiller, "assets/sfx/spray.wav");
         this.load.audio(Tool.Basket, "assets/sfx/basket.wav");
         this.load.audio(Tool.Fertilizer, "assets/sfx/fertilizer.wav");
         this.load.audio(Tool.Lamp, "assets/sfx/lamp.wav");
-        this.load.audio(Tool.Shade, "assets/sfx/umbrella.ogg");
+        this.load.audio(Tool.Shade, "assets/sfx/umbrella.mp3");
         this.load.audio(Tool.WateringCan, "assets/sfx/wateringcan.wav");
-        this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.ogg");
+        this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.mp3");
         this.load.audio(WrongTool, "assets/sfx/wrong.wav");
-        this.load.audio(Lose, "assets/sfx/lose.ogg");
+        this.load.audio(Lose, "assets/sfx/lose.mp3");
 
         // Load json
         this.load.json("config", "assets/json/config.json");
