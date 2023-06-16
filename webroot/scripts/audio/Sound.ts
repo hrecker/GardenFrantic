@@ -26,9 +26,9 @@ export function loadSounds(scene: Phaser.Scene) {
     sounds[Tool.Basket] = scene.sound.add(Tool.Basket);
     sounds[Tool.Fertilizer] = scene.sound.add(Tool.Fertilizer);
     sounds[Tool.Lamp] = scene.sound.add(Tool.Lamp);
-    sounds[Tool.Shade] = scene.sound.add(Tool.Shade);
+    sounds[Tool.BlackHole] = scene.sound.add(Tool.BlackHole);
     sounds[Tool.WateringCan] = scene.sound.add(Tool.WateringCan);
-    sounds[Tool.Umbrella] = scene.sound.add(Tool.Umbrella);
+    sounds[Tool.Drain] = scene.sound.add(Tool.Drain);
     sounds[ButtonClick] = scene.sound.add(ButtonClick);
     sounds[WrongTool] = scene.sound.add(WrongTool);
     sounds[Lose] = scene.sound.add(Lose);

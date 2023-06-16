@@ -298,9 +298,9 @@ export class MenuScene extends Phaser.Scene {
         this.toolListDescriptions = [];
         this.addToolToToolList(Tool.Basket);
         this.addToolToToolList(Tool.Fertilizer);
-        this.addToolToToolList(Tool.Umbrella);
+        this.addToolToToolList(Tool.Drain);
         this.addToolToToolList(Tool.WateringCan);
-        this.addToolToToolList(Tool.Shade);
+        this.addToolToToolList(Tool.BlackHole);
         this.addToolToToolList(Tool.Lamp);
         this.addToolToToolList(Tool.Scarecrow);
         this.addToolToToolList(Tool.Weedkiller);

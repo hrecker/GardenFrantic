@@ -3,8 +3,8 @@ import { config } from "../model/Config";
 export enum Tool {
     NoTool = "",
     Lamp = "lamp",
-    Shade = "shade",
-    Umbrella = "umbrella",
+    BlackHole = "blackhole",
+    Drain = "drain",
     WateringCan = "wateringcan",
     Basket = "basket",
     Scarecrow = "scarecrow",
@@ -28,9 +28,9 @@ export function getAllTools(): Tool[] {
     return [
         Tool.Basket,
         Tool.Fertilizer,
-        Tool.Umbrella,
+        Tool.Drain,
         Tool.WateringCan,
-        Tool.Shade,
+        Tool.BlackHole,
         Tool.Lamp,
         Tool.Scarecrow,
         Tool.Weedkiller,
@@ -54,10 +54,10 @@ export function getToolName(tool: Tool): string {
     switch (tool) {
         case Tool.Lamp:
             return "Lamp";
-        case Tool.Shade:
-            return "Shade";
-        case Tool.Umbrella:
-            return "Umbrella";
+        case Tool.BlackHole:
+            return "Black Hole";
+        case Tool.Drain:
+            return "Drain";
         case Tool.WateringCan:
             return "Watering Can";
         case Tool.Basket:
@@ -85,9 +85,9 @@ export function getToolDescription(tool: Tool): string {
     switch (tool) {
         case Tool.Lamp:
             return "Increase plant's light level";
-        case Tool.Shade:
+        case Tool.BlackHole:
             return "Decrease plant's light level";
-        case Tool.Umbrella:
+        case Tool.Drain:
             return "Decrease plant's water level";
         case Tool.WateringCan:
             return "Increase plant's water level";

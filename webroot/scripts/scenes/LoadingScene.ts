@@ -67,8 +67,8 @@ export class LoadingScene extends Phaser.Scene {
         this.loadToolTexture(Tool.Basket);
         this.loadToolTexture(Tool.Fertilizer);
         this.loadToolTexture(Tool.Lamp);
-        this.loadToolTexture(Tool.Shade);
-        this.loadToolTexture(Tool.Umbrella);
+        this.loadToolTexture(Tool.BlackHole);
+        this.loadToolTexture(Tool.Drain);
         this.loadToolTexture(Tool.WateringCan);
         this.loadToolTexture(Tool.Scarecrow);
         this.loadToolTexture(Tool.Weedkiller);
@@ -154,9 +154,9 @@ export class LoadingScene extends Phaser.Scene {
         this.load.audio(Tool.Basket, "assets/sfx/basket.wav");
         this.load.audio(Tool.Fertilizer, "assets/sfx/fertilizer.wav");
         this.load.audio(Tool.Lamp, "assets/sfx/lamp.wav");
-        this.load.audio(Tool.Shade, "assets/sfx/umbrella.mp3");
+        this.load.audio(Tool.BlackHole, "assets/sfx/blackhole.mp3");
         this.load.audio(Tool.WateringCan, "assets/sfx/wateringcan.wav");
-        this.load.audio(Tool.Umbrella, "assets/sfx/umbrella.mp3");
+        this.load.audio(Tool.Drain, "assets/sfx/drain.mp3");
         this.load.audio(WrongTool, "assets/sfx/wrong.wav");
         this.load.audio(Lose, "assets/sfx/lose.mp3");
 

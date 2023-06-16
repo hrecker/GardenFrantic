@@ -3,7 +3,7 @@ import { addSettingsListener } from "../events/EventMessenger";
 import { config } from "../model/Config";
 import { getSettings, Settings } from "../state/Settings";
 
-/** Shader background shown for menu and for the main game */
+/** Background shown for menu and for the main game */
 export class BackgroundScene extends Phaser.Scene {
     bgMusic: Phaser.Sound.BaseSound;
 

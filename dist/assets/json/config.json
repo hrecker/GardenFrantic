@@ -191,11 +191,11 @@
             "category": "light",
             "delta": 10
         },
-        "shade": {
+        "blackhole": {
             "category": "light",
             "delta": -10
         },
-        "umbrella": {
+        "drain": {
             "category": "water",
             "delta": -10
         },
@@ -385,14 +385,14 @@
         "lamp": {
             "volume": 0.5
         },
-        "shade": {
+        "blackhole": {
             "volume": 0.5
         },
         "wateringcan": {
             "volume": 0.5
         },
-        "umbrella": {
-            "volume": 0.5
+        "drain": {
+            "volume": 0.3
         },
         "buttonClick": {
             "volume": 1
@@ -409,9 +409,9 @@
         "Your goal is to keep the plant healthy as long as possible, harvesting the fruit that grows to reach a high score.",
         "The status bars above the plant represent water, light, fruit growth, and overall health. Health will improve over time as long as water, light, and hazards are managed.",
         "The tools on the right allow managing water and light levels. Select a tool by tapping it and use it by tapping on the plant. Most of the tools won't do anything right now.",
-        "The umbrella and watering can tools (the second row) will decrease and increase the water level, respectively.",
+        "The drain and watering can tools (the second row) will decrease and increase the water level, respectively.",
         "If the water level is too low OR too high, the plant will lose health. Use the tools in the second row to keep the plant at a healthy water level.",
-        "Light works similarly to water. The shade and lamp tools (the third row) will decrease and increase the light level, respectively.",
+        "Light works similarly to water. The black hole and lamp tools (the third row) will decrease and increase the light level, respectively.",
         "Weather changes every few seconds. A preview of upcoming weather can be seen in the top right.",
         "As long as the plant is not losing health, it will grow fruit periodically. When the fruit turns red, it can be harvested with the basket tool.",
         "Your score is shown in the top left. It will regularly increase based on the current health of the plant. Whenever you harvest a fruit, you receive 100 bonus points.",
