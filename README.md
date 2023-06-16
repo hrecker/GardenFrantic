@@ -5,7 +5,7 @@ Garden Frantic is a mobile browser game made with [Phaser 3.60.0](https://phaser
 [Play Garden Frantic on itch.io!](https://robocrow.itch.io/garden-frantic). Playing on mobile is highly recommended.
 
 # Game Overview
-![Gameplay4](screenshots/gameplay4.png?raw=true)
+![Gameplay](screenshots/gameplay1.png?raw=true)
 
 In Garden Frantic, you must keep your plant healthy by monitoring its water and light levels, while also defending against dangerous hazards. While the plant is healthy it will grow fruit, which you can harvest for bonus points. You have access to an array of tools that can be used to manage your plants health and to defeat the various hazards you are faced with.
 
