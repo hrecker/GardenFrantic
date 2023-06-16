@@ -520,6 +520,10 @@ export class MainScene extends Phaser.Scene {
                 break;
             case FruitGrowthStage.FullyGrown:
                 sprite = scene.add.sprite(pos.x, pos.y, 'fruitlarge1').setScale(0.25).play('fruitlargesway');
+                sprite.setInteractive();
+                sprite.on("pointerdown", () => {
+                    scene.useSelectedToolWithSound(plant);
+                });
                 scene.plantFruitImages[plant.id].destroy()
                 break;
         }

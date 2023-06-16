@@ -69,6 +69,8 @@ export class MenuScene extends Phaser.Scene {
     toolListTitles: Phaser.GameObjects.Text[];
     toolListDescriptions: Phaser.GameObjects.Text[];
 
+    landscapeAdvice: Phaser.GameObjects.Text;
+
     constructor() {
         super({
             key: "MenuScene"
@@ -193,6 +195,9 @@ export class MenuScene extends Phaser.Scene {
         let backButtonMaxY = this.game.renderer.height - buttonMargin / 2;
         this.backButton.setPosition(centerX, Math.min(backButtonMaxY, this.fruitHarvestedText.y + buttonMargin * 3 / 2));
         this.toolListBackButton.setPosition(centerX, Math.min(backButtonMaxY, this.toolListImages[numTools - 1].y + buttonMargin * 3 / 2));
+
+        this.landscapeAdvice.setPosition(5, 5);
+        this.landscapeAdvice.setVisible(this.game.renderer.height > this.game.renderer.width);
     }
 
     create() {
@@ -320,6 +325,8 @@ export class MenuScene extends Phaser.Scene {
         this.toolListBackButton = this.add.image(0, 0, "backButton").setScale(1.15).setName("backButton");
         this.configureButton(this.toolListBackButton, "backButton");
         this.toolListGroup.add(this.toolListBackButton);
+
+        this.landscapeAdvice = this.add.text(0, 0, "Play in landscape orientation!", { ...config()["titleStyle"], font: "18px Verdana" });
 
         this.resize(true);
         this.scale.on("resize", this.resize, this);
